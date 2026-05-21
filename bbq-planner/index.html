@@ -9,25 +9,22 @@
 <body class="bg-gray-50 text-gray-800 min-h-screen">
 
     <div class="max-w-2xl mx-auto px-4 py-12">
-        <div class="text-center mb-10">
+        <div class="text-center mb-6">
             <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 mb-2">🔥 Summer BBQ Planner</h1>
-            <p class="text-lg text-gray-600">Bring your appetite. Tell us who you are, suggest what we need, and vote on the essentials!</p>
+            <p class="text-lg text-gray-600">Bring your appetite. Suggest items and vote on the essentials!</p>
+            <div class="mt-3 text-sm inline-flex items-center gap-2 bg-orange-50 text-orange-800 px-3 py-1.5 rounded-full border border-orange-100">
+                <span>👋 Welkom, <strong id="welcomeName">Guest</strong>!</span>
+                <button onclick="changeName()" class="text-xs underline hover:text-orange-900 cursor-pointer font-medium">Change Name</button>
+            </div>
         </div>
 
         <div class="bg-white rounded-xl shadow-xs border border-gray-100 p-6 mb-8">
             <h2 class="text-xl font-bold mb-4">Add a Suggestion</h2>
             <form id="bbqForm" class="space-y-4">
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Your Name</label>
-                        <input type="text" id="guestName" required placeholder="e.g., Marcus" 
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-orange-500">
-                    </div>
-                    <div>
-                        <label class="block text-sm font-medium text-gray-700 mb-1">Item Suggestion</label>
-                        <input type="text" id="bbqItem" required placeholder="e.g., Brioche Burger Buns" 
-                            class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-orange-500">
-                    </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1">What should we get?</label>
+                    <input type="text" id="bbqItem" required placeholder="e.g., Brioche Burger Buns, Cold IPA" 
+                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-orange-500">
                 </div>
                 <button type="submit" 
                     class="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-lg transition duration-150 cursor-pointer">
@@ -61,21 +58,49 @@
         const form = document.getElementById('bbqForm');
         const itemsList = document.getElementById('itemsList');
         const loadingEl = document.getElementById('loading');
+        const welcomeNameEl = document.getElementById('welcomeName');
 
-        // Helper to get array of voted item IDs from local storage
-        function getVotedItems() {
-            return JSON.parse(localStorage.getItem('bbq_votes') || '[]');
+        // Global state for user identities
+        let currentUserName = localStorage.getItem('bbq_user_name');
+
+        // Identity verification routine
+        function checkIdentity() {
+            while (!currentUserName || currentUserName.trim() === "") {
+                currentUserName = prompt("Please enter your name to view and vote on the BBQ planner:");
+            }
+            currentUserName = currentUserName.trim();
+            localStorage.setItem('bbq_user_name', currentUserName);
+            welcomeNameEl.textContent = currentUserName;
         }
 
-        // 2. FETCH AND RENDER ITEMS
+        function changeName() {
+            const newName = prompt("Enter your new name:", currentUserName);
+            if (newName && newName.trim() !== "") {
+                currentUserName = newName.trim();
+                localStorage.setItem('bbq_user_name', currentUserName);
+                welcomeNameEl.textContent = currentUserName;
+                fetchItems();
+            }
+        }
+
+        // Initialize identification
+        checkIdentity();
+
+        // 2. FETCH AND RENDER ITEMS (WITH VOTER LISTS)
         async function fetchItems() {
-            const { data, error } = await db
+            // Fetch items from the main board
+            const { data: items, error: itemsError } = await db
                 .from('bbq_items')
                 .select('*')
                 .order('votes', { ascending: false });
 
-            if (error) {
-                console.error('Error fetching data:', error);
+            // Fetch the logs showing who voted for what
+            const { data: logs, error: logsError } = await db
+                .from('bbq_votes_log')
+                .select('*');
+
+            if (itemsError || logsError) {
+                console.error('Error syncing data configurations:', itemsError || logsError);
                 return;
             }
 
@@ -83,30 +108,42 @@
             itemsList.classList.remove('hidden');
             itemsList.innerHTML = '';
 
-            if (data.length === 0) {
+            if (items.length === 0) {
                 itemsList.innerHTML = `<li class="py-6 text-center text-gray-400">No suggestions yet. Be the first hero!</li>`;
                 return;
             }
 
-            const votedItems = getVotedItems();
+            items.forEach(row => {
+                // Find all names associated with votes for this specific item ID
+                const votersForThisItem = logs
+                    .filter(log => log.item_id === row.id)
+                    .map(log => escapeHtml(log.voter_name));
 
-            data.forEach(row => {
-                const hasVoted = votedItems.includes(row.id);
+                // Check if current session runner has voted for this row yet
+                const hasVoted = votersForThisItem.includes(escapeHtml(currentUserName));
+                
+                // Construct a pretty badge string of who upvoted it
+                let voterString = "";
+                if (votersForThisItem.length > 0) {
+                    voterString = `<div class="text-xs text-gray-400 mt-1 truncate">👍 Backed by: ${votersForThisItem.join(', ')}</div>`;
+                }
+
                 const li = document.createElement('li');
-                li.className = 'py-4 flex items-center justify-between gap-4';
+                li.className = 'py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3';
                 li.innerHTML = `
                     <div class="flex-1 min-w-0">
                         <p class="text-md font-semibold text-gray-900 truncate">${escapeHtml(row.item)}</p>
                         <p class="text-xs text-gray-500 truncate">Suggested by ${escapeHtml(row.name)}</p>
+                        ${voterString}
                     </div>
-                    <div class="flex items-center gap-3">
+                    <div class="flex items-center justify-between sm:justify-end gap-3 shrink-0">
                         <span class="text-sm font-bold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-full">${row.votes} votes</span>
-                        <button onclick="upvoteItem(${row.id}, ${row.votes})" 
+                        <button onclick="upvoteItem(${row.id}, ${row.votes}, '${encodeURIComponent(votersForThisItem.join(','))}')" 
                             ${hasVoted ? 'disabled' : ''}
                             class="${hasVoted 
                                 ? 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed' 
                                 : 'bg-orange-50 hover:bg-orange-100 active:bg-orange-200 text-orange-700 border border-orange-200 cursor-pointer'} 
-                                p-2 rounded-lg font-bold transition duration-150">
+                                p-2 rounded-lg text-sm font-bold transition duration-150">
                             ${hasVoted ? '✓ Voted' : '👍 +1'}
                         </button>
                     </div>
@@ -118,48 +155,54 @@
         // 3. SUBMIT NEW ITEM
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
-            const nameInput = document.getElementById('guestName');
             const itemInput = document.getElementById('bbqItem');
 
+            // 1. Create the product item
             const { data, error } = await db
                 .from('bbq_items')
-                .insert([{ name: nameInput.value, item: itemInput.value }])
-                .select(); // Ask Supabase to return the newly created row details
+                .insert([{ name: currentUserName, item: itemInput.value }])
+                .select();
 
             if (error) {
                 alert('Oops, something went wrong adding your item!');
                 console.error(error);
-            } else {
-                // Automatically count their suggestion as their vote for that item
-                if (data && data[0]) {
-                    const votedItems = getVotedItems();
-                    votedItems.push(data[0].id);
-                    localStorage.setItem('bbq_votes', JSON.stringify(votedItems));
-                }
+            } else if (data && data[0]) {
+                // 2. Automatically log the creator's vote inside our new audit table
+                await db
+                    .from('bbq_votes_log')
+                    .insert([{ voter_name: currentUserName, item_id: data[0].id }]);
 
-                itemInput.value = ''; // clear item field
+                itemInput.value = '';
                 fetchItems();
             }
         });
 
         // 4. UPVOTE AN ITEM
-        async function upvoteItem(id, currentVotes) {
-            const votedItems = getVotedItems();
+        async function upvoteItem(id, currentVotes, encodedVoters) {
+            const votersList = decodeURIComponent(encodedVoters).split(',').filter(Boolean);
             
-            // Safety check: block execution if they've already voted for this ID
-            if (votedItems.includes(id)) return;
+            // Double-check on front-end to block duplicate entries
+            if (votersList.includes(currentUserName)) return;
 
-            const { error } = await db
+            // 1. Add record row to our tracking ledger
+            const { error: logError } = await db
+                .from('bbq_votes_log')
+                .insert([{ voter_name: currentUserName, item_id: id }]);
+
+            if (logError) {
+                console.error('Error registering vote trace:', logError);
+                return;
+            }
+
+            // 2. Increment numerical display leaderboard counter
+            const { error: itemError } = await db
                 .from('bbq_items')
                 .update({ votes: currentVotes + 1 })
                 .eq('id', id);
 
-            if (error) {
-                console.error('Error updating votes:', error);
+            if (itemError) {
+                console.error('Error updating main items total ledger:', itemError);
             } else {
-                // Add the ID to storage so they can't click it again
-                votedItems.push(id);
-                localStorage.setItem('bbq_votes', JSON.stringify(votedItems));
                 fetchItems();
             }
         }
@@ -169,7 +212,7 @@
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
-        // Initial load
+        // Initial execution
         fetchItems();
     </script>
 </body>
