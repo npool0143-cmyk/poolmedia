@@ -10,7 +10,7 @@
 
     <div class="max-w-2xl mx-auto px-4 py-12">
         <div class="text-center mb-10">
-            <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 mb-2">🔥 BBQ Planner</h1>
+            <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 mb-2">🔥 Summer BBQ Planner</h1>
             <p class="text-lg text-gray-600">Bring your appetite. Tell us who you are, suggest what we need, and vote on the essentials!</p>
         </div>
 
@@ -51,12 +51,12 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        // 1. CONFIGURATION: Your live Supabase credentials
+        // 1. CONFIGURATION
         const SUPABASE_URL = "https://lpcfgasmetsocpluhcsh.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_xWPJ0Wp3qQ4J6mrWMieFlw_E0QHlkfK";
 
-        // FIXED: Changed second 'supabase' to capital 'Supabase' to resolve the syntax crash
-        const supabase = Supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        // Fixed variable conflict by renaming our client instance to 'db'
+        const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // DOM Elements
         const form = document.getElementById('bbqForm');
@@ -65,7 +65,7 @@
 
         // 2. FETCH AND RENDER ITEMS
         async function fetchItems() {
-            const { data, error } = await supabase
+            const { data, error } = await db
                 .from('bbq_items')
                 .select('*')
                 .order('votes', { ascending: false });
@@ -110,7 +110,7 @@
             const nameInput = document.getElementById('guestName');
             const itemInput = document.getElementById('bbqItem');
 
-            const { error } = await supabase
+            const { error } = await db
                 .from('bbq_items')
                 .insert([{ name: nameInput.value, item: itemInput.value }]);
 
@@ -125,7 +125,7 @@
 
         // 4. UPVOTE AN ITEM
         async function upvoteItem(id, currentVotes) {
-            const { error } = await supabase
+            const { error } = await db
                 .from('bbq_items')
                 .update({ votes: currentVotes + 1 })
                 .eq('id', id);
