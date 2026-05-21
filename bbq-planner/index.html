@@ -30,7 +30,7 @@
                     </div>
                 </div>
                 <button type="submit" 
-                    class="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-lg transition duration-150">
+                    class="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-lg transition duration-150 cursor-pointer">
                     Submit Suggestion
                 </button>
             </form>
@@ -55,13 +55,17 @@
         const SUPABASE_URL = "https://lpcfgasmetsocpluhcsh.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_xWPJ0Wp3qQ4J6mrWMieFlw_E0QHlkfK";
 
-        // Fixed variable conflict by renaming our client instance to 'db'
         const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // DOM Elements
         const form = document.getElementById('bbqForm');
         const itemsList = document.getElementById('itemsList');
         const loadingEl = document.getElementById('loading');
+
+        // Helper to get array of voted item IDs from local storage
+        function getVotedItems() {
+            return JSON.parse(localStorage.getItem('bbq_votes') || '[]');
+        }
 
         // 2. FETCH AND RENDER ITEMS
         async function fetchItems() {
@@ -84,7 +88,10 @@
                 return;
             }
 
+            const votedItems = getVotedItems();
+
             data.forEach(row => {
+                const hasVoted = votedItems.includes(row.id);
                 const li = document.createElement('li');
                 li.className = 'py-4 flex items-center justify-between gap-4';
                 li.innerHTML = `
@@ -95,8 +102,12 @@
                     <div class="flex items-center gap-3">
                         <span class="text-sm font-bold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-full">${row.votes} votes</span>
                         <button onclick="upvoteItem(${row.id}, ${row.votes})" 
-                            class="bg-orange-50 hover:bg-orange-100 active:bg-orange-200 text-orange-700 p-2 rounded-lg font-bold border border-orange-200 transition duration-150 cursor-pointer">
-                            👍 +1
+                            ${hasVoted ? 'disabled' : ''}
+                            class="${hasVoted 
+                                ? 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed' 
+                                : 'bg-orange-50 hover:bg-orange-100 active:bg-orange-200 text-orange-700 border border-orange-200 cursor-pointer'} 
+                                p-2 rounded-lg font-bold transition duration-150">
+                            ${hasVoted ? '✓ Voted' : '👍 +1'}
                         </button>
                     </div>
                 `;
@@ -110,21 +121,34 @@
             const nameInput = document.getElementById('guestName');
             const itemInput = document.getElementById('bbqItem');
 
-            const { error } = await db
+            const { data, error } = await db
                 .from('bbq_items')
-                .insert([{ name: nameInput.value, item: itemInput.value }]);
+                .insert([{ name: nameInput.value, item: itemInput.value }])
+                .select(); // Ask Supabase to return the newly created row details
 
             if (error) {
                 alert('Oops, something went wrong adding your item!');
                 console.error(error);
             } else {
-                itemInput.value = ''; // clear item field, keep name for convenience
+                // Automatically count their suggestion as their vote for that item
+                if (data && data[0]) {
+                    const votedItems = getVotedItems();
+                    votedItems.push(data[0].id);
+                    localStorage.setItem('bbq_votes', JSON.stringify(votedItems));
+                }
+
+                itemInput.value = ''; // clear item field
                 fetchItems();
             }
         });
 
         // 4. UPVOTE AN ITEM
         async function upvoteItem(id, currentVotes) {
+            const votedItems = getVotedItems();
+            
+            // Safety check: block execution if they've already voted for this ID
+            if (votedItems.includes(id)) return;
+
             const { error } = await db
                 .from('bbq_items')
                 .update({ votes: currentVotes + 1 })
@@ -133,6 +157,9 @@
             if (error) {
                 console.error('Error updating votes:', error);
             } else {
+                // Add the ID to storage so they can't click it again
+                votedItems.push(id);
+                localStorage.setItem('bbq_votes', JSON.stringify(votedItems));
                 fetchItems();
             }
         }
