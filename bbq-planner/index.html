@@ -1,45 +1,45 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>🔥 Epic BBQ Planner</title>
+    <title>🔥 Epische BBQ Planner</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
 </head>
 <body class="bg-gray-50 text-gray-800 min-h-screen">
 
     <div class="max-w-2xl mx-auto px-4 py-12">
         <div class="text-center mb-6">
-            <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 mb-2">🔥 Summer BBQ Planner</h1>
-            <p class="text-lg text-gray-600">Bring your appetite. Suggest items and vote on the essentials!</p>
+            <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 mb-2">🔥 Zomer BBQ Planner</h1>
+            <p class="text-lg text-gray-600">Neem je goede humeur en grote eetlust mee. Voeg items toe en stem op de essentials!</p>
             <div class="mt-3 text-sm inline-flex items-center gap-2 bg-orange-50 text-orange-800 px-3 py-1.5 rounded-full border border-orange-100">
-                <span>👋 Welkom, <strong id="welcomeName">Guest</strong>!</span>
-                <button onclick="changeName()" class="text-xs underline hover:text-orange-900 cursor-pointer font-medium">Change Name</button>
+                <span>👋 Welkom, <strong id="welcomeName">Gast</strong>!</span>
+                <button onclick="changeName()" class="text-xs underline hover:text-orange-900 cursor-pointer font-medium">Naam wijzigen</button>
             </div>
         </div>
 
         <div class="bg-white rounded-xl shadow-xs border border-gray-100 p-6 mb-8">
-            <h2 class="text-xl font-bold mb-4">Add a Suggestion</h2>
+            <h2 class="text-xl font-bold mb-4">Voeg een suggestie toe</h2>
             <form id="bbqForm" class="space-y-4">
                 <div>
-                    <label class="block text-sm font-medium text-gray-700 mb-1">What should we get?</label>
-                    <input type="text" id="bbqItem" required placeholder="e.g., Brioche Burger Buns, Cold IPA" 
+                    <label class="block text-sm font-medium text-gray-700 mb-1">Wat moeten we halen?</label>
+                    <input type="text" id="bbqItem" required placeholder="bijv. Hamburgerbroodjes, Koude IPA" 
                         class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-hidden focus:ring-2 focus:ring-orange-500">
                 </div>
                 <button type="submit" 
                     class="w-full bg-orange-600 hover:bg-orange-700 text-white font-medium py-2 px-4 rounded-lg transition duration-150 cursor-pointer">
-                    Submit Suggestion
+                    Suggestie indienen
                 </button>
             </form>
         </div>
 
         <div class="bg-white rounded-xl shadow-xs border border-gray-100 p-6">
             <div class="flex justify-between items-center mb-4">
-                <h2 class="text-xl font-bold">The Leaderboard</h2>
-                <span class="text-xs text-gray-500">Sorted by highest votes</span>
+                <h2 class="text-xl font-bold">Het Leaderboard</h2>
+                <span class="text-xs text-gray-500">Gesorteerd op de meeste stemmen</span>
             </div>
             
-            <div id="loading" class="text-center py-6 text-gray-500">Loading feast details...</div>
+            <div id="loading" class="text-center py-6 text-gray-500">Lijst laden...</div>
             <ul id="itemsList" class="divide-y divide-gray-100 hidden">
                 </ul>
         </div>
@@ -48,25 +48,25 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
-        // 1. CONFIGURATION
+        // 1. CONFIGURATIE
         const SUPABASE_URL = "https://lpcfgasmetsocpluhcsh.supabase.co";
         const SUPABASE_ANON_KEY = "sb_publishable_xWPJ0Wp3qQ4J6mrWMieFlw_E0QHlkfK";
 
         const db = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-        // DOM Elements
+        // DOM Elementen
         const form = document.getElementById('bbqForm');
         const itemsList = document.getElementById('itemsList');
         const loadingEl = document.getElementById('loading');
         const welcomeNameEl = document.getElementById('welcomeName');
 
-        // Global state for user identities
+        // Globale status voor gebruikersidentiteiten
         let currentUserName = localStorage.getItem('bbq_user_name');
 
-        // Identity verification routine
+        // Identificatie controle routine
         function checkIdentity() {
             while (!currentUserName || currentUserName.trim() === "") {
-                currentUserName = prompt("Please enter your name to view and vote on the BBQ planner:");
+                currentUserName = prompt("Vul je naam in om de BBQ planner te bekijken en te stemmen:");
             }
             currentUserName = currentUserName.trim();
             localStorage.setItem('bbq_user_name', currentUserName);
@@ -74,7 +74,7 @@
         }
 
         function changeName() {
-            const newName = prompt("Enter your new name:", currentUserName);
+            const newName = prompt("Vul je nieuwe naam in:", currentUserName);
             if (newName && newName.trim() !== "") {
                 currentUserName = newName.trim();
                 localStorage.setItem('bbq_user_name', currentUserName);
@@ -83,24 +83,24 @@
             }
         }
 
-        // Initialize identification
+        // Start identificatie
         checkIdentity();
 
-        // 2. FETCH AND RENDER ITEMS (WITH VOTER LISTS)
+        // 2. ITEMS OPHALEN EN EN RENDERING (INCLUSIEF STEMMERS)
         async function fetchItems() {
-            // Fetch items from the main board
+            // Haal de items op van de hoofdlijst
             const { data: items, error: itemsError } = await db
                 .from('bbq_items')
                 .select('*')
                 .order('votes', { ascending: false });
 
-            // Fetch the logs showing who voted for what
+            // Haal de logs op om te zien wie waarop heeft gestemd
             const { data: logs, error: logsError } = await db
                 .from('bbq_votes_log')
                 .select('*');
 
             if (itemsError || logsError) {
-                console.error('Error syncing data configurations:', itemsError || logsError);
+                console.error('Fout bij synchroniseren van gegevens:', itemsError || logsError);
                 return;
             }
 
@@ -109,42 +109,45 @@
             itemsList.innerHTML = '';
 
             if (items.length === 0) {
-                itemsList.innerHTML = `<li class="py-6 text-center text-gray-400">No suggestions yet. Be the first hero!</li>`;
+                itemsList.innerHTML = `<li class="py-6 text-center text-gray-400">Nog geen suggesties. Wees de eerste held!</li>`;
                 return;
             }
 
             items.forEach(row => {
-                // Find all names associated with votes for this specific item ID
+                // Vind alle namen die gekoppeld zijn aan stemmen voor dit specifieke item ID
                 const votersForThisItem = logs
                     .filter(log => log.item_id === row.id)
                     .map(log => escapeHtml(log.voter_name));
 
-                // Check if current session runner has voted for this row yet
+                // Controleer of de huidige gebruiker al op dit item heeft gestemd
                 const hasVoted = votersForThisItem.includes(escapeHtml(currentUserName));
                 
-                // Construct a pretty badge string of who upvoted it
+                // Maak een overzichtelijke tekst van wie er gestemd hebben
                 let voterString = "";
                 if (votersForThisItem.length > 0) {
-                    voterString = `<div class="text-xs text-gray-400 mt-1 truncate">👍 Backed by: ${votersForThisItem.join(', ')}</div>`;
+                    voterString = `<div class="text-xs text-gray-400 mt-1 truncate">👍 Gestemd door: ${votersForThisItem.join(', ')}</div>`;
                 }
+
+                // Vertaal numerieke stemweergave naar het Nederlands
+                const voteText = row.votes === 1 ? 'stem' : 'stemmen';
 
                 const li = document.createElement('li');
                 li.className = 'py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3';
                 li.innerHTML = `
                     <div class="flex-1 min-w-0">
                         <p class="text-md font-semibold text-gray-900 truncate">${escapeHtml(row.item)}</p>
-                        <p class="text-xs text-gray-500 truncate">Suggested by ${escapeHtml(row.name)}</p>
+                        <p class="text-xs text-gray-500 truncate">Voorgesteld door ${escapeHtml(row.name)}</p>
                         ${voterString}
                     </div>
                     <div class="flex items-center justify-between sm:justify-end gap-3 shrink-0">
-                        <span class="text-sm font-bold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-full">${row.votes} votes</span>
+                        <span class="text-sm font-bold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-full">${row.votes} ${voteText}</span>
                         <button onclick="upvoteItem(${row.id}, ${row.votes}, '${encodeURIComponent(votersForThisItem.join(','))}')" 
                             ${hasVoted ? 'disabled' : ''}
                             class="${hasVoted 
                                 ? 'bg-gray-100 text-gray-400 border border-gray-200 cursor-not-allowed' 
                                 : 'bg-orange-50 hover:bg-orange-100 active:bg-orange-200 text-orange-700 border border-orange-200 cursor-pointer'} 
                                 p-2 rounded-lg text-sm font-bold transition duration-150">
-                            ${hasVoted ? '✓ Voted' : '👍 +1'}
+                            ${hasVoted ? '✓ Gestemd' : '👍 +1'}
                         </button>
                     </div>
                 `;
@@ -152,22 +155,22 @@
             });
         }
 
-        // 3. SUBMIT NEW ITEM
+        // 3. NIEUW ITEM INDIENEN
         form.addEventListener('submit', async (e) => {
             e.preventDefault();
             const itemInput = document.getElementById('bbqItem');
 
-            // 1. Create the product item
+            // 1. Maak het item aan
             const { data, error } = await db
                 .from('bbq_items')
                 .insert([{ name: currentUserName, item: itemInput.value }])
                 .select();
 
             if (error) {
-                alert('Oops, something went wrong adding your item!');
+                alert('Oeps, er ging iets mis bij het toevoegen van je item!');
                 console.error(error);
             } else if (data && data[0]) {
-                // 2. Automatically log the creator's vote inside our new audit table
+                // 2. Log automatisch de stem van de maker in de audit-tabel
                 await db
                     .from('bbq_votes_log')
                     .insert([{ voter_name: currentUserName, item_id: data[0].id }]);
@@ -177,42 +180,42 @@
             }
         });
 
-        // 4. UPVOTE AN ITEM
+        // 4. STEMMEN OP EEN ITEM
         async function upvoteItem(id, currentVotes, encodedVoters) {
             const votersList = decodeURIComponent(encodedVoters).split(',').filter(Boolean);
             
-            // Double-check on front-end to block duplicate entries
+            // Dubbele controle aan de voorkant om dubbele stemmen te blokkeren
             if (votersList.includes(currentUserName)) return;
 
-            // 1. Add record row to our tracking ledger
+            // 1. Voeg stem toe aan de log-tabel
             const { error: logError } = await db
                 .from('bbq_votes_log')
                 .insert([{ voter_name: currentUserName, item_id: id }]);
 
             if (logError) {
-                console.error('Error registering vote trace:', logError);
+                console.error('Fout bij registreren van stem:', logError);
                 return;
             }
 
-            // 2. Increment numerical display leaderboard counter
+            // 2. Verhoog de teller op het hoofd-leaderboard
             const { error: itemError } = await db
                 .from('bbq_items')
                 .update({ votes: currentVotes + 1 })
                 .eq('id', id);
 
             if (itemError) {
-                console.error('Error updating main items total ledger:', itemError);
+                console.error('Fout bij updaten van algemene stemmenteller:', itemError);
             } else {
                 fetchItems();
             }
         }
 
-        // Simple XSS security helper
+        // Eenvoudige XSS-beveiligingshelper
         function escapeHtml(str) {
             return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
         }
 
-        // Initial execution
+        // Initiële uitvoering
         fetchItems();
     </script>
 </body>
