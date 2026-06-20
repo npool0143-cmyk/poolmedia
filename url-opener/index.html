@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk URL Opener</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            max-width: 600px;
+            margin: 40px auto;
+            padding: 0 20px;
+            background-color: #f9f9f9;
+            color: #333;
+        }
+        h1 {
+            font-size: 1.5rem;
+            color: #111;
+        }
+        textarea {
+            width: 100%;
+            height: 250px;
+            padding: 12px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            box-sizing: border-box;
+            resize: vertical;
+            font-family: monospace;
+            font-size: 0.9rem;
+        }
+        button {
+            background-color: #0070f3;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 12px;
+            font-weight: 600;
+        }
+        button:hover {
+            background-color: #0051a8;
+        }
+        .info {
+            margin-top: 8px;
+            font-size: 0.85rem;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+        }
+        .warning {
+            margin-top: 15px;
+            padding: 10px;
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: 4px;
+            font-size: 0.85rem;
+            color: #664d03;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Bulk URL Opener</h1>
+    <p>Paste your URLs below (one per line).</p>
+    
+    <textarea id="urlInput" placeholder="https://example.com&#10;https://google.com" oninput="updateCount()"></textarea>
+    
+    <div class="info">
+        <span id="urlCount">0 URLs detected</span>
+    </div>
+
+    <button onclick="openUrls()">Open All Links</button>
+
+    <div class="warning">
+        <strong>⚠️ Browser Note:</strong> Your browser will likely block this as a popup the first time you use it. When you click the button, look at the right side of your address bar and select <strong>"Always allow pop-ups from this site"</strong>, then try again.
+    </div>
+
+    <script>
+        function getUrls() {
+            const text = document.getElementById('urlInput').value;
+            // Split by newlines, trim whitespace, and filter out empty lines
+            return text.split('\n')
+                       .map(url => url.trim())
+                       .filter(url => url.length > 0);
+        }
+
+        function updateCount() {
+            const urls = getUrls();
+            document.getElementById('urlCount').textContent = `${urls.length} URL${urls.length === 1 ? '' : 's'} detected`;
+        }
+
+        function openUrls() {
+            const urls = getUrls();
+            
+            if (urls.length === 0) {
+                alert('Please paste some URLs first!');
+                return;
+            }
+
+            urls.forEach(url => {
+                // Ensure the URL has a protocol so it doesn't try to open as a relative local file
+                let formattedUrl = url;
+                if (!/^https?:\/\//i.test(url)) {
+                    formattedUrl = 'https://' + url;
+                }
+                window.open(formattedUrl, '_blank');
+            });
+        }
+    </script>
+
+</body>
+</html>
