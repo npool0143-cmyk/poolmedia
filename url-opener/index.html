@@ -20,6 +20,7 @@
             --warning-bg: rgba(210, 153, 34, 0.1);
             --warning-border: rgba(210, 153, 34, 0.4);
             --warning-text: #f0883e;
+            --control-bg: #1f242c;
         }
 
         body {
@@ -143,6 +144,76 @@
             color: var(--accent-color);
         }
 
+        /* Settings Toolbar */
+        .controls-panel {
+            background-color: var(--control-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            margin-top: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .control-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        /* Clean Toggle Switch styling */
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 42px;
+            height: 24px;
+        }
+
+        .switch input { 
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: #30363d;
+            transition: .2s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 16px; width: 16px;
+            left: 4px; bottom: 4px;
+            background-color: white;
+            transition: .2s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--accent-color);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(18px);
+        }
+
+        /* Range slider text alignment */
+        .range-label {
+            min-width: 75px;
+            text-align: right;
+            font-weight: 600;
+            color: var(--accent-color);
+        }
+
         .action-buttons {
             display: flex;
             gap: 12px;
@@ -214,6 +285,21 @@
             <span id="urlCount" class="counter-badge">0 URLs</span>
         </div>
 
+        <div class="controls-panel">
+            <div class="control-group">
+                <label class="switch">
+                    <input type="checkbox" id="utmToggle" onchange="toggleUtmClean()">
+                    <span class="slider"></span>
+                </label>
+                <span>Auto-Strip Tracking Parameters (UTMs)</span>
+            </div>
+            <div class="control-group">
+                <span>Delay Sequence:</span>
+                <input type="range" id="delaySlider" min="0" max="3" step="0.5" value="0" oninput="updateDelayLabel(this.value)">
+                <span id="delayLabel" class="range-label">Instant</span>
+            </div>
+        </div>
+
         <div class="action-buttons">
             <button class="btn-secondary" onclick="clearAll()">Clear List</button>
             <button class="btn-primary" onclick="openUrls()">Launch Tabs</button>
@@ -230,18 +316,38 @@
     <script>
         let urlList = [];
 
+        function cleanUtmParams(urlString) {
+            try {
+                // Ensure a valid protocol exists before passing to URL constructor
+                let targetUrl = urlString;
+                if (!/^https?:\/\//i.test(targetUrl)) {
+                    targetUrl = 'https://' + targetUrl;
+                }
+                const url = new URL(targetUrl);
+                const keysToRemove = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'fbclid', 'msclkid'];
+                
+                keysToRemove.forEach(key => url.searchParams.delete(key));
+                
+                // Return cleaned absolute string or relative format if needed
+                return url.toString();
+            } catch (e) {
+                return urlString;
+            }
+        }
+
         function handlePaste(e) {
             e.preventDefault();
-            // Get text from clipboard
             const clipboardData = e.clipboardData || window.clipboardData;
             const pastedText = clipboardData.getData('Text');
             
-            // Split by lines or spaces to handle different paste styles
-            const incomingUrls = pastedText.split(/[\n\r\s]+/)
+            let incomingUrls = pastedText.split(/[\n\r\s]+/)
                                            .map(url => url.trim())
                                            .filter(url => url.length > 0);
 
-            // Merge into our master array avoiding duplicates if you paste multiple times
+            if (document.getElementById('utmToggle').checked) {
+                incomingUrls = incomingUrls.map(url => cleanUtmParams(url));
+            }
+
             incomingUrls.forEach(url => {
                 if (!urlList.includes(url)) {
                     urlList.push(url);
@@ -251,16 +357,28 @@
             renderTags();
         }
 
+        function toggleUtmClean() {
+            if (document.getElementById('utmToggle').checked && urlList.length > 0) {
+                urlList = urlList.map(url => cleanUtmParams(url));
+                // Filter duplicates that may result from cleaning tracking params
+                urlList = [...new Set(urlList)];
+                renderTags();
+            }
+        }
+
+        function updateDelayLabel(val) {
+            const label = document.getElementById('delayLabel');
+            label.textContent = parseFloat(val) === 0 ? "Instant" : `${val}s delay`;
+        }
+
         function renderTags() {
             const container = document.getElementById('urlContainer');
-            container.innerHTML = ''; // Clear container
+            container.innerHTML = '';
             
             urlList.forEach((url, index) => {
                 const tag = document.createElement('div');
                 tag.className = 'url-tag';
-                tag.contentEditable = 'false'; // Keep tags uneditable
-                
-                // Add text and close button
+                tag.contentEditable = 'false';
                 tag.innerHTML = `${url}<span class="remove-btn" onclick="removeUrl(${index})">×</span>`;
                 container.appendChild(tag);
             });
@@ -282,19 +400,29 @@
             document.getElementById('urlCount').textContent = `${urlList.length} URL${urlList.length === 1 ? '' : 's'}`;
         }
 
-        function openUrls() {
+        // Asynchronous delay mechanism
+        const sleep = ms => new Promise(res => setTimeout(res, ms));
+
+        async function openUrls() {
             if (urlList.length === 0) {
                 alert('Please paste some URLs first!');
                 return;
             }
 
-            urlList.forEach(url => {
-                let formattedUrl = url;
-                if (!/^https?:\/\//i.test(url)) {
-                    formattedUrl = 'https://' + url;
+            const delayInterval = parseFloat(document.getElementById('delaySlider').value) * 1000;
+
+            for (let i = 0; i < urlList.length; i++) {
+                let formattedUrl = urlList[i];
+                if (!/^https?:\/\//i.test(formattedUrl)) {
+                    formattedUrl = 'https://' + formattedUrl;
                 }
+                
                 window.open(formattedUrl, '_blank');
-            });
+
+                if (delayInterval > 0 && i < urlList.length - 1) {
+                    await sleep(delayInterval);
+                }
+            }
         }
     </script>
 
