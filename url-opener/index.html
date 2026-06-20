@@ -17,6 +17,7 @@
             --tag-bg: #21262d;
             --tag-hover: #262c36;
             --danger-color: #f85149;
+            --danger-hover: #da3633;
             --warning-bg: rgba(210, 153, 34, 0.1);
             --warning-border: rgba(210, 153, 34, 0.4);
             --warning-text: #f0883e;
@@ -142,7 +143,6 @@
             color: var(--accent-color);
         }
 
-        /* Settings Panels stacked smoothly */
         .controls-panel {
             background-color: var(--control-bg);
             border: 1px solid var(--border-color);
@@ -208,7 +208,6 @@
             transform: translateX(18px);
         }
 
-        /* Premium Custom Slider UI Wrapper */
         .slider-wrapper {
             display: flex;
             flex-direction: column;
@@ -234,7 +233,6 @@
             cursor: pointer;
         }
 
-        /* Webkit Browsers (Chrome, Safari, Edge, Opera) */
         .custom-range::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
@@ -252,7 +250,6 @@
             background: var(--accent-color);
         }
 
-        /* Mozilla Firefox */
         .custom-range::-moz-range-thumb {
             width: 14px;
             height: 14px;
@@ -298,7 +295,7 @@
             font-weight: 600;
             border-radius: 8px;
             cursor: pointer;
-            transition: background-color 0.2s, transform 0.1s;
+            transition: background-color 0.2s, transform 0.1s, border-color 0.2s;
         }
 
         .btn-primary {
@@ -323,7 +320,26 @@
             border-color: #8b949e;
         }
 
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: #ffffff;
+            border: none;
+            flex: 1;
+            display: none; /* Controlled dynamically by JS script execution */
+            animation: fadeIn 0.2s ease-in-out;
+        }
+
+        .btn-danger:hover { background-color: var(--danger-hover); }
+
         button:active { transform: scale(0.99); }
+
+        button:disabled {
+            background-color: #21262d;
+            color: var(--text-muted);
+            border: 1px solid var(--border-color);
+            cursor: not-allowed;
+            transform: none;
+        }
 
         .warning-box {
             margin-top: 24px;
@@ -364,7 +380,7 @@
                         <input type="checkbox" id="utmToggle" onchange="toggleUtmClean()">
                         <span class="slider-toggle"></span>
                     </label>
-                    <span>Auto-Strip Tracking Parameters (UTMs)</span>
+                    <span>Auto-Strip Tracking Parameters (UTMs & Ad IDs)</span>
                 </div>
             </div>
             
@@ -388,8 +404,9 @@
         </div>
 
         <div class="action-buttons">
-            <button class="btn-secondary" onclick="clearAll()">Clear List</button>
-            <button class="btn-primary" onclick="openUrls()">Launch Tabs</button>
+            <button id="btnClear" class="btn-secondary" onclick="clearAll()">Clear List</button>
+            <button id="btnStop" class="btn-danger" onclick="stopUrls()">Stop Sequence</button>
+            <button id="btnLaunch" class="btn-primary" onclick="openUrls()">Launch Tabs</button>
         </div>
 
         <div class="warning-box">
@@ -402,51 +419,35 @@
 
     <script>
         let urlList = [];
+        let isRunning = false;
 
-function cleanUtmParams(urlString) {
-    try {
-        let targetUrl = urlString;
-        if (!/^https?:\/\//i.test(targetUrl)) {
-            targetUrl = 'https://' + targetUrl;
+        function cleanUtmParams(urlString) {
+            try {
+                let targetUrl = urlString;
+                if (!/^https?:\/\//i.test(targetUrl)) {
+                    targetUrl = 'https://' + targetUrl;
+                }
+                const url = new URL(targetUrl);
+                const keysToRemove = [
+                    'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'utm_id', 'utm_source_platform',
+                    'gclid', 'gad_source', 'gad_campaignid', 'gclsrc', 'dclid', 'wbraid', 'gbraid',
+                    'cid', 'sc_cid', 'icid', 'fbclid', 'msclkid', 'ttclid'
+                ];
+                
+                keysToRemove.forEach(key => url.searchParams.delete(key));
+                
+                let resultUrl = url.toString();
+                if (resultUrl.endsWith('?')) {
+                    resultUrl = resultUrl.slice(0, -1);
+                }
+                return resultUrl;
+            } catch (e) {
+                return urlString;
+            }
         }
-        const url = new URL(targetUrl);
-        
-        // Comprehensive master list of global retail, e-com, and ad tracking keys
-        const keysToRemove = [
-            'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'utm_id', 'utm_source_platform',
-            
-            'gclid', 'gad_source', 'gad_campaignid', 'gclsrc', 'dclid', 'wbraid', 'gbraid',
-            
-            'cid', 'sc_cid', 'icid',
-            
-            'fbclid', 'fbl_id', 'fb_action_ids', 'fb_action_types', 'fb_source',
-            
-            'msclkid',
-            
-            'ttclid', '_tt_enable_click', 'p_id',
-            
-            'sc_campaign', 's_kwcid', 'sfmc_id', 'sfmc_s',
-            
-            '_hsenc', '_hsmi', 'hsCtaTracking', 'mc_cid', 'mc_eid', 'kx',
-            
-            'aff_id', 'affiliate_id', 'clickref', 'ref'
-        ];
-        
-        keysToRemove.forEach(key => url.searchParams.delete(key));
-        
-        // If the URL ends in an empty query string (e.g., "lidl.nl/?"), clean it up nicely
-        let resultUrl = url.toString();
-        if (resultUrl.endsWith('?')) {
-            resultUrl = resultUrl.slice(0, -1);
-        }
-        
-        return resultUrl;
-    } catch (e) {
-        return urlString;
-    }
-}
 
         function handlePaste(e) {
+            if (isRunning) return e.preventDefault();
             e.preventDefault();
             const clipboardData = e.clipboardData || window.clipboardData;
             const pastedText = clipboardData.getData('Text');
@@ -469,6 +470,7 @@ function cleanUtmParams(urlString) {
         }
 
         function toggleUtmClean() {
+            if (isRunning) return;
             if (document.getElementById('utmToggle').checked && urlList.length > 0) {
                 urlList = urlList.map(url => cleanUtmParams(url));
                 urlList = [...new Set(urlList)];
@@ -476,12 +478,10 @@ function cleanUtmParams(urlString) {
             }
         }
 
-        // Dynamically recalculate slider fill percentage on drag
         function updateSliderUI(val) {
             const slider = document.getElementById('delaySlider');
             const label = document.getElementById('delayLabel');
             
-            // Calculate active track percentage fill
             const percentage = ((val - slider.min) / (slider.max - slider.min)) * 100;
             slider.style.background = `linear-gradient(to right, var(--accent-color) 0%, var(--accent-color) ${percentage}%, var(--slider-track) ${percentage}%, var(--slider-track) 100%)`;
             
@@ -496,7 +496,12 @@ function cleanUtmParams(urlString) {
                 const tag = document.createElement('div');
                 tag.className = 'url-tag';
                 tag.contentEditable = 'false';
-                tag.innerHTML = `${url}<span class="remove-btn" onclick="removeUrl(${index})">×</span>`;
+                // Disable removal interactions completely if a process sequence is hot
+                if (isRunning) {
+                    tag.innerHTML = `${url}`;
+                } else {
+                    tag.innerHTML = `${url}<span class="remove-btn" onclick="removeUrl(${index})">×</span>`;
+                }
                 container.appendChild(tag);
             });
 
@@ -504,11 +509,13 @@ function cleanUtmParams(urlString) {
         }
 
         function removeUrl(index) {
+            if (isRunning) return;
             urlList.splice(index, 1);
             renderTags();
         }
 
         function clearAll() {
+            if (isRunning) return;
             urlList = [];
             renderTags();
         }
@@ -525,9 +532,33 @@ function cleanUtmParams(urlString) {
                 return;
             }
 
-            const delayInterval = parseFloat(document.getElementById('delaySlider').value) * 1000;
+            isRunning = true;
+            const btnLaunch = document.getElementById('btnLaunch');
+            const btnStop = document.getElementById('btnStop');
+            const btnClear = document.getElementById('btnClear');
+            const slider = document.getElementById('delaySlider');
+            const container = document.getElementById('urlContainer');
+
+            // Toggle element states across UI layout components during live run
+            btnClear.disabled = true;
+            slider.disabled = true;
+            container.contentEditable = "false";
+            renderTags(); 
+
+            const delayInterval = parseFloat(slider.value) * 1000;
+            
+            // Show Stop Button UI only if sequence utilizes a delayed step loop
+            if (delayInterval > 0) {
+                btnStop.style.display = 'block';
+            }
 
             for (let i = 0; i < urlList.length; i++) {
+                if (!isRunning) break; // Halts process loops instantly when Stop button fires
+
+                // Update text container parameters live to display current batch metrics
+                btnLaunch.textContent = `Opening ${i + 1} of ${urlList.length}...`;
+                btnLaunch.disabled = true;
+
                 let formattedUrl = urlList[i];
                 if (!/^https?:\/\//i.test(formattedUrl)) {
                     formattedUrl = 'https://' + formattedUrl;
@@ -539,9 +570,32 @@ function cleanUtmParams(urlString) {
                     await sleep(delayInterval);
                 }
             }
+
+            // Restore baseline UI states on termination
+            resetControlUI();
         }
 
-        // Run on boot to ensure initial fill state matches default values
+        function stopUrls() {
+            isRunning = false;
+        }
+
+        function resetControlUI() {
+            isRunning = false;
+            const btnLaunch = document.getElementById('btnLaunch');
+            const btnStop = document.getElementById('btnStop');
+            const btnClear = document.getElementById('btnClear');
+            const slider = document.getElementById('delaySlider');
+            const container = document.getElementById('urlContainer');
+
+            btnLaunch.textContent = 'Launch Tabs';
+            btnLaunch.disabled = false;
+            btnStop.style.display = 'none';
+            btnClear.disabled = false;
+            slider.disabled = false;
+            container.contentEditable = "true";
+            renderTags();
+        }
+
         window.onload = function() {
             updateSliderUI(document.getElementById('delaySlider').value);
         };
