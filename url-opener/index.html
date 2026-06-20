@@ -5,83 +5,164 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bulk URL Opener</title>
     <style>
+        :root {
+            --bg-color: #0d1117;
+            --card-bg: #161b22;
+            --border-color: #30363d;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+            --accent-color: #58a6ff;
+            --accent-hover: #1f6feb;
+            --warning-bg: rgba(210, 153, 34, 0.1);
+            --warning-border: rgba(210, 153, 34, 0.4);
+            --warning-text: #f0883e;
+        }
+
         body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            max-width: 600px;
-            margin: 40px auto;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            max-width: 680px;
+            margin: 60px auto;
             padding: 0 20px;
-            background-color: #f9f9f9;
-            color: #333;
+            line-height: 1.5;
         }
+
+        .container {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 32px;
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
         h1 {
-            font-size: 1.5rem;
-            color: #111;
+            font-size: 1.75rem;
+            font-weight: 600;
+            margin-top: 0;
+            margin-bottom: 8px;
+            color: #ffffff;
+            letter-spacing: -0.5px;
         }
+
+        p {
+            color: var(--text-muted);
+            margin-bottom: 24px;
+            font-size: 0.95rem;
+        }
+
+        .textarea-wrapper {
+            position: relative;
+        }
+
         textarea {
             width: 100%;
-            height: 250px;
-            padding: 12px;
-            border: 1px solid #ccc;
-            border-radius: 6px;
+            height: 280px;
+            padding: 16px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             box-sizing: border-box;
             resize: vertical;
-            font-family: monospace;
+            font-family: "Fira Code", Consolas, Monaco, monospace;
             font-size: 0.9rem;
+            color: #ecf2f8;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        button {
-            background-color: #0070f3;
-            color: white;
-            border: none;
-            padding: 12px 20px;
-            font-size: 1rem;
-            border-radius: 6px;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 12px;
-            font-weight: 600;
+
+        textarea:focus {
+            border-color: var(--accent-color);
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
         }
-        button:hover {
-            background-color: #0051a8;
-        }
-        .info {
-            margin-top: 8px;
-            font-size: 0.85rem;
-            color: #666;
+
+        .info-bar {
             display: flex;
             justify-content: space-between;
-        }
-        .warning {
-            margin-top: 15px;
-            padding: 10px;
-            background-color: #fff3cd;
-            border-left: 4px solid #ffc107;
-            border-radius: 4px;
+            align-items: center;
+            margin-top: 10px;
             font-size: 0.85rem;
-            color: #664d03;
+            color: var(--text-muted);
+            padding: 0 4px;
+        }
+
+        .counter-badge {
+            background-color: #21262d;
+            padding: 4px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--border-color);
+            font-weight: 500;
+            color: var(--accent-color);
+        }
+
+        button {
+            background-color: var(--accent-color);
+            color: #ffffff;
+            border: none;
+            padding: 14px 24px;
+            font-size: 1rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 24px;
+            transition: background-color 0.2s, transform 0.1s;
+        }
+
+        button:hover {
+            background-color: var(--accent-hover);
+        }
+
+        button:active {
+            transform: scale(0.995);
+        }
+
+        .warning-box {
+            margin-top: 24px;
+            padding: 14px 16px;
+            background-color: var(--warning-bg);
+            border: 1px solid var(--warning-border);
+            border-radius: 8px;
+            font-size: 0.85rem;
+            color: var(--warning-text);
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+
+        .warning-box strong {
+            color: #ffb454;
         }
     </style>
 </head>
 <body>
 
-    <h1>Bulk URL Opener</h1>
-    <p>Paste your URLs below (one per line).</p>
-    
-    <textarea id="urlInput" placeholder="https://example.com&#10;https://google.com" oninput="updateCount()"></textarea>
-    
-    <div class="info">
-        <span id="urlCount">0 URLs detected</span>
-    </div>
+    <div class="container">
+        <h1>Bulk URL Opener</h1>
+        <p>Drop your list of links below to launch them all simultaneously into new tabs.</p>
+        
+        <div class="textarea-wrapper">
+            <textarea id="urlInput" placeholder="https://example.com&#10;https://google.com" oninput="updateCount()"></textarea>
+        </div>
+        
+        <div class="info-bar">
+            <span>Paste one URL per line</span>
+            <span id="urlCount" class="counter-badge">0 URLs</span>
+        </div>
 
-    <button onclick="openUrls()">Open All Links</button>
+        <button onclick="openUrls()">Launch Tabs</button>
 
-    <div class="warning">
-        <strong>⚠️ Browser Note:</strong> Your browser will likely block this as a popup the first time you use it. When you click the button, look at the right side of your address bar and select <strong>"Always allow pop-ups from this site"</strong>, then try again.
+        <div class="warning-box">
+            <span>⚠️</span>
+            <div>
+                <strong>First-time user?</strong> Your browser will block these tabs as pop-ups. When you click "Launch Tabs", click the pop-up icon in your address bar and select <strong>"Always allow"</strong> to fix it.
+            </div>
+        </div>
     </div>
 
     <script>
         function getUrls() {
             const text = document.getElementById('urlInput').value;
-            // Split by newlines, trim whitespace, and filter out empty lines
             return text.split('\n')
                        .map(url => url.trim())
                        .filter(url => url.length > 0);
@@ -89,7 +170,7 @@
 
         function updateCount() {
             const urls = getUrls();
-            document.getElementById('urlCount').textContent = `${urls.length} URL${urls.length === 1 ? '' : 's'} detected`;
+            document.getElementById('urlCount').textContent = `${urls.length} URL${urls.length === 1 ? '' : 's'}`;
         }
 
         function openUrls() {
@@ -101,7 +182,6 @@
             }
 
             urls.forEach(url => {
-                // Ensure the URL has a protocol so it doesn't try to open as a relative local file
                 let formattedUrl = url;
                 if (!/^https?:\/\//i.test(url)) {
                     formattedUrl = 'https://' + url;
