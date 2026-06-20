@@ -403,21 +403,48 @@
     <script>
         let urlList = [];
 
-        function cleanUtmParams(urlString) {
-            try {
-                let targetUrl = urlString;
-                if (!/^https?:\/\//i.test(targetUrl)) {
-                    targetUrl = 'https://' + targetUrl;
-                }
-                const url = new URL(targetUrl);
-                const keysToRemove = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'fbclid', 'msclkid'];
-                
-                keysToRemove.forEach(key => url.searchParams.delete(key));
-                return url.toString();
-            } catch (e) {
-                return urlString;
-            }
+function cleanUtmParams(urlString) {
+    try {
+        let targetUrl = urlString;
+        if (!/^https?:\/\//i.test(targetUrl)) {
+            targetUrl = 'https://' + targetUrl;
         }
+        const url = new URL(targetUrl);
+        
+        // Comprehensive master list of global retail, e-com, and ad tracking keys
+        const keysToRemove = [
+            'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'utm_id', 'utm_source_platform',
+            
+            'gclid', 'gad_source', 'gad_campaignid', 'gclsrc', 'dclid', 'wbraid', 'gbraid',
+            
+            'cid', 'sc_cid', 'icid',
+            
+            'fbclid', 'fbl_id', 'fb_action_ids', 'fb_action_types', 'fb_source',
+            
+            'msclkid',
+            
+            'ttclid', '_tt_enable_click', 'p_id',
+            
+            'sc_campaign', 's_kwcid', 'sfmc_id', 'sfmc_s',
+            
+            '_hsenc', '_hsmi', 'hsCtaTracking', 'mc_cid', 'mc_eid', 'kx',
+            
+            'aff_id', 'affiliate_id', 'clickref', 'ref'
+        ];
+        
+        keysToRemove.forEach(key => url.searchParams.delete(key));
+        
+        // If the URL ends in an empty query string (e.g., "lidl.nl/?"), clean it up nicely
+        let resultUrl = url.toString();
+        if (resultUrl.endsWith('?')) {
+            resultUrl = resultUrl.slice(0, -1);
+        }
+        
+        return resultUrl;
+    } catch (e) {
+        return urlString;
+    }
+}
 
         function handlePaste(e) {
             e.preventDefault();
