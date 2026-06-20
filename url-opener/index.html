@@ -325,7 +325,7 @@
             color: #ffffff;
             border: none;
             flex: 1;
-            display: none; /* Controlled dynamically by JS script execution */
+            display: none;
             animation: fadeIn 0.2s ease-in-out;
         }
 
@@ -496,7 +496,6 @@
                 const tag = document.createElement('div');
                 tag.className = 'url-tag';
                 tag.contentEditable = 'false';
-                // Disable removal interactions completely if a process sequence is hot
                 if (isRunning) {
                     tag.innerHTML = `${url}`;
                 } else {
@@ -524,7 +523,16 @@
             document.getElementById('urlCount').textContent = `${urlList.length} URL${urlList.length === 1 ? '' : 's'}`;
         }
 
-        const sleep = ms => new Promise(res => setTimeout(res, ms));
+        // Responsive sleep loop that tracks execution status every 50ms
+        async function responsiveSleep(ms) {
+            const checkInterval = 50; 
+            let elapsed = 0;
+            while (elapsed < ms) {
+                if (!isRunning) return; // Instantly breaks out if stop clicked mid-sleep
+                await new Promise(res => setTimeout(res, checkInterval));
+                elapsed += checkInterval;
+            }
+        }
 
         async function openUrls() {
             if (urlList.length === 0) {
@@ -539,7 +547,6 @@
             const slider = document.getElementById('delaySlider');
             const container = document.getElementById('urlContainer');
 
-            // Toggle element states across UI layout components during live run
             btnClear.disabled = true;
             slider.disabled = true;
             container.contentEditable = "false";
@@ -547,15 +554,13 @@
 
             const delayInterval = parseFloat(slider.value) * 1000;
             
-            // Show Stop Button UI only if sequence utilizes a delayed step loop
             if (delayInterval > 0) {
                 btnStop.style.display = 'block';
             }
 
             for (let i = 0; i < urlList.length; i++) {
-                if (!isRunning) break; // Halts process loops instantly when Stop button fires
+                if (!isRunning) break; 
 
-                // Update text container parameters live to display current batch metrics
                 btnLaunch.textContent = `Opening ${i + 1} of ${urlList.length}...`;
                 btnLaunch.disabled = true;
 
@@ -567,11 +572,10 @@
                 window.open(formattedUrl, '_blank');
 
                 if (delayInterval > 0 && i < urlList.length - 1) {
-                    await sleep(delayInterval);
+                    await responsiveSleep(delayInterval);
                 }
             }
 
-            // Restore baseline UI states on termination
             resetControlUI();
         }
 
