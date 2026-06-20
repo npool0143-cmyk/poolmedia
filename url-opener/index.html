@@ -21,6 +21,7 @@
             --warning-border: rgba(210, 153, 34, 0.4);
             --warning-text: #f0883e;
             --control-bg: #1f242c;
+            --slider-track: #30363d;
         }
 
         body {
@@ -56,7 +57,6 @@
             font-size: 0.95rem;
         }
 
-        /* The dynamic visual bucket */
         .url-box-container {
             width: 100%;
             min-height: 200px;
@@ -76,7 +76,6 @@
             box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
         }
 
-        /* Placeholder styles when container is empty */
         .url-box-container:empty::before {
             content: "Paste your URLs here (Excel columns, list format, or raw text)...";
             color: #555;
@@ -84,7 +83,6 @@
             cursor: text;
         }
 
-        /* Individual visual URL items */
         .url-tag {
             display: inline-flex;
             align-items: center;
@@ -144,42 +142,46 @@
             color: var(--accent-color);
         }
 
-        /* Settings Toolbar */
+        /* Settings Panels stacked smoothly */
         .controls-panel {
             background-color: var(--control-bg);
             border: 1px solid var(--border-color);
             border-radius: 8px;
-            padding: 16px;
+            padding: 20px;
             margin-top: 20px;
             display: flex;
-            flex-wrap: wrap;
+            flex-direction: column;
             gap: 20px;
+        }
+
+        .control-row {
+            display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
         .control-group {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             font-size: 0.9rem;
         }
 
-        /* Clean Toggle Switch styling */
         .switch {
             position: relative;
             display: inline-block;
             width: 42px;
             height: 24px;
+            flex-shrink: 0;
         }
 
         .switch input { 
-            opacity: 0;
-            width: 0;
-            height: 0;
+            opacity: 0; width: 0; height: 0;
         }
 
-        .slider {
+        .slider-toggle {
             position: absolute;
             cursor: pointer;
             top: 0; left: 0; right: 0; bottom: 0;
@@ -188,7 +190,7 @@
             border-radius: 24px;
         }
 
-        .slider:before {
+        .slider-toggle:before {
             position: absolute;
             content: "";
             height: 16px; width: 16px;
@@ -198,20 +200,90 @@
             border-radius: 50%;
         }
 
-        input:checked + .slider {
+        input:checked + .slider-toggle {
             background-color: var(--accent-color);
         }
 
-        input:checked + .slider:before {
+        input:checked + .slider-toggle:before {
             transform: translateX(18px);
         }
 
-        /* Range slider text alignment */
+        /* Premium Custom Slider UI Wrapper */
+        .slider-wrapper {
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            max-width: 320px;
+            width: 100%;
+        }
+
+        .slider-container {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .custom-range {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: linear-gradient(to right, var(--accent-color) 0%, var(--accent-color) 0%, var(--slider-track) 0%, var(--slider-track) 100%);
+            outline: none;
+            cursor: pointer;
+        }
+
+        /* Webkit Browsers (Chrome, Safari, Edge, Opera) */
+        .custom-range::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 2px solid var(--accent-color);
+            box-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
+            transition: transform 0.1s, background-color 0.1s;
+        }
+
+        .custom-range::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: var(--accent-color);
+        }
+
+        /* Mozilla Firefox */
+        .custom-range::-moz-range-thumb {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: #ffffff;
+            border: 2px solid var(--accent-color);
+            box-shadow: 0 0 10px rgba(88, 166, 255, 0.5);
+            transition: transform 0.1s, background-color 0.1s;
+            cursor: pointer;
+        }
+
+        .custom-range::-moz-range-thumb:hover {
+            transform: scale(1.2);
+            background: var(--accent-color);
+        }
+
+        .range-ticks {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 2px;
+            margin-top: 6px;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
         .range-label {
-            min-width: 75px;
+            min-width: 80px;
             text-align: right;
             font-weight: 600;
             color: var(--accent-color);
+            font-size: 0.9rem;
         }
 
         .action-buttons {
@@ -286,16 +358,31 @@
         </div>
 
         <div class="controls-panel">
-            <div class="control-group">
-                <label class="switch">
-                    <input type="checkbox" id="utmToggle" onchange="toggleUtmClean()">
-                    <span class="slider"></span>
-                </label>
-                <span>Auto-Strip Tracking Parameters (UTMs)</span>
+            <div class="control-row">
+                <div class="control-group">
+                    <label class="switch">
+                        <input type="checkbox" id="utmToggle" onchange="toggleUtmClean()">
+                        <span class="slider-toggle"></span>
+                    </label>
+                    <span>Auto-Strip Tracking Parameters (UTMs)</span>
+                </div>
             </div>
-            <div class="control-group">
-                <span>Delay Sequence:</span>
-                <input type="range" id="delaySlider" min="0" max="3" step="0.5" value="0" oninput="updateDelayLabel(this.value)">
+            
+            <div class="control-row" style="border-top: 1px solid var(--border-color); padding-top: 15px;">
+                <div class="control-group">
+                    <span>Delay Sequence:</span>
+                </div>
+                <div class="slider-wrapper">
+                    <div class="slider-container">
+                        <input type="range" id="delaySlider" class="custom-range" min="0" max="3" step="0.5" value="0" oninput="updateSliderUI(this.value)">
+                    </div>
+                    <div class="range-ticks">
+                        <span>0s</span>
+                        <span>1s</span>
+                        <span>2s</span>
+                        <span>3s</span>
+                    </div>
+                </div>
                 <span id="delayLabel" class="range-label">Instant</span>
             </div>
         </div>
@@ -318,7 +405,6 @@
 
         function cleanUtmParams(urlString) {
             try {
-                // Ensure a valid protocol exists before passing to URL constructor
                 let targetUrl = urlString;
                 if (!/^https?:\/\//i.test(targetUrl)) {
                     targetUrl = 'https://' + targetUrl;
@@ -327,8 +413,6 @@
                 const keysToRemove = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'gclid', 'fbclid', 'msclkid'];
                 
                 keysToRemove.forEach(key => url.searchParams.delete(key));
-                
-                // Return cleaned absolute string or relative format if needed
                 return url.toString();
             } catch (e) {
                 return urlString;
@@ -360,14 +444,20 @@
         function toggleUtmClean() {
             if (document.getElementById('utmToggle').checked && urlList.length > 0) {
                 urlList = urlList.map(url => cleanUtmParams(url));
-                // Filter duplicates that may result from cleaning tracking params
                 urlList = [...new Set(urlList)];
                 renderTags();
             }
         }
 
-        function updateDelayLabel(val) {
+        // Dynamically recalculate slider fill percentage on drag
+        function updateSliderUI(val) {
+            const slider = document.getElementById('delaySlider');
             const label = document.getElementById('delayLabel');
+            
+            // Calculate active track percentage fill
+            const percentage = ((val - slider.min) / (slider.max - slider.min)) * 100;
+            slider.style.background = `linear-gradient(to right, var(--accent-color) 0%, var(--accent-color) ${percentage}%, var(--slider-track) ${percentage}%, var(--slider-track) 100%)`;
+            
             label.textContent = parseFloat(val) === 0 ? "Instant" : `${val}s delay`;
         }
 
@@ -400,7 +490,6 @@
             document.getElementById('urlCount').textContent = `${urlList.length} URL${urlList.length === 1 ? '' : 's'}`;
         }
 
-        // Asynchronous delay mechanism
         const sleep = ms => new Promise(res => setTimeout(res, ms));
 
         async function openUrls() {
@@ -424,7 +513,11 @@
                 }
             }
         }
-    </script>
 
+        // Run on boot to ensure initial fill state matches default values
+        window.onload = function() {
+            updateSliderUI(document.getElementById('delaySlider').value);
+        };
+    </script>
 </body>
 </html>
