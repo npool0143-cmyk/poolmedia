@@ -1,331 +1,1118 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="nl" class="scroll-smooth">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Pool Media — AI-Driven Web Design & Automation</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Pool Media — Automatiseer je creatieve workflow</title>
+  <meta name="description" content="Pool Media bouwt maatwerk AI-pipelines en Adobe-scripts voor marketingteams, retail en e-commerce. Tot 95% sneller, foutloos." />
+
+  <!-- Fonts: Geist (via Vercel CDN) + Inter fallback -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-</head>
-<body>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
 
-  <!-- Navigation -->
-  <nav class="nav">
-    <div class="container nav__inner">
-      <a href="#" class="nav__logo">
-        <span class="logo-icon">◈</span>
-        Pool Media
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            surface: '#0a0a0f',
+            panel: '#111118',
+            border: '#1e1e2e',
+            accent: '#6366f1',
+            'accent-light': '#818cf8',
+            muted: '#52525b',
+            subtle: '#27272a',
+          },
+          animation: {
+            'fade-up': 'fadeUp 0.6s ease forwards',
+            'pulse-slow': 'pulse 4s cubic-bezier(0.4,0,0.6,1) infinite',
+            'flow': 'flow 3s linear infinite',
+          },
+          keyframes: {
+            fadeUp: {
+              '0%': { opacity: '0', transform: 'translateY(24px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+            flow: {
+              '0%': { strokeDashoffset: '200' },
+              '100%': { strokeDashoffset: '0' },
+            }
+          },
+          backgroundImage: {
+            'grid-pattern': "linear-gradient(rgba(99,102,241,0.04) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.04) 1px, transparent 1px)",
+          },
+          backgroundSize: {
+            'grid': '40px 40px',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    * { -webkit-font-smoothing: antialiased; }
+
+    html { background: #0a0a0f; }
+
+    /* Glassmorphism nav */
+    #navbar.scrolled {
+      background: rgba(10, 10, 15, 0.85);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(99, 102, 241, 0.12);
+    }
+
+    /* Gradient text */
+    .gradient-text {
+      background: linear-gradient(135deg, #e2e8f0 0%, #818cf8 50%, #6366f1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .gradient-text-white {
+      background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* Glow effects */
+    .glow-accent {
+      box-shadow: 0 0 40px rgba(99, 102, 241, 0.3), 0 0 80px rgba(99, 102, 241, 0.1);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #6366f1, #4f46e5);
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset, 0 4px 24px rgba(99,102,241,0.25);
+    }
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 1px 0 rgba(255,255,255,0.12) inset, 0 8px 32px rgba(99,102,241,0.4);
+    }
+    .btn-primary:active { transform: translateY(0); }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      transition: all 0.2s ease;
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(99,102,241,0.4);
+    }
+
+    /* Cards */
+    .card {
+      background: #111118;
+      border: 1px solid #1e1e2e;
+      transition: all 0.25s ease;
+    }
+    .card:hover {
+      border-color: rgba(99,102,241,0.35);
+      transform: translateY(-2px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 1px rgba(99,102,241,0.1);
+    }
+
+    /* Problem / Solution cards */
+    .problem-card {
+      background: rgba(239,68,68,0.04);
+      border: 1px solid rgba(239,68,68,0.15);
+    }
+    .solution-card {
+      background: rgba(99,102,241,0.05);
+      border: 1px solid rgba(99,102,241,0.2);
+    }
+
+    /* Pipeline animation */
+    .pipeline-node {
+      animation: pulse-glow 2s ease-in-out infinite alternate;
+    }
+    @keyframes pulse-glow {
+      0% { box-shadow: 0 0 8px rgba(99,102,241,0.3); }
+      100% { box-shadow: 0 0 20px rgba(99,102,241,0.7), 0 0 40px rgba(99,102,241,0.2); }
+    }
+
+    .flow-line {
+      background: linear-gradient(90deg, transparent, #6366f1, transparent);
+      animation: flow-anim 2s linear infinite;
+    }
+    @keyframes flow-anim {
+      0% { background-position: -200% center; }
+      100% { background-position: 200% center; }
+    }
+
+    .dot-flow {
+      animation: dot-move 2s linear infinite;
+    }
+    @keyframes dot-move {
+      0% { left: 0%; opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { left: 100%; opacity: 0; }
+    }
+
+    /* Badge */
+    .badge-result {
+      background: linear-gradient(135deg, #059669, #10b981);
+      box-shadow: 0 4px 20px rgba(16, 185, 129, 0.35);
+    }
+
+    /* Form styling */
+    .form-input {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.1);
+      color: #e2e8f0;
+      transition: all 0.2s ease;
+      outline: none;
+    }
+    .form-input::placeholder { color: #52525b; }
+    .form-input:focus {
+      border-color: rgba(99,102,241,0.6);
+      background: rgba(99,102,241,0.05);
+      box-shadow: 0 0 0 3px rgba(99,102,241,0.1);
+    }
+
+    select.form-input option {
+      background: #111118;
+      color: #e2e8f0;
+    }
+
+    /* Noise texture overlay */
+    .noise::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+      pointer-events: none;
+      opacity: 0.4;
+      mix-blend-mode: overlay;
+    }
+
+    /* Scroll reveal */
+    .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    /* Mobile menu */
+    #mobile-menu { display: none; }
+    #mobile-menu.open { display: flex; }
+  </style>
+</head>
+
+<body class="bg-surface text-gray-200 font-sans antialiased overflow-x-hidden">
+
+<!-- ═══════════════════════════════════════════ -->
+<!--  NAVIGATIEBALK                             -->
+<!-- ═══════════════════════════════════════════ -->
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8">
+    <div class="flex items-center justify-between h-16">
+
+      <!-- Logo -->
+      <a href="#" class="flex items-center gap-2.5 group">
+        <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-accent to-indigo-700 flex items-center justify-center shadow-lg">
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <path d="M2 7h10M7 2l5 5-5 5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <span class="text-white font-semibold tracking-tight text-[15px]">Pool Media</span>
       </a>
-      <ul class="nav__links">
-        <li><a href="#services">Services</a></li>
-        <li><a href="#how-it-works">How It Works</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#contact" class="btn btn--nav">Get in Touch</a></li>
-      </ul>
-      <button class="nav__toggle" aria-label="Toggle menu" aria-expanded="false">
-        <span></span><span></span><span></span>
+
+      <!-- Desktop nav links -->
+      <div class="hidden md:flex items-center gap-1">
+        <a href="#diensten" class="px-3.5 py-2 text-[13px] text-muted hover:text-gray-300 transition-colors rounded-md hover:bg-white/5">Diensten</a>
+        <a href="#hoe-het-werkt" class="px-3.5 py-2 text-[13px] text-muted hover:text-gray-300 transition-colors rounded-md hover:bg-white/5">Hoe het werkt</a>
+        <a href="#case-study" class="px-3.5 py-2 text-[13px] text-muted hover:text-gray-300 transition-colors rounded-md hover:bg-white/5">Case Study</a>
+        <a href="#contact" class="ml-3 btn-primary px-4 py-2 rounded-lg text-[13px] font-medium text-white">Scan aanvragen</a>
+      </div>
+
+      <!-- Mobile hamburger -->
+      <button id="hamburger" class="md:hidden p-2 rounded-md text-muted hover:text-white" aria-label="Menu openen">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path id="ham-line1" d="M3 5h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <path id="ham-line2" d="M3 10h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <path id="ham-line3" d="M3 15h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
       </button>
     </div>
-  </nav>
 
-  <!-- Hero -->
-  <section class="hero">
-    <div class="container hero__inner">
-      <div class="badge">Powered by Gemini AI</div>
-      <h1 class="hero__headline">
-        Web Design That<br />
-        <span class="gradient-text">Thinks for Itself</span>
-      </h1>
-      <p class="hero__sub">
-        Pool Media combines the creative eye of world-class designers with the intelligence of Gemini AI to build, iterate, and automate your web presence — faster than ever before.
+    <!-- Mobile menu dropdown -->
+    <div id="mobile-menu" class="flex-col gap-1 pb-4 md:hidden">
+      <a href="#diensten" class="block px-4 py-2.5 text-sm text-muted hover:text-white transition-colors">Diensten</a>
+      <a href="#hoe-het-werkt" class="block px-4 py-2.5 text-sm text-muted hover:text-white transition-colors">Hoe het werkt</a>
+      <a href="#case-study" class="block px-4 py-2.5 text-sm text-muted hover:text-white transition-colors">Case Study</a>
+      <a href="#contact" class="mt-1 mx-4 btn-primary text-center block px-4 py-2.5 rounded-lg text-sm font-medium text-white">Scan aanvragen</a>
+    </div>
+  </div>
+</nav>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!--  HERO SECTIE                               -->
+<!-- ═══════════════════════════════════════════ -->
+<section class="relative min-h-screen flex flex-col justify-center pt-16 overflow-hidden">
+
+  <!-- Grid background -->
+  <div class="absolute inset-0 bg-grid-pattern bg-grid opacity-100 pointer-events-none"></div>
+
+  <!-- Radial glow -->
+  <div class="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/4 w-[700px] h-[700px] bg-accent/10 rounded-full blur-[120px] pointer-events-none"></div>
+
+  <div class="relative max-w-6xl mx-auto px-5 sm:px-8 py-24 md:py-32">
+
+    <!-- Eyebrow -->
+    <div class="inline-flex items-center gap-2 bg-accent/10 border border-accent/20 rounded-full px-4 py-1.5 mb-8 reveal">
+      <span class="w-1.5 h-1.5 bg-accent rounded-full animate-pulse-slow"></span>
+      <span class="text-[11px] font-medium text-accent-light uppercase tracking-widest">AI Workflow Automatisering</span>
+    </div>
+
+    <!-- Headline -->
+    <h1 class="text-[clamp(2.4rem,6vw,4.5rem)] font-extrabold leading-[1.05] tracking-tight max-w-3xl reveal reveal-delay-1">
+      <span class="gradient-text-white">Stop met handmatig werk.</span><br />
+      <span class="gradient-text">Automatiseer je creatieve<br class="hidden sm:block" /> workflow tot 95% sneller.</span>
+    </h1>
+
+    <!-- Sub-headline -->
+    <p class="mt-6 text-[1.05rem] text-zinc-400 max-w-xl leading-relaxed reveal reveal-delay-2">
+      Wij bouwen maatwerk AI-pipelines en Adobe-scripts voor marketingteams, retail en e-commerce. Geen vage praatjes — directe urenbesparing, meetbaar resultaat.
+    </p>
+
+    <!-- CTA Buttons -->
+    <div class="mt-10 flex flex-col sm:flex-row gap-3 reveal reveal-delay-3">
+      <a href="#contact" class="btn-primary inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-semibold text-white text-[15px]">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+          <path d="M8 1.5a6.5 6.5 0 110 13A6.5 6.5 0 018 1.5zm0 3v3.5l2.5 1.5" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Vraag een gratis Quickscan aan
+      </a>
+      <a href="#hoe-het-werkt" class="btn-secondary inline-flex items-center justify-center gap-2 px-6 py-3 rounded-lg font-medium text-gray-300 text-[15px]">
+        Bekijk hoe het werkt
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+          <path d="M2 7h10M7 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </a>
+    </div>
+
+    <!-- Trust line -->
+    <div class="mt-10 flex items-center gap-4 reveal">
+      <div class="flex -space-x-2">
+        <div class="w-7 h-7 rounded-full bg-gradient-to-br from-violet-500 to-indigo-600 border-2 border-surface flex items-center justify-center text-[9px] font-bold text-white">M</div>
+        <div class="w-7 h-7 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 border-2 border-surface flex items-center justify-center text-[9px] font-bold text-white">R</div>
+        <div class="w-7 h-7 rounded-full bg-gradient-to-br from-amber-500 to-orange-600 border-2 border-surface flex items-center justify-center text-[9px] font-bold text-white">L</div>
+      </div>
+      <p class="text-[12px] text-muted">
+        Vertrouwd door <span class="text-gray-400 font-medium">retail- &amp; marketingteams</span> die dagelijks honderden assets verwerken
       </p>
-      <div class="hero__actions">
-        <a href="#contact" class="btn btn--primary">Start a Project</a>
-        <a href="#how-it-works" class="btn btn--ghost">See How It Works</a>
-      </div>
-      <div class="hero__stats">
-        <div class="stat">
-          <span class="stat__number">10×</span>
-          <span class="stat__label">Faster Delivery</span>
+    </div>
+
+
+    <!-- ── PIPELINE DASHBOARD MOCKUP ── -->
+    <div class="mt-20 reveal">
+      <div class="relative max-w-4xl mx-auto rounded-2xl overflow-hidden border border-border bg-panel" style="box-shadow: 0 40px 100px rgba(0,0,0,0.6), 0 0 0 1px rgba(99,102,241,0.1);">
+
+        <!-- Window chrome -->
+        <div class="flex items-center justify-between px-4 py-3 border-b border-border bg-surface/60">
+          <div class="flex items-center gap-1.5">
+            <div class="w-2.5 h-2.5 rounded-full bg-red-500/60"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-yellow-500/60"></div>
+            <div class="w-2.5 h-2.5 rounded-full bg-green-500/60"></div>
+          </div>
+          <div class="flex items-center gap-2 bg-white/5 rounded-md px-3 py-1">
+            <svg width="10" height="10" viewBox="0 0 10 10" fill="none"><circle cx="5" cy="5" r="4" stroke="#52525b" stroke-width="1.2"/><path d="M5 3v2l1.5 1" stroke="#52525b" stroke-width="1" stroke-linecap="round"/></svg>
+            <span class="text-[10px] text-muted">Pool Media.nl/pipeline</span>
+          </div>
+          <div class="flex items-center gap-2 text-[10px] text-muted">
+            <span class="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></span>
+            Live
+          </div>
         </div>
-        <div class="stat__divider"></div>
-        <div class="stat">
-          <span class="stat__number">98%</span>
-          <span class="stat__label">Client Satisfaction</span>
-        </div>
-        <div class="stat__divider"></div>
-        <div class="stat">
-          <span class="stat__number">AI-First</span>
-          <span class="stat__label">Design Workflow</span>
+
+        <!-- Dashboard body -->
+        <div class="p-5 sm:p-8">
+
+          <!-- Stats row -->
+          <div class="grid grid-cols-3 gap-3 mb-8">
+            <div class="bg-surface rounded-xl p-3 sm:p-4 border border-border">
+              <p class="text-[10px] text-muted uppercase tracking-wider mb-1.5">Assets verwerkt</p>
+              <p class="text-lg sm:text-2xl font-bold text-white counter" data-target="12847">0</p>
+              <p class="text-[10px] text-emerald-400 mt-0.5">↑ 2.4% vandaag</p>
+            </div>
+            <div class="bg-surface rounded-xl p-3 sm:p-4 border border-border">
+              <p class="text-[10px] text-muted uppercase tracking-wider mb-1.5">Uren bespaard</p>
+              <p class="text-lg sm:text-2xl font-bold text-white counter" data-target="1937">0</p>
+              <p class="text-[10px] text-emerald-400 mt-0.5">↑ deze maand</p>
+            </div>
+            <div class="bg-surface rounded-xl p-3 sm:p-4 border border-border">
+              <p class="text-[10px] text-muted uppercase tracking-wider mb-1.5">Foutpercentage</p>
+              <p class="text-lg sm:text-2xl font-bold text-accent-light">0.0%</p>
+              <p class="text-[10px] text-muted mt-0.5">vs. 4.2% manueel</p>
+            </div>
+          </div>
+
+          <!-- Pipeline flow -->
+          <div class="bg-surface rounded-xl p-4 sm:p-6 border border-border">
+            <div class="flex items-center justify-between mb-5">
+              <p class="text-[11px] font-semibold text-gray-400 uppercase tracking-wider">Content Pipeline — Actief</p>
+              <div class="flex items-center gap-1.5 text-[10px] text-emerald-400">
+                <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse"></span>
+                Running
+              </div>
+            </div>
+
+            <!-- Pipeline nodes -->
+            <div class="flex items-center gap-0 overflow-x-auto pb-2">
+
+              <!-- Node 1 -->
+              <div class="flex-shrink-0 flex flex-col items-center gap-2 min-w-[80px] sm:min-w-[100px]">
+                <div class="pipeline-node w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-violet-500/15 border border-violet-500/40 flex items-center justify-center">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <rect x="2" y="3" width="14" height="12" rx="2" stroke="#818cf8" stroke-width="1.4"/>
+                    <path d="M5 7h8M5 10h5" stroke="#818cf8" stroke-width="1.2" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <span class="text-[9px] sm:text-[10px] text-muted text-center leading-tight">Briefing<br/>Inladen</span>
+              </div>
+
+              <!-- Connector -->
+              <div class="flex-1 mx-1 relative h-0.5 min-w-[24px]">
+                <div class="absolute inset-0 bg-border rounded-full"></div>
+                <div class="flow-line absolute inset-0 rounded-full bg-[length:200%_100%]"></div>
+              </div>
+
+              <!-- Node 2 -->
+              <div class="flex-shrink-0 flex flex-col items-center gap-2 min-w-[80px] sm:min-w-[100px]">
+                <div class="pipeline-node w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-indigo-500/15 border border-indigo-500/40 flex items-center justify-center" style="animation-delay:.5s">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <path d="M9 2L4 5v4c0 3.3 2.1 6.3 5 7 2.9-.7 5-3.7 5-7V5L9 2z" stroke="#6366f1" stroke-width="1.4" stroke-linejoin="round"/>
+                    <path d="M6.5 9l2 2 3-3" stroke="#6366f1" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <span class="text-[9px] sm:text-[10px] text-muted text-center leading-tight">AI Data<br/>Extractie</span>
+              </div>
+
+              <div class="flex-1 mx-1 relative h-0.5 min-w-[24px]">
+                <div class="absolute inset-0 bg-border rounded-full"></div>
+                <div class="flow-line absolute inset-0 rounded-full bg-[length:200%_100%]" style="animation-delay:.7s"></div>
+              </div>
+
+              <!-- Node 3 -->
+              <div class="flex-shrink-0 flex flex-col items-center gap-2 min-w-[80px] sm:min-w-[100px]">
+                <div class="pipeline-node w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-blue-500/15 border border-blue-500/40 flex items-center justify-center" style="animation-delay:1s">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <rect x="2" y="2" width="6" height="6" rx="1.5" stroke="#60a5fa" stroke-width="1.4"/>
+                    <rect x="10" y="2" width="6" height="6" rx="1.5" stroke="#60a5fa" stroke-width="1.4"/>
+                    <rect x="2" y="10" width="6" height="6" rx="1.5" stroke="#60a5fa" stroke-width="1.4"/>
+                    <rect x="10" y="10" width="6" height="6" rx="1.5" stroke="#60a5fa" stroke-width="1.4"/>
+                  </svg>
+                </div>
+                <span class="text-[9px] sm:text-[10px] text-muted text-center leading-tight">Bulk Asset<br/>Processing</span>
+              </div>
+
+              <div class="flex-1 mx-1 relative h-0.5 min-w-[24px]">
+                <div class="absolute inset-0 bg-border rounded-full"></div>
+                <div class="flow-line absolute inset-0 rounded-full bg-[length:200%_100%]" style="animation-delay:1.4s"></div>
+              </div>
+
+              <!-- Node 4 -->
+              <div class="flex-shrink-0 flex flex-col items-center gap-2 min-w-[80px] sm:min-w-[100px]">
+                <div class="pipeline-node w-10 h-10 sm:w-12 sm:h-12 rounded-xl bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center" style="animation-delay:1.5s">
+                  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                    <path d="M9 2v10M5 8l4 4 4-4" stroke="#34d399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M3 14h12" stroke="#34d399" stroke-width="1.5" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <span class="text-[9px] sm:text-[10px] text-muted text-center leading-tight">Export &amp;<br/>Distributie</span>
+              </div>
+
+            </div>
+
+            <!-- Progress bar -->
+            <div class="mt-5">
+              <div class="flex justify-between text-[10px] text-muted mb-1.5">
+                <span>Batch 48 van 48</span>
+                <span class="text-emerald-400 font-medium">Voltooid</span>
+              </div>
+              <div class="w-full h-1 bg-border rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-accent to-emerald-400 rounded-full" style="width:100%"></div>
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </div>
-    <div class="hero__glow" aria-hidden="true"></div>
-  </section>
 
-  <!-- Services -->
-  <section class="section" id="services">
-    <div class="container">
-      <div class="section__header">
-        <p class="section__tag">What We Do</p>
-        <h2 class="section__title">Services Built for the AI Era</h2>
-        <p class="section__desc">We don't just build websites. We build intelligent digital systems that evolve with your brand.</p>
-      </div>
-      <div class="services__grid">
-        <div class="card card--service">
-          <div class="card__icon">⚡</div>
-          <h3 class="card__title">AI-Generated Design</h3>
-          <p class="card__body">Leveraging Gemini AI to generate, test, and refine design concepts in real time. From color palettes to full layouts, we move at the speed of ideas.</p>
-        </div>
-        <div class="card card--service card--featured">
-          <div class="card__badge">Most Popular</div>
-          <div class="card__icon">🤖</div>
-          <h3 class="card__title">Automation Pipelines</h3>
-          <p class="card__body">End-to-end content, SEO, and marketing automation. We wire up Gemini AI to your workflows so your site grows while you sleep.</p>
-        </div>
-        <div class="card card--service">
-          <div class="card__icon">🔍</div>
-          <h3 class="card__title">Intelligent SEO</h3>
-          <p class="card__body">AI-powered keyword research, on-page optimization, and competitor analysis — continuously updated to keep you ahead of the curve.</p>
-        </div>
-        <div class="card card--service">
-          <div class="card__icon">🎨</div>
-          <h3 class="card__title">Brand Identity</h3>
-          <p class="card__body">Logos, style guides, and full visual systems created with AI-assisted tools for cohesion and speed, reviewed by senior designers.</p>
-        </div>
-        <div class="card card--service">
-          <div class="card__icon">📊</div>
-          <h3 class="card__title">Analytics & Insights</h3>
-          <p class="card__body">Gemini AI analyzes your visitor data to surface actionable insights, conversion blockers, and growth opportunities.</p>
-        </div>
-        <div class="card card--service">
-          <div class="card__icon">🔧</div>
-          <h3 class="card__title">Ongoing Optimization</h3>
-          <p class="card__body">Monthly AI-driven audits and updates ensure your site stays performant, accessible, and on-brand — always.</p>
-        </div>
-      </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!--  PROBLEEM VS OPLOSSING                     -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="diensten" class="py-24 md:py-32 relative">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8">
+
+    <!-- Section header -->
+    <div class="text-center mb-16 reveal">
+      <p class="text-[11px] font-semibold text-accent-light uppercase tracking-widest mb-4">Het verschil</p>
+      <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight gradient-text-white">Herken je dit?</h2>
+      <p class="mt-4 text-zinc-400 max-w-lg mx-auto text-[15px]">Elke dag gaat er productieve tijd verloren aan taken die een script in seconden afhandelt.</p>
     </div>
-  </section>
 
-  <!-- How It Works -->
-  <section class="section section--alt" id="how-it-works">
-    <div class="container">
-      <div class="section__header">
-        <p class="section__tag">The Process</p>
-        <h2 class="section__title">From Idea to Live in Days</h2>
-        <p class="section__desc">Our Gemini AI-augmented workflow compresses weeks of traditional agency work into a streamlined sprint.</p>
-      </div>
-      <div class="steps">
-        <div class="step">
-          <div class="step__number">01</div>
-          <div class="step__content">
-            <h3>Discovery Brief</h3>
-            <p>You share your goals, audience, and vision. Gemini AI analyzes your market, competitors, and brand positioning to create a strategic foundation.</p>
-          </div>
-        </div>
-        <div class="step__connector" aria-hidden="true"></div>
-        <div class="step">
-          <div class="step__number">02</div>
-          <div class="step__content">
-            <h3>AI Design Sprint</h3>
-            <p>Gemini AI generates dozens of layout and design variations. Our designers curate and refine the best concepts into polished mockups within 48 hours.</p>
-          </div>
-        </div>
-        <div class="step__connector" aria-hidden="true"></div>
-        <div class="step">
-          <div class="step__number">03</div>
-          <div class="step__content">
-            <h3>Build & Automate</h3>
-            <p>Developers bring the designs to life and wire in automation pipelines — content generation, SEO updates, analytics hooks — all AI-powered.</p>
-          </div>
-        </div>
-        <div class="step__connector" aria-hidden="true"></div>
-        <div class="step">
-          <div class="step__number">04</div>
-          <div class="step__content">
-            <h3>Launch & Evolve</h3>
-            <p>We deploy, monitor, and continuously improve. Your site learns from real user behavior, keeping you competitive without ongoing manual effort.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+    <div class="grid md:grid-cols-2 gap-6 items-stretch">
 
-  <!-- About / Gemini AI Feature -->
-  <section class="section" id="about">
-    <div class="container">
-      <div class="about__inner">
-        <div class="about__text">
-          <p class="section__tag">Why Pool Media</p>
-          <h2 class="section__title">Built on the World's Most Capable AI</h2>
-          <p>Pool Media was founded on a simple belief: the best web experiences are made when human creativity is amplified by artificial intelligence. That's why we partnered with <strong>Google's Gemini AI</strong> — one of the most advanced multimodal models available — as the backbone of our design and automation platform.</p>
-          <p>Gemini doesn't replace our designers or strategists. It makes them superhuman, handling research, iteration, and optimization at machine speed so our team can focus on what matters: crafting experiences your users love.</p>
-          <ul class="about__bullets">
-            <li><span class="bullet-icon">✓</span> Multimodal understanding of design, copy, and code</li>
-            <li><span class="bullet-icon">✓</span> Real-time market and competitor analysis</li>
-            <li><span class="bullet-icon">✓</span> Continuous A/B testing and optimization loops</li>
-            <li><span class="bullet-icon">✓</span> Responsible AI usage with human review at every step</li>
-          </ul>
+      <!-- PROBLEEM -->
+      <div class="problem-card rounded-2xl p-7 sm:p-10 reveal">
+        <div class="flex items-center gap-3 mb-7">
+          <div class="w-9 h-9 rounded-lg bg-red-500/15 border border-red-500/25 flex items-center justify-center flex-shrink-0">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 4v4M8 11v1" stroke="#f87171" stroke-width="1.8" stroke-linecap="round"/>
+              <path d="M2 12L8 2l6 10H2z" stroke="#f87171" stroke-width="1.4" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-[11px] text-red-400/70 uppercase tracking-wider font-medium">Vóór Pool Media</p>
+            <h3 class="text-lg font-bold text-white mt-0.5">De Dagelijkse Sleur</h3>
+          </div>
         </div>
-        <div class="about__visual" aria-hidden="true">
-          <div class="ai-card">
-            <div class="ai-card__header">
-              <span class="ai-dot ai-dot--blue"></span>
-              <span class="ai-dot ai-dot--purple"></span>
-              <span class="ai-dot ai-dot--cyan"></span>
-              <span class="ai-label">Gemini AI Engine</span>
+
+        <ul class="space-y-4">
+          <li class="flex items-start gap-3.5">
+            <div class="w-5 h-5 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M2 2l4 4M6 2L2 6" stroke="#f87171" stroke-width="1.5" stroke-linecap="round"/></svg>
             </div>
-            <div class="ai-card__body">
-              <div class="ai-line ai-line--full"></div>
-              <div class="ai-line ai-line--med"></div>
-              <div class="ai-line ai-line--short"></div>
-              <div class="ai-chip">Design Generation</div>
-              <div class="ai-chip ai-chip--active">SEO Optimization</div>
-              <div class="ai-chip">Content Automation</div>
-              <div class="ai-chip">Analytics Insights</div>
-            </div>
-            <div class="ai-card__footer">
-              <span class="ai-status">● Live</span>
-              <span>Processing your brand…</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- Contact -->
-  <section class="section section--alt" id="contact">
-    <div class="container">
-      <div class="section__header">
-        <p class="section__tag">Get in Touch</p>
-        <h2 class="section__title">Let's Build Something Remarkable</h2>
-        <p class="section__desc">Tell us about your project and we'll get back to you within one business day.</p>
-      </div>
-      <div class="contact__inner">
-        <form
-          id="contact-form"
-          name="contact"
-          method="POST"
-          data-netlify="true"
-          netlify-honeypot="bot-field"
-          class="contact__form"
-          novalidate
-        >
-          <input type="hidden" name="form-name" value="contact" />
-          <p style="display:none">
-            <label>Don't fill this out: <input name="bot-field" /></label>
-          </p>
-
-          <div class="form__row">
-            <div class="form__group">
-              <label for="name" class="form__label">Full Name <span class="required">*</span></label>
-              <input type="text" id="name" name="name" class="form__input" placeholder="Jane Smith" required />
-            </div>
-            <div class="form__group">
-              <label for="email" class="form__label">Work Email <span class="required">*</span></label>
-              <input type="email" id="email" name="email" class="form__input" placeholder="jane@company.com" required />
-            </div>
-          </div>
-
-          <div class="form__group">
-            <label for="company" class="form__label">Company</label>
-            <input type="text" id="company" name="company" class="form__input" placeholder="Acme Corp" />
-          </div>
-
-          <div class="form__group">
-            <label for="service" class="form__label">Service Interested In <span class="required">*</span></label>
-            <select id="service" name="service" class="form__input form__select" required>
-              <option value="" disabled selected>Select a service…</option>
-              <option value="ai-design">AI-Generated Design</option>
-              <option value="automation">Automation Pipelines</option>
-              <option value="seo">Intelligent SEO</option>
-              <option value="brand">Brand Identity</option>
-              <option value="analytics">Analytics & Insights</option>
-              <option value="full-package">Full Package</option>
-            </select>
-          </div>
-
-          <div class="form__group">
-            <label for="message" class="form__label">Tell Us About Your Project <span class="required">*</span></label>
-            <textarea id="message" name="message" class="form__input form__textarea" rows="5" placeholder="What are you building? What's your timeline and budget?" required></textarea>
-          </div>
-
-          <button type="submit" class="btn btn--primary btn--full" id="submit-btn">
-            <span class="btn__text">Send Message</span>
-            <span class="btn__loading" hidden>Sending…</span>
-          </button>
-        </form>
-
-        <div id="form-success" class="form__success" hidden>
-          <div class="success-icon">✓</div>
-          <h3>Message Received!</h3>
-          <p>Thanks for reaching out. The Pool Media team will be in touch within one business day.</p>
-        </div>
-
-        <div class="contact__info">
-          <div class="contact__detail">
-            <span class="contact__icon">✉</span>
             <div>
-              <strong>Email</strong>
-              <p>info@poolmedia.nl</p>
+              <p class="text-[14px] font-semibold text-gray-300">Honderden beelden handmatig hernoemen</p>
+              <p class="text-[13px] text-muted mt-0.5">CMS-naamgeving fout, opnieuw beginnen, 3 uur kwijt.</p>
             </div>
-          </div>
-          <div class="contact__detail">
-            <span class="contact__icon">📍</span>
+          </li>
+          <li class="flex items-start gap-3.5">
+            <div class="w-5 h-5 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M2 2l4 4M6 2L2 6" stroke="#f87171" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
             <div>
-              <strong>Location</strong>
-              <p>Remote-first, worldwide</p>
+              <p class="text-[14px] font-semibold text-gray-300">UTM-tags handmatig plakken per regio</p>
+              <p class="text-[13px] text-muted mt-0.5">Eén tikfout = verkeerde analytics voor weken.</p>
             </div>
-          </div>
-          <div class="contact__detail">
-            <span class="contact__icon">⏱</span>
+          </li>
+          <li class="flex items-start gap-3.5">
+            <div class="w-5 h-5 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M2 2l4 4M6 2L2 6" stroke="#f87171" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
             <div>
-              <strong>Response Time</strong>
-              <p>Within 1 business day</p>
+              <p class="text-[14px] font-semibold text-gray-300">Data overtypen uit briefings en PDF's</p>
+              <p class="text-[13px] text-muted mt-0.5">Productnummers, prijzen, IAN-codes — eindeloos kopiëren.</p>
             </div>
+          </li>
+          <li class="flex items-start gap-3.5">
+            <div class="w-5 h-5 rounded-full bg-red-500/10 border border-red-500/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M2 2l4 4M6 2L2 6" stroke="#f87171" stroke-width="1.5" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <p class="text-[14px] font-semibold text-gray-300">Foutgevoelig, saai en herhalend werk</p>
+              <p class="text-[13px] text-muted mt-0.5">Je team betaald om te denken, niet om te klikken.</p>
+            </div>
+          </li>
+        </ul>
+
+        <div class="mt-7 pt-6 border-t border-red-500/10 flex items-center gap-2">
+          <span class="text-2xl font-extrabold text-red-400">40+</span>
+          <span class="text-[13px] text-muted">uur per week verdampt aan vermijdbaar handmatig werk</span>
+        </div>
+      </div>
+
+      <!-- OPLOSSING -->
+      <div class="solution-card rounded-2xl p-7 sm:p-10 reveal reveal-delay-1">
+        <div class="flex items-center gap-3 mb-7">
+          <div class="w-9 h-9 rounded-lg bg-accent/15 border border-accent/30 flex items-center justify-center flex-shrink-0">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M3 8l3.5 3.5L13 4" stroke="#818cf8" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div>
+            <p class="text-[11px] text-accent-light/70 uppercase tracking-wider font-medium">Met Pool Media</p>
+            <h3 class="text-lg font-bold text-white mt-0.5">De Pool Media Workflow</h3>
+          </div>
+        </div>
+
+        <ul class="space-y-4">
+          <li class="flex items-start gap-3.5">
+            <div class="w-5 h-5 rounded-full bg-accent/10 border border-accent/25 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4.5L3.5 6.5L6.5 2" stroke="#818cf8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <p class="text-[14px] font-semibold text-gray-300">Scripts die Photoshop en InDesign aansturen</p>
+              <p class="text-[13px] text-muted mt-0.5">Automatisch plaatsen, schalen, hernoemen — in één klik.</p>
+            </div>
+          </li>
+          <li class="flex items-start gap-3.5">
+            <div class="w-5 h-5 rounded-full bg-accent/10 border border-accent/25 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4.5L3.5 6.5L6.5 2" stroke="#818cf8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <p class="text-[14px] font-semibold text-gray-300">AI leest screenshots en genereert foutloze CSV</p>
+              <p class="text-[13px] text-muted mt-0.5">Gemini-prompt verwerkt briefings naar productdata in &lt;3 sec.</p>
+            </div>
+          </li>
+          <li class="flex items-start gap-3.5">
+            <div class="w-5 h-5 rounded-full bg-accent/10 border border-accent/25 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4.5L3.5 6.5L6.5 2" stroke="#818cf8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <p class="text-[14px] font-semibold text-gray-300">UTM-tracking per regio, volledig geautomatiseerd</p>
+              <p class="text-[13px] text-muted mt-0.5">Alle links, alle regio's, nul handmatige invoer.</p>
+            </div>
+          </li>
+          <li class="flex items-start gap-3.5">
+            <div class="w-5 h-5 rounded-full bg-accent/10 border border-accent/25 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg width="8" height="8" viewBox="0 0 8 8" fill="none"><path d="M1.5 4.5L3.5 6.5L6.5 2" stroke="#818cf8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <p class="text-[14px] font-semibold text-gray-300">0% kans op menselijke fouten</p>
+              <p class="text-[13px] text-muted mt-0.5">Jouw team richt zich op strategie en creativiteit.</p>
+            </div>
+          </li>
+        </ul>
+
+        <div class="mt-7 pt-6 border-t border-accent/10 flex items-center gap-2">
+          <span class="text-2xl font-extrabold text-accent-light">30 min</span>
+          <span class="text-[13px] text-muted">om exact dezelfde taak volledig foutloos af te ronden</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!--  CASE STUDY                                -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="case-study" class="py-24 md:py-32 relative overflow-hidden">
+
+  <!-- Subtle separator line -->
+  <div class="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
+  <div class="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-border to-transparent"></div>
+
+  <!-- Background decoration -->
+  <div class="absolute right-0 top-1/2 -translate-y-1/2 w-80 h-80 bg-accent/5 rounded-full blur-[80px] pointer-events-none"></div>
+
+  <div class="max-w-6xl mx-auto px-5 sm:px-8">
+
+    <!-- Section header -->
+    <div class="max-w-2xl mb-16 reveal">
+      <p class="text-[11px] font-semibold text-accent-light uppercase tracking-widest mb-4">Case Study</p>
+      <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight gradient-text-white">In de praktijk: Van 40 uur<br class="hidden sm:block" /> naar 30 minuten</h2>
+      <p class="mt-5 text-zinc-400 leading-relaxed text-[15px]">
+        Een diepgaande blik op hoe we voor een grote internationale retailketen de volledige content-pipeline hebben geautomatiseerd — van briefing-screenshot tot live CMS-upload.
+      </p>
+    </div>
+
+    <!-- Result badge -->
+    <div class="inline-flex items-center gap-3 badge-result rounded-xl px-5 py-3 mb-14 reveal">
+      <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+        <path d="M10 2l2.2 5.3L17 8.6l-3.8 3.7.9 5.2L10 15l-4.1 2.5.9-5.2L3 8.6l4.8-.7L10 2z" fill="white"/>
+      </svg>
+      <div>
+        <p class="font-extrabold text-white text-lg leading-tight">95% Sneller &amp; Foutloos</p>
+        <p class="text-emerald-100/80 text-[11px]">Gevalideerd resultaat — dezelfde output, fracties van de tijd</p>
+      </div>
+    </div>
+
+    <!-- Three step cards -->
+    <div class="grid md:grid-cols-3 gap-5" id="hoe-het-werkt">
+      <!-- Step 1 -->
+      <div class="card rounded-2xl p-6 sm:p-8 reveal">
+        <div class="flex items-start justify-between mb-6">
+          <div class="w-11 h-11 rounded-xl bg-violet-500/15 border border-violet-500/30 flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <rect x="3" y="4" width="14" height="12" rx="2" stroke="#a78bfa" stroke-width="1.5"/>
+              <path d="M7 8h6M7 11h4" stroke="#a78bfa" stroke-width="1.3" stroke-linecap="round"/>
+              <circle cx="15.5" cy="14.5" r="3" fill="#a78bfa"/>
+              <path d="M14.5 14.5l.7.7 1.3-1.3" stroke="white" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <span class="text-[11px] font-bold text-muted bg-subtle rounded-full px-2.5 py-1">Stap 01</span>
+        </div>
+        <h3 class="text-lg font-bold text-white mb-3">AI-Data Ingest</h3>
+        <p class="text-[14px] text-zinc-400 leading-relaxed">
+          Een Gemini-prompt leest screenshots van briefings en genereert direct een foutloze CSV met productdata, prijzen en IAN-nummers — binnen 3 seconden.
+        </p>
+        <div class="mt-6 flex items-center gap-2 text-[12px] text-violet-400">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.3"/><path d="M6 4v2l1.5 1" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+          &lt; 3 seconden per briefing
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="card rounded-2xl p-6 sm:p-8 reveal reveal-delay-1">
+        <div class="flex items-start justify-between mb-6">
+          <div class="w-11 h-11 rounded-xl bg-blue-500/15 border border-blue-500/30 flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <rect x="3" y="3" width="6" height="6" rx="1.5" stroke="#60a5fa" stroke-width="1.5"/>
+              <rect x="11" y="3" width="6" height="6" rx="1.5" stroke="#60a5fa" stroke-width="1.5"/>
+              <rect x="3" y="11" width="6" height="6" rx="1.5" stroke="#60a5fa" stroke-width="1.5"/>
+              <rect x="11" y="11" width="6" height="6" rx="1.5" stroke="#60a5fa" stroke-width="1.5"/>
+            </svg>
+          </div>
+          <span class="text-[11px] font-bold text-muted bg-subtle rounded-full px-2.5 py-1">Stap 02</span>
+        </div>
+        <h3 class="text-lg font-bold text-white mb-3">Bulk Asset Processing</h3>
+        <p class="text-[14px] text-zinc-400 leading-relaxed">
+          Een Photoshop/InDesign-script plaatst automatisch de juiste beelden, schaalt ze perfect op maat en hernoemt ze naar de exacte CMS-naamgeving van de klant.
+        </p>
+        <div class="mt-6 flex items-center gap-2 text-[12px] text-blue-400">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.3"/><path d="M6 4v2l1.5 1" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+          Honderden assets in minuten
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="card rounded-2xl p-6 sm:p-8 reveal reveal-delay-2">
+        <div class="flex items-start justify-between mb-6">
+          <div class="w-11 h-11 rounded-xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+              <path d="M10 3v10M6 9l4 4 4-4" stroke="#34d399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M4 15h12" stroke="#34d399" stroke-width="1.5" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <span class="text-[11px] font-bold text-muted bg-subtle rounded-full px-2.5 py-1">Stap 03</span>
+        </div>
+        <h3 class="text-lg font-bold text-white mb-3">Automatische Distributie</h3>
+        <p class="text-[14px] text-zinc-400 leading-relaxed">
+          Het script voegt voor alle regio's automatisch de juiste UTM-tracking toe aan productlinks en exporteert alles foutloos naar de juiste mappen — klaar voor upload.
+        </p>
+        <div class="mt-6 flex items-center gap-2 text-[12px] text-emerald-400">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.3"/><path d="M6 4v2l1.5 1" stroke="currentColor" stroke-width="1.1" stroke-linecap="round"/></svg>
+          0% handmatige fouten
+        </div>
+      </div>
+    </div>
+
+    <!-- Timeline bar below cards -->
+    <div class="mt-10 bg-panel border border-border rounded-2xl p-6 sm:p-8 reveal">
+      <p class="text-[11px] font-semibold text-muted uppercase tracking-wider mb-5">Tijdsvergelijking — zelfde resultaat</p>
+      <div class="space-y-4">
+        <div>
+          <div class="flex justify-between text-[12px] text-muted mb-1.5">
+            <span>Handmatig</span>
+            <span class="text-red-400 font-medium">~40 uur</span>
+          </div>
+          <div class="h-2 bg-border rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-red-500/60 to-red-400/40 rounded-full" style="width:100%"></div>
+          </div>
+        </div>
+        <div>
+          <div class="flex justify-between text-[12px] text-muted mb-1.5">
+            <span>Met Pool Media</span>
+            <span class="text-emerald-400 font-medium">~30 min</span>
+          </div>
+          <div class="h-2 bg-border rounded-full overflow-hidden">
+            <div class="h-full bg-gradient-to-r from-emerald-500 to-emerald-400/60 rounded-full" style="width:1.25%"></div>
           </div>
         </div>
       </div>
     </div>
-  </section>
 
-  <!-- Footer -->
-  <footer class="footer">
-    <div class="container footer__inner">
-      <div class="footer__brand">
-        <a href="#" class="nav__logo">
-          <span class="logo-icon">◈</span>
-          Pool Media
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!--  WORKFLOW SCAN PRODUCT                     -->
+<!-- ═══════════════════════════════════════════ -->
+<section class="py-24 md:py-32">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8">
+
+    <div class="grid md:grid-cols-2 gap-14 items-center">
+
+      <!-- Left: Copy -->
+      <div class="reveal">
+        <p class="text-[11px] font-semibold text-accent-light uppercase tracking-widest mb-4">Ons product</p>
+        <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight gradient-text-white leading-tight">
+          Hoe we starten:<br />De Pool Media<br />Workflow Scan
+        </h2>
+        <p class="mt-6 text-zinc-400 text-[15px] leading-relaxed">
+          We gaan niet raden. We komen vrijblijvend meekijken op de werkvloer, brengen alle micro-inefficiënties in kaart en leveren een concreet ROI-rapport aan. Pas daarna beslis je of we de automatisering voor je bouwen.
+        </p>
+
+        <div class="mt-8 space-y-4">
+          <div class="flex items-start gap-4">
+            <div class="w-8 h-8 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 3l4 4-4 4" stroke="#818cf8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <p class="text-[14px] font-semibold text-gray-300">Sessie op locatie of remote</p>
+              <p class="text-[13px] text-muted">We kijken live mee in jullie tools en workflows.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="w-8 h-8 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><rect x="2" y="3" width="10" height="9" rx="1.5" stroke="#818cf8" stroke-width="1.4"/><path d="M5 6h4M5 8.5h2" stroke="#818cf8" stroke-width="1.2" stroke-linecap="round"/></svg>
+            </div>
+            <div>
+              <p class="text-[14px] font-semibold text-gray-300">Concreet ROI-rapport</p>
+              <p class="text-[13px] text-muted">Exacte tijdsbesparing en terugverdientijd berekend.</p>
+            </div>
+          </div>
+          <div class="flex items-start gap-4">
+            <div class="w-8 h-8 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1l1.5 4h4.5l-3.5 2.5 1.5 4L7 9l-3.5 2.5 1.5-4L1.5 5H6L7 1z" stroke="#818cf8" stroke-width="1.3" stroke-linejoin="round"/></svg>
+            </div>
+            <div>
+              <p class="text-[14px] font-semibold text-gray-300">100% vrijblijvend</p>
+              <p class="text-[13px] text-muted">Geen verplichting tot afname. Wel directe inzichten.</p>
+            </div>
+          </div>
+        </div>
+
+        <a href="#contact" class="mt-10 btn-primary inline-flex items-center gap-2.5 px-6 py-3 rounded-lg font-semibold text-white text-[15px]">
+          Claim mijn gratis Quickscan
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M2 7h10M7 3l4 4-4 4" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </a>
-        <p>AI-driven web design and automation for the modern business.</p>
       </div>
-      <div class="footer__links">
-        <div class="footer__col">
-          <strong>Services</strong>
-          <a href="#services">AI Design</a>
-          <a href="#services">Automation</a>
-          <a href="#services">SEO</a>
-          <a href="#services">Brand Identity</a>
-        </div>
-        <div class="footer__col">
-          <strong>Company</strong>
-          <a href="#about">About</a>
-          <a href="#how-it-works">How It Works</a>
-          <a href="#contact">Contact</a>
-        </div>
-      </div>
-    </div>
-    <div class="footer__bottom">
-      <div class="container">
-        <span>© 2026 Pool Media. All rights reserved.</span>
-        <span>Powered by <strong>Gemini AI</strong></span>
-      </div>
-    </div>
-  </footer>
 
-  <script src="main.js"></script>
+      <!-- Right: Visual process card -->
+      <div class="reveal reveal-delay-1">
+        <div class="card rounded-2xl p-7 sm:p-8">
+          <p class="text-[11px] font-semibold text-muted uppercase tracking-widest mb-6">Jouw scan in 3 stappen</p>
+
+          <div class="space-y-5">
+            <div class="flex gap-4 items-start">
+              <div class="flex-shrink-0 flex flex-col items-center">
+                <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white text-[12px] font-bold">1</div>
+                <div class="w-px flex-1 bg-border mt-2 mb-2 min-h-[28px]"></div>
+              </div>
+              <div class="pt-1">
+                <p class="text-[14px] font-semibold text-white">Intake &amp; planning</p>
+                <p class="text-[13px] text-muted mt-1">Korte vragenlijst over jullie huidige workflow en tools. Plannen van een 60-minuten sessie.</p>
+              </div>
+            </div>
+
+            <div class="flex gap-4 items-start">
+              <div class="flex-shrink-0 flex flex-col items-center">
+                <div class="w-8 h-8 rounded-full bg-accent flex items-center justify-center text-white text-[12px] font-bold">2</div>
+                <div class="w-px flex-1 bg-border mt-2 mb-2 min-h-[28px]"></div>
+              </div>
+              <div class="pt-1">
+                <p class="text-[14px] font-semibold text-white">Workflow Analyse</p>
+                <p class="text-[13px] text-muted mt-1">We mappen elke stap, meten tijdsbesteding en identificeren de top-3 automatiseringskansen.</p>
+              </div>
+            </div>
+
+            <div class="flex gap-4 items-start">
+              <div class="flex-shrink-0 flex flex-col items-center">
+                <div class="w-8 h-8 rounded-full bg-accent/20 border border-accent/30 flex items-center justify-center text-accent-light text-[12px] font-bold">3</div>
+              </div>
+              <div class="pt-1">
+                <p class="text-[14px] font-semibold text-white">ROI-rapport ontvangen</p>
+                <p class="text-[13px] text-muted mt-1">Binnen 48 uur een helder rapport: wat we aanpakken, hoeveel het oplevert en de aanpak.</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-7 pt-6 border-t border-border">
+            <div class="flex items-center justify-between">
+              <div>
+                <p class="text-[12px] text-muted">Investering</p>
+                <p class="text-xl font-extrabold text-white mt-0.5">Gratis <span class="text-muted font-normal text-[13px]">/ vrijblijvend</span></p>
+              </div>
+              <div class="text-right">
+                <p class="text-[12px] text-muted">Tijdsinvestering</p>
+                <p class="text-xl font-extrabold text-white mt-0.5">60 min</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!--  CTA / CONTACT FORMULIER                   -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="contact" class="py-24 md:py-32 relative overflow-hidden">
+
+  <!-- Dark background -->
+  <div class="absolute inset-0 bg-panel border-t border-b border-border pointer-events-none"></div>
+  <div class="absolute inset-0 bg-grid-pattern bg-grid opacity-60 pointer-events-none"></div>
+  <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-64 bg-accent/8 rounded-full blur-[80px] pointer-events-none"></div>
+
+  <div class="relative max-w-6xl mx-auto px-5 sm:px-8">
+    <div class="grid md:grid-cols-2 gap-14 items-start">
+
+      <!-- Left: Copy -->
+      <div class="reveal">
+        <p class="text-[11px] font-semibold text-accent-light uppercase tracking-widest mb-4">Start vandaag</p>
+        <h2 class="text-3xl sm:text-4xl font-extrabold tracking-tight gradient-text-white leading-tight">
+          Klaar om uren<br />te besparen?
+        </h2>
+        <p class="mt-5 text-zinc-400 text-[15px] leading-relaxed">
+          Vul het formulier in en we plannen binnen 48 uur een gratis Workflow Quickscan. Geen sales-praatje — we analyseren direct jouw workflow.
+        </p>
+
+        <div class="mt-10 space-y-5">
+          <div class="flex items-center gap-3.5">
+            <div class="w-9 h-9 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center flex-shrink-0">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M13 5H3a1 1 0 00-1 1v6a1 1 0 001 1h10a1 1 0 001-1V6a1 1 0 00-1-1z" stroke="#818cf8" stroke-width="1.3"/><path d="M2 6l6 4 6-4" stroke="#818cf8" stroke-width="1.3"/></svg>
+            </div>
+            <p class="text-[14px] text-zinc-400">Reactie binnen <span class="text-white font-medium">48 uur</span></p>
+          </div>
+          <div class="flex items-center gap-3.5">
+            <div class="w-9 h-9 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center flex-shrink-0">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 1a7 7 0 100 14A7 7 0 008 1z" stroke="#818cf8" stroke-width="1.3"/><path d="M5.5 8.5l2 2 3-3" stroke="#818cf8" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <p class="text-[14px] text-zinc-400">Volledig <span class="text-white font-medium">vrijblijvend</span> — geen verplichtingen</p>
+          </div>
+          <div class="flex items-center gap-3.5">
+            <div class="w-9 h-9 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center flex-shrink-0">
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><rect x="2" y="5" width="12" height="9" rx="1.5" stroke="#818cf8" stroke-width="1.3"/><path d="M5 5V4a3 3 0 016 0v1" stroke="#818cf8" stroke-width="1.3" stroke-linecap="round"/></svg>
+            </div>
+            <p class="text-[14px] text-zinc-400">Jouw data <span class="text-white font-medium">veilig</span> en vertrouwelijk</p>
+          </div>
+        </div>
+
+        <!-- Social proof -->
+        <div class="mt-12 pt-8 border-t border-border">
+          <p class="text-[12px] text-muted uppercase tracking-wider mb-5">Vertrouwd door teams bij</p>
+          <div class="flex flex-wrap gap-4">
+            <div class="h-7 bg-white/5 border border-border rounded-md px-4 flex items-center justify-center text-[11px] text-muted font-medium">Retail</div>
+            <div class="h-7 bg-white/5 border border-border rounded-md px-4 flex items-center justify-center text-[11px] text-muted font-medium">E-Commerce</div>
+            <div class="h-7 bg-white/5 border border-border rounded-md px-4 flex items-center justify-center text-[11px] text-muted font-medium">Design Studios</div>
+            <div class="h-7 bg-white/5 border border-border rounded-md px-4 flex items-center justify-center text-[11px] text-muted font-medium">Marketing Bureaus</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right: Form -->
+      <div class="reveal reveal-delay-1">
+        <div class="bg-surface border border-border rounded-2xl p-7 sm:p-9" style="box-shadow: 0 20px 60px rgba(0,0,0,0.4);">
+
+          <form action="https://formspree.io/f/YOUR_FORM_ID" method="POST" class="space-y-5" id="contact-form">
+
+            <!-- Name -->
+            <div>
+              <label for="naam" class="block text-[12px] font-medium text-gray-400 mb-1.5">Naam <span class="text-accent">*</span></label>
+              <input
+                type="text" id="naam" name="naam" required
+                placeholder="Jan de Vries"
+                class="form-input w-full rounded-xl px-4 py-3 text-[14px]"
+              />
+            </div>
+
+            <!-- Company -->
+            <div>
+              <label for="bedrijf" class="block text-[12px] font-medium text-gray-400 mb-1.5">Bedrijfsnaam <span class="text-accent">*</span></label>
+              <input
+                type="text" id="bedrijf" name="bedrijf" required
+                placeholder="Acme Marketing B.V."
+                class="form-input w-full rounded-xl px-4 py-3 text-[14px]"
+              />
+            </div>
+
+            <!-- Email -->
+            <div>
+              <label for="email" class="block text-[12px] font-medium text-gray-400 mb-1.5">E-mailadres <span class="text-accent">*</span></label>
+              <input
+                type="email" id="email" name="email" required
+                placeholder="jan@bedrijf.nl"
+                class="form-input w-full rounded-xl px-4 py-3 text-[14px]"
+              />
+            </div>
+
+            <!-- Dropdown -->
+            <div>
+              <label for="tijdsverspiller" class="block text-[12px] font-medium text-gray-400 mb-1.5">Wat is je grootste tijdsverspiller? <span class="text-accent">*</span></label>
+              <select id="tijdsverspiller" name="tijdsverspiller" required class="form-input w-full rounded-xl px-4 py-3 text-[14px]">
+                <option value="" disabled selected>Kies een categorie…</option>
+                <option value="beeldbewerking">Beeldbewerking / Design</option>
+                <option value="data-invoer">Data-invoer / CMS</option>
+                <option value="link-tracking">Link-tracking / Marketing</option>
+                <option value="anders">Iets anders</option>
+              </select>
+            </div>
+
+            <!-- Submit -->
+            <div class="pt-2">
+              <button type="submit" id="submit-btn" class="btn-primary w-full flex items-center justify-center gap-2.5 py-3.5 rounded-xl font-bold text-white text-[15px]">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                  <path d="M8 1.5a6.5 6.5 0 110 13A6.5 6.5 0 018 1.5zm0 3v3.5l2.5 1.5" stroke="white" stroke-width="1.5" stroke-linecap="round"/>
+                </svg>
+                Claim mijn gratis Quickscan
+              </button>
+            </div>
+
+            <!-- Privacy note -->
+            <p class="text-center text-[11px] text-muted">
+              Door te versturen ga je akkoord met onze <a href="#" class="text-gray-500 hover:text-gray-300 underline underline-offset-2">Privacyverklaring</a>.
+            </p>
+
+          </form>
+
+          <!-- Success state (hidden) -->
+          <div id="form-success" class="hidden text-center py-8">
+            <div class="w-14 h-14 rounded-2xl badge-result flex items-center justify-center mx-auto mb-5">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L19 7" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <h3 class="text-xl font-bold text-white mb-2">Aanvraag ontvangen!</h3>
+            <p class="text-[14px] text-zinc-400">We nemen binnen 48 uur contact met je op voor de Workflow Quickscan.</p>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!--  FOOTER                                    -->
+<!-- ═══════════════════════════════════════════ -->
+<footer class="py-10 border-t border-border">
+  <div class="max-w-6xl mx-auto px-5 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+
+    <!-- Logo -->
+    <div class="flex items-center gap-2.5">
+      <div class="w-6 h-6 rounded-md bg-gradient-to-br from-accent to-indigo-700 flex items-center justify-center">
+        <svg width="11" height="11" viewBox="0 0 14 14" fill="none">
+          <path d="M2 7h10M7 2l5 5-5 5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <span class="text-white font-semibold text-[14px]">Pool Media</span>
+    </div>
+
+    <!-- Copyright -->
+    <p class="text-[12px] text-muted">© 2026 Pool Media. Alle rechten voorbehouden.</p>
+
+    <!-- Legal links -->
+    <div class="flex items-center gap-5">
+      <a href="#" class="text-[12px] text-muted hover:text-gray-400 transition-colors">Algemene Voorwaarden</a>
+      <a href="#" class="text-[12px] text-muted hover:text-gray-400 transition-colors">Privacybeleid</a>
+    </div>
+
+  </div>
+</footer>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!--  JAVASCRIPT                                -->
+<!-- ═══════════════════════════════════════════ -->
+<script>
+  // ── Sticky nav ──
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 20) navbar.classList.add('scrolled');
+    else navbar.classList.remove('scrolled');
+  });
+
+  // ── Mobile menu ──
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobile-menu');
+  hamburger.addEventListener('click', () => {
+    mobileMenu.classList.toggle('open');
+  });
+  // Close on link click
+  mobileMenu.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => mobileMenu.classList.remove('open'));
+  });
+
+  // ── Scroll reveal ──
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
+  revealEls.forEach(el => revealObs.observe(el));
+
+  // ── Counter animation ──
+  function animateCounter(el, target, duration = 1800) {
+    let start = null;
+    const step = (timestamp) => {
+      if (!start) start = timestamp;
+      const progress = Math.min((timestamp - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 3); // ease-out cubic
+      el.textContent = Math.floor(ease * target).toLocaleString('nl-NL');
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  const counterEls = document.querySelectorAll('.counter');
+  const counterObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        animateCounter(e.target, parseInt(e.target.dataset.target));
+        counterObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.5 });
+  counterEls.forEach(el => counterObs.observe(el));
+
+  // ── Form handling ──
+  const form = document.getElementById('contact-form');
+  const formSuccess = document.getElementById('form-success');
+  const submitBtn = document.getElementById('submit-btn');
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = '<svg class="animate-spin" width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M8 2a6 6 0 100 12A6 6 0 008 2z" stroke="rgba(255,255,255,0.3)" stroke-width="1.5"/><path d="M14 8a6 6 0 00-6-6" stroke="white" stroke-width="1.5" stroke-linecap="round"/></svg> Versturen…';
+      submitBtn.disabled = true;
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        });
+
+        if (response.ok) {
+          form.style.display = 'none';
+          formSuccess.classList.remove('hidden');
+        } else {
+          throw new Error('Server error');
+        }
+      } catch {
+        // Fallback: show success anyway for demo (remove in production)
+        form.style.display = 'none';
+        formSuccess.classList.remove('hidden');
+      }
+    });
+  }
+
+  // ── Smooth scroll for anchor links ──
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        const offset = 72; // nav height
+        const top = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
