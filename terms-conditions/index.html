@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="nl" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Algemene Voorwaarden — Pool Media</title>
+  <meta name="robots" content="noindex, follow" />
+  <link rel="icon" type="image/png" href="/assets/Pool-Media-Logo-Black-White-200px.png" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            surface: '#06070d',
+            panel: '#0e101a',
+            border: '#1a1d2e',
+            accent: '#5B5EF4',
+            'accent-light': '#818cf8',
+            muted: '#64748b',
+            subtle: '#111425',
+          },
+          backgroundImage: {
+            'grid-pattern': "linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)",
+          },
+          backgroundSize: {
+            'grid': '48px 48px',
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    .header-logo-text {
+      font-size: 20px;
+      margin-left: 3px;
+    }
+    * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    html { background: #06070d; }
+
+    #navbar.scrolled {
+      background: rgba(6, 7, 13, 0.82);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    .gradient-text {
+      background: linear-gradient(160deg, #ffffff 0%, #e2e8f0 55%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .btn-secondary {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: #e2e8f0;
+      border-radius: 8px;
+      letter-spacing: -0.01em;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    #mobile-menu { display: none; }
+    #mobile-menu.open { display: flex; }
+  </style>
+</head>
+
+<body class="bg-[#06070d] text-gray-300 font-sans antialiased overflow-x-hidden">
+
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-200 border-b border-transparent scrolled">
+  <div class="max-w-6xl mx-auto px-6 sm:px-8">
+    <div class="flex items-center justify-between h-20">
+
+      <a href="/" class="flex items-center gap-3 group">
+        <img src="/assets/Pool-Media-Logo-White-Favicon-200px.png" alt="Pool Media" class="h-7 w-auto" />
+        <span class="text-white font-medium tracking-tight header-logo-text"><b>Pool</b> Media</span>
+      </a>
+
+      <div class="hidden md:flex items-center gap-2">
+        <a href="/" class="btn-secondary px-4 py-2 rounded font-medium text-[13px]">Terug naar home</a>
+      </div>
+
+      <button id="hamburger" class="md:hidden p-2 text-gray-400 hover:text-white focus:outline-none" aria-label="Menu openen">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
+          <path id="ham-line1" d="M3 5h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <path id="ham-line2" d="M3 10h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <path id="ham-line3" d="M3 15h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <div id="mobile-menu" class="flex-col gap-1 pb-6 md:hidden">
+      <a href="/" class="mt-2 btn-secondary text-center block px-4 py-2.5 rounded text-sm font-medium">Terug naar home</a>
+    </div>
+  </div>
+</nav>
+
+<section class="relative min-h-screen pt-32 pb-24 overflow-hidden">
+  <div class="absolute inset-0 bg-grid-pattern bg-grid opacity-40 pointer-events-none"></div>
+  
+  <div class="relative max-w-3xl mx-auto px-6 sm:px-8">
+    
+    <header class="mb-12">
+      <h1 class="text-[clamp(2rem,4vw,3rem)] font-extrabold leading-[1.2] tracking-tight gradient-text mb-4">
+        Algemene Voorwaarden
+      </h1>
+      <p class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Laatst bijgewerkt: 25 juni 2026</p>
+    </header>
+
+    <div class="space-y-8 text-[14px] leading-relaxed text-gray-400 font-light">
+      
+      <p>
+        Sfeer en wederzijds vertrouwen vinden we belangrijk, maar duidelijke afspraken zijn de basis van elke succesvolle automatisering. Deze algemene voorwaarden zijn van toepassing op alle offertes, scans, opdrachten en diensten van Pool Media.
+      </p>
+
+      <hr class="border-white/5 my-6" />
+
+      <div>
+        <h2 class="text-[16px] font-semibold text-white mb-3">1. Definities &amp; Toepasselijkheid</h2>
+        <p>
+          1.1 <strong>Pool Media:</strong> De dienstverlener, gevestigd te Nederland, die opdrachten uitvoert op het gebied van marketing- en designautomatisering.<br>
+          1.2 <strong>Opdrachtgever:</strong> De natuurlijke of rechtspersoon die een overeenkomst aangaat met Pool Media (B2B).<br>
+          1.3 Deze voorwaarden zijn van toepassing op elk aanbod, elke offerte en elke overeenkomst tussen Pool Media en Opdrachtgever, tenzij schriftelijk anders is overengekomen.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-[16px] font-semibold text-white mb-3">2. Aanbiedingen, Scans &amp; Offertes</h2>
+        <p>
+          2.1 De "Workflow Scan" of "Quickscan" is te allen tijde volledig gratis en vrijblijvend, tenzij vooraf expliciet een andere afspraak is gemaakt.<br>
+          2.2 Alle overige offertes en prijsopgaven van Pool Media zijn 14 dagen geldig. Prijzen zijn exclusief btw en eventuele licentiekosten van derden (zoals Adobe-licenties, API-kosten of automatiseringsplatformen).
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-[16px] font-semibold text-white mb-3">3. Uitvoering van de Overeenkomst</h2>
+        <p>
+          3.1 Pool Media voert de opdracht naar beste inzicht en vermogen uit op basis van een inspanningsverplichting.<br>
+          3.2 Opdrachtgever is verantwoordelijk voor het tijdig aanleveren van de juiste data, inloggegevens, testomgevingen en briefings die nodig zijn voor de bouw van de automatisering of scripts.<br>
+          3.3 Vertraging in de uitvoering veroorzaakt door het niet of niet tijdig aanleveren van benodigde materialen door Opdrachtgever, kan leiden tot verschuiving van deadlines en eventuele extra kosten.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-[16px] font-semibold text-white mb-3">4. Licenties &amp; Wijzigingen door Derden</h2>
+        <p>
+          4.1 De automatiseringen, scripts en softwarekoppelingen die Pool Media bouwt, zijn vaak afhankelijk van software van derden (zoals Adobe Creative Cloud, Monday.com, Airtable, of specifieke CMS/PIM-systemen).<br>
+          4.2 Pool Media is nimmer aansprakelijk voor het niet of verminderd functioneren van de geleverde automatisering indien dit het gevolg is van updates, prijswijzigingen, API-aanpassingen of beleidswijzigingen van deze externe partijen.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-[16px] font-semibold text-white mb-3">5. Intellectueel Eigendom &amp; Eigendomsvoorbehoud</h2>
+        <p>
+          5.1 Tenzij schriftelijk anders overengekomen, blijven de rechten op door Pool Media ontwikkelde generieke scripts, broncodes en basistools eigendom van Pool Media.<br>
+          5.2 Opdrachtgever verkrijgt na volledige betaling een exclusief, eeuwigdurend gebruiksrecht op de specifiek voor hen op maat gemaakte scripts en pipelines ten behoeve van de eigen bedrijfsvoering.<br>
+          5.3 Het is Opdrachtgever niet toegestaan de geleverde broncode of scripts te verkopen, te licentiëren of te distribueren aan derden zonder schriftelijke toestemming van Pool Media.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-[16px] font-semibold text-white mb-3">6. Betaling &amp; Facturatie</h2>
+        <p>
+          6.1 Betaling dient te geschieden binnen 14 dagen na factuurdatum, tenzij in de offerte of overeenkomst andere termijnen (bijvoorbeeld een aanbetaling van 50% vóór de start) zijn afgesproken.<br>
+          6.2 Indien Opdrachtgever niet tijdig betaalt, is deze van rechtswege in verzuim. Pool Media heeft in dat geval het recht de geleverde scripts, koppelingen of pipelines tijdelijk buiten werking te stellen totdat aan de betalingsverplichting is voldaan.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-[16px] font-semibold text-white mb-3">7. Aansprakelijkheid &amp; Garanties</h2>
+        <p>
+          7.1 Pool Media biedt na oplevering een garantieperiode van 30 dagen op verborgen fouten of bugs in de geleverde maatwerksoftware/scripts. Binnen deze periode worden eventuele fouten kosteloos hersteld.<br>
+          7.2 Pool Media is uitsluitend aansprakelijk voor directe schade die is ontstaan door een aantoonbare, toerekenbare tekortkoming. De totale aansprakelijkheid is te allen tijde beperkt tot het bedrag dat voor de desbetreffende opdracht is gefactureerd en betaald.<br>
+          7.3 Pool Media is nimmer aansprakelijk voor indirecte schade, gederfde winst, gemiste besparingen, reputatieschade of schade door verlies/corruptie van data in de systemen van de Opdrachtgever.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-[16px] font-semibold text-white mb-3">8. Geheimhouding (NDA)</h2>
+        <p>
+          8.1 Zowel Pool Media als Opdrachtgever zijn verplicht tot geheimhouding van alle vertrouwelijke informatie die zij in het kader van hun overeenkomst van elkaar hebben verkregen. Dit geldt met name voor interne bedrijfsprocessen, klantinformatie, briefings en bronbestanden.
+        </p>
+      </div>
+
+      <div>
+        <h2 class="text-[16px] font-semibold text-white mb-3">9. Toepasselijk recht</h2>
+        <p>
+          9.1 Op alle rechtsbetrekkingen waarbij Pool Media partij is, is uitsluitend het Nederlands recht van toepassing.<br>
+          9.2 Geschillen worden in eerste instantie voorgelegd aan de bevoegde rechter in het arrondissement waar Pool Media is gevestigd.
+        </p>
+      </div>
+
+    </div>
+
+    <div class="mt-12 pt-6 border-t border-white/5">
+      <a href="/" class="text-xs text-indigo-400 hover:text-white transition-colors flex items-center gap-2">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+        Terug naar de website
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<footer class="py-12 border-t border-white/5 bg-surface">
+  <div class="max-w-6xl mx-auto px-6 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+    <div class="flex items-center gap-3">
+      <img src="/assets/Pool-Media-Logo-White-Favicon-200px.png" alt="Pool Media" class="h-6 w-auto" />
+    </div>
+    <p class="text-[12px] text-gray-500">© 2026 Pool Media. Alle rechten voorbehouden.</p>
+    <div class="flex gap-6 text-[12px] text-gray-500">
+      <a href="/" class="hover:text-white transition-colors">Home</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobile-menu');
+
+  hamburger.addEventListener('click', () => {
+    mobileMenu.classList.toggle('open');
+  });
+</script>
+
+</body>
+</html>
