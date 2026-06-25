@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pool Media — Marketing & Design Automatisering</title>
   <meta name="description" content="Pool Media automatiseert repetitieve creatieve processen, marketing pipelines en Adobe-workflows voor moderne marketingteams. Efficiënt, schaalbaar en foutloos." />
+  <link rel="icon" type="image/png" href="/assets/Pool-Media-Logo-Black-White-200px.png" />
 
   <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -21,14 +22,13 @@
             sans: ['Inter', 'system-ui', 'sans-serif'],
           },
           colors: {
-            // Geïnspireerd op de rustige, strakke paletten van Mollie/Adyen
-            surface: '#090a0f',
-            panel: '#10121a',
-            border: '#1f222f',
-            accent: '#3b82f6', // Professioneel tech-blauw
-            'accent-light': '#60a5fa',
-            muted: '#6b7280',
-            subtle: '#1b1d28',
+            surface: '#06070d',
+            panel: '#0e101a',
+            border: '#1a1d2e',
+            accent: '#5B5EF4',
+            'accent-light': '#818cf8',
+            muted: '#64748b',
+            subtle: '#111425',
           },
           animation: {
             'fade-up': 'fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
@@ -53,70 +53,78 @@
 
   <style>
     * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-    html { background: #090a0f; }
+    html { background: #06070d; }
 
-    /* Premium minimalistische navigatie */
+    /* ── Revolut/Stripe nav ── */
     #navbar.scrolled {
-      background: rgba(9, 10, 15, 0.75);
-      backdrop-filter: blur(24px);
-      -webkit-backdrop-filter: blur(24px);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      background: rgba(6, 7, 13, 0.82);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
     }
 
-    /* Fijne typografie verloopjes zoals Mollie/Adyen */
+    /* Heading gradient – tighter, whiter, crisper (Stripe-style) */
     .gradient-text {
-      background: linear-gradient(135deg, #ffffff 0%, #f3f4f6 40%, #9ca3af 100%);
+      background: linear-gradient(160deg, #ffffff 0%, #e2e8f0 55%, #94a3b8 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
 
-    /* Knoppen met precieze styling */
+    /* ── Revolut-style primary CTA: vivid indigo pill ── */
     .btn-primary {
-      background: #ffffff;
-      color: #090a0f;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      background: #5B5EF4;
+      color: #ffffff;
+      border-radius: 8px;
+      letter-spacing: -0.01em;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 0 0 0 rgba(91,94,244,0);
     }
     .btn-primary:hover {
-      background: #f3f4f6;
+      background: #4a4de0;
       transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(91,94,244,0.35);
     }
-    .btn-primary:active { transform: translateY(0); }
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
 
+    /* ── Ghost secondary ── */
     .btn-secondary {
-      background: rgba(255,255,255,0.03);
-      border: 1px solid rgba(255,255,255,0.08);
-      color: #f3f4f6;
-      transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: #e2e8f0;
+      border-radius: 8px;
+      letter-spacing: -0.01em;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .btn-secondary:hover {
-      background: rgba(255,255,255,0.06);
-      border-color: rgba(255,255,255,0.15);
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.18);
     }
 
-    /* Strakke panelen zonder overdreven schaduw */
+    /* ── Cards ── */
     .card {
-      background: #10121a;
-      border: 1px solid rgba(255, 255, 255, 0.05);
-      transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+      background: #0e101a;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .card:hover {
-      border-color: rgba(255, 255, 255, 0.12);
-      background: #131622;
+      border-color: rgba(255, 255, 255, 0.13);
+      background: #111425;
     }
 
-    /* Flow line animatie */
-    .flow-line {
-      background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.4), transparent);
-      background-size: 200% 100%;
-      animation: flow-anim 2.5s linear infinite;
-    }
-    @keyframes flow-anim {
-      0% { background-position: -200% center; }
-      100% { background-position: 200% center; }
+    /* ── Accent pill label (like Stripe's "New" badge) ── */
+    .badge-label {
+      background: rgba(91,94,244,0.12);
+      border: 1px solid rgba(91,94,244,0.25);
+      color: #a5b4fc;
     }
 
-    /* Scroll reveal */
-    .reveal { opacity: 0; transform: translateY(16px); transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1); }
+    /* ── Scroll reveal ── */
+    .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
     .reveal.visible { opacity: 1; transform: translateY(0); }
     .reveal-delay-1 { transition-delay: 0.1s; }
     .reveal-delay-2 { transition-delay: 0.2s; }
@@ -124,10 +132,22 @@
 
     #mobile-menu { display: none; }
     #mobile-menu.open { display: flex; }
+
+    /* ── Stripe-style stat highlight ── */
+    .stat-accent { color: #818cf8; }
+
+    /* ── Form inputs ── */
+    input, select, textarea {
+      border-radius: 8px !important;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(91,94,244,0.5) !important;
+      box-shadow: 0 0 0 3px rgba(91,94,244,0.12);
+    }
   </style>
 </head>
 
-<body class="bg-surface text-gray-300 font-sans antialiased overflow-x-hidden">
+<body class="bg-[#06070d] text-gray-300 font-sans antialiased overflow-x-hidden">
 
 <!-- ═══════════════════════════════════════════ -->
 <!--  NAVIGATIEBALK                             -->
@@ -138,12 +158,7 @@
 
       <!-- Logo -->
       <a href="#" class="flex items-center gap-3 group">
-        <div class="w-6 h-6 rounded bg-white flex items-center justify-center">
-          <svg width="12" height="12" viewBox="0 0 14 14" fill="none">
-            <path d="M2 7h10M7 2l5 5-5 5" stroke="#090a0f" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </div>
-        <span class="text-white font-medium tracking-tight text-[15px]">Pool Media</span>
+        <img src="/assets/Pool-Media-Logo-Black-White.svg" alt="Pool Media" class="h-7 w-auto" />
       </a>
 
       <!-- Desktop Links -->
@@ -189,9 +204,9 @@
   <div class="relative max-w-6xl mx-auto px-6 sm:px-8 py-20">
 
     <!-- Label -->
-    <div class="inline-flex items-center gap-2 px-3 py-1 border border-white/10 rounded-full mb-6 bg-white/[0.02] reveal">
-      <span class="w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse-slow"></span>
-      <span class="text-[11px] font-semibold tracking-wider text-gray-400 uppercase">Automate creative operations</span>
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-6 badge-label reveal">
+      <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse-slow"></span>
+      <span class="text-[11px] font-semibold tracking-wider text-indigo-300 uppercase">Automate creative operations</span>
     </div>
 
     <!-- Hoofdkop (Mollie stijl: strak, groot, zelfverzekerd) -->
@@ -214,66 +229,6 @@
       </a>
     </div>
 
-    <!-- Dashboard/Systeem Visualisatie -->
-    <div class="mt-20 reveal reveal-delay-3">
-      <div class="relative max-w-4xl mx-auto rounded-xl overflow-hidden border border-white/5 bg-panel" style="box-shadow: 0 30px 60px rgba(0,0,0,0.4);">
-        
-        <!-- Top bar mockup -->
-        <div class="flex items-center justify-between px-5 py-3.5 border-b border-white/5 bg-white/[0.01]">
-          <div class="flex items-center gap-2">
-            <div class="w-2 h-2 rounded-full bg-white/20"></div>
-            <div class="w-2 h-2 rounded-full bg-white/20"></div>
-            <div class="w-2 h-2 rounded-full bg-white/20"></div>
-          </div>
-          <div class="text-[11px] text-gray-500 font-medium tracking-tight">poolmedia.io/operations-pipeline</div>
-          <div class="flex items-center gap-2 text-[11px] text-emerald-400 font-medium">
-            <span class="w-1.5 h-1.5 bg-emerald-400 rounded-full"></span>
-            System Active
-          </div>
-        </div>
-
-        <!-- Dashboard inhoud -->
-        <div class="p-6 sm:p-8">
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8">
-            <div class="border border-white/5 bg-white/[0.01] rounded-lg p-4">
-              <span class="text-[11px] text-gray-500 uppercase tracking-wider font-medium">Automatische Verwerking</span>
-              <div class="text-2xl font-bold text-white mt-1 counter" data-target="34120">0</div>
-              <span class="text-[10px] text-gray-500 block mt-1">assets verwerkt via scripts &amp; AI</span>
-            </div>
-            <div class="border border-white/5 bg-white/[0.01] rounded-lg p-4">
-              <span class="text-[11px] text-gray-500 uppercase tracking-wider font-medium">Foutmarge Systeem</span>
-              <div class="text-2xl font-bold text-emerald-400 mt-1">0.00%</div>
-              <span class="text-[10px] text-gray-500 block mt-1">gevalideerd door data-checks</span>
-            </div>
-            <div class="border border-white/5 bg-white/[0.01] rounded-lg p-4">
-              <span class="text-[11px] text-gray-500 uppercase tracking-wider font-medium">Gemiddelde Snelheidswinst</span>
-              <div class="text-2xl font-bold text-white mt-1">14.2x</div>
-              <span class="text-[10px] text-gray-500 block mt-1">sneller dan handmatige invoer</span>
-            </div>
-          </div>
-
-          <!-- Flowchart -->
-          <div class="border border-white/5 bg-surface rounded-lg p-5 flex flex-col sm:flex-row items-center justify-between gap-4 overflow-x-auto">
-            <div class="flex items-center gap-3 min-w-[140px]">
-              <div class="w-8 h-8 rounded bg-white/5 border border-white/10 flex items-center justify-center text-[12px] text-white font-medium">01</div>
-              <div class="text-xs"><p class="text-white font-medium">Inkomende Briefing</p><p class="text-gray-500 text-[10px]">Data, CSV of PDF</p></div>
-            </div>
-            <div class="hidden sm:block flex-1 h-px relative min-w-[40px]"><div class="absolute inset-0 flow-line"></div></div>
-            <div class="flex items-center gap-3 min-w-[140px]">
-              <div class="w-8 h-8 rounded bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-[12px] text-blue-400 font-medium">02</div>
-              <div class="text-xs"><p class="text-white font-medium">AI Structurering</p><p class="text-gray-500 text-[10px]">Data extractie</p></div>
-            </div>
-            <div class="hidden sm:block flex-1 h-px relative min-w-[40px]"><div class="absolute inset-0 flow-line"></div></div>
-            <div class="flex items-center gap-3 min-w-[140px]">
-              <div class="w-8 h-8 rounded bg-white/5 border border-white/10 flex items-center justify-center text-[12px] text-white font-medium">03</div>
-              <div class="text-xs"><p class="text-white font-medium">Adobe Bulk Engine</p><p class="text-gray-500 text-[10px]">Design &amp; Export</p></div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
   </div>
 </section>
 
@@ -285,7 +240,7 @@
   <div class="max-w-6xl mx-auto px-6 sm:px-8">
     <div class="grid md:grid-cols-3 gap-12">
       <div class="reveal">
-        <h2 class="text-xs font-semibold uppercase tracking-wider text-blue-400">De Uitdaging</h2>
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-indigo-400">De Uitdaging</h2>
         <p class="text-xl text-white font-medium mt-4 leading-snug">
           Waarom creatieve en marketingafdelingen vastlopen.
         </p>
@@ -324,7 +279,7 @@
     
     <!-- Header -->
     <div class="max-w-2xl mb-16 reveal">
-      <h2 class="text-xs font-semibold uppercase tracking-wider text-blue-400">Toepassingen &amp; Mogelijkheden</h2>
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Toepassingen &amp; Mogelijkheden</h2>
       <p class="text-3xl text-white font-extrabold mt-4 tracking-tight">Wat we zoal automatiseren binnen Marketing &amp; Design</p>
       <p class="text-gray-400 font-light mt-4 text-[15px]">
         Elke marketingafdeling heeft unieke systemen, maar de pijnpunten zijn vaak hetzelfde. Hier zijn veelvoorkomende scenario's waar we direct impact maken.
@@ -428,7 +383,7 @@
   
 <section class="py-20 border-t border-white/5 bg-gradient-to-b from-transparent to-white/[0.01]">
   <div class="max-w-4xl mx-auto px-6 sm:px-8 text-center reveal">
-    <h2 class="text-xs font-semibold uppercase tracking-wider text-blue-400">Maatwerk &amp; Sparren</h2>
+    <h2 class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Maatwerk &amp; Sparren</h2>
     <p class="text-2xl sm:text-3xl text-white font-extrabold mt-4 tracking-tight">Loop je ergens vast, maar weet je niet of het te automatiseren valt?</p>
     <p class="text-gray-400 font-light mt-4 text-[15px] leading-relaxed max-w-2xl mx-auto">
       Je hoeft de technische oplossing niet zelf te bedenken. Als je binnen je team een proces ziet waarvan je denkt: <span class="text-white font-medium">"Dit moet anno nu toch sneller of slimmer kunnen?"</span>, dan is dat voor ons al genoeg.
@@ -454,7 +409,7 @@
       
       <!-- Linker tekstkolom -->
       <div class="lg:col-span-5 reveal">
-        <h2 class="text-xs font-semibold uppercase tracking-wider text-blue-400">Gevalideerd Resultaat</h2>
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Gevalideerd Resultaat</h2>
         <p class="text-3xl text-white font-extrabold mt-4 tracking-tight">Van 40 uur werk naar 30 minuten.</p>
         <p class="text-gray-400 font-light mt-4 text-[15px] leading-relaxed">
           Voor een grote retailketen hebben we een content-pipeline gebouwd die wekelijks honderden binnenkomende briefings volledig geautomatiseerd verwerkt. 
@@ -471,7 +426,7 @@
 
       <!-- Rechter visuele vergelijking -->
       <div class="lg:col-span-7 reveal reveal-delay-1">
-        <div class="bg-panel border border-white/5 rounded-xl p-6 sm:p-8">
+        <div class="bg-[#0e101a] border border-white/6 rounded-xl p-6 sm:p-8">
           <span class="text-[11px] font-semibold tracking-wider text-gray-500 uppercase block mb-6">Tijdsbesteding per batch</span>
           
           <div class="space-y-6">
@@ -494,7 +449,7 @@
                 <span class="text-emerald-400 font-semibold">~30 min</span>
               </div>
               <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
-                <div class="h-full bg-gradient-to-r from-blue-500 to-emerald-400 rounded-full" style="width: 2.5%"></div>
+                <div class="h-full bg-gradient-to-r from-indigo-500 to-emerald-400 rounded-full" style="width: 2.5%"></div>
               </div>
               <span class="text-[11px] text-gray-400 block mt-1.5 font-light">AI leest data, scripts sturen Creative Cloud aan, automatische CMS export.</span>
             </div>
@@ -516,7 +471,7 @@
   <div class="max-w-6xl mx-auto px-6 sm:px-8">
     
     <div class="max-w-3xl mx-auto text-center mb-16 reveal">
-      <h2 class="text-xs font-semibold uppercase tracking-wider text-blue-400">Onze Aanpak</h2>
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Onze Aanpak</h2>
       <p class="text-3xl text-white font-extrabold mt-4 tracking-tight">De Pool Media Workflow Scan</p>
       <p class="text-gray-400 font-light mt-4 text-[16px]">
         We gaan niks raden of overhaasten. We starten altijd met een vrijblijvende, grondige analyse van jullie huidige marketing operations.
@@ -525,7 +480,7 @@
 
     <div class="grid md:grid-cols-3 gap-6">
       <div class="border border-white/5 bg-panel rounded-xl p-6 reveal">
-        <div class="text-[13px] font-semibold text-blue-400">01. Inventarisatie</div>
+        <div class="text-[13px] font-semibold text-indigo-400">01. Inventarisatie</div>
         <h3 class="text-[16px] font-semibold text-white mt-3 mb-2">Proces doorlichten</h3>
         <p class="text-gray-400 font-light text-[13px] leading-relaxed">
           We kijken remote of op locatie een uur live mee met de marketeers en designers om te zien welke handelingen repetitief zijn.
@@ -533,7 +488,7 @@
       </div>
 
       <div class="border border-white/5 bg-panel rounded-xl p-6 reveal reveal-delay-1">
-        <div class="text-[13px] font-semibold text-blue-400">02. ROI Berekening</div>
+        <div class="text-[13px] font-semibold text-indigo-400">02. ROI Berekening</div>
         <h3 class="text-[16px] font-semibold text-white mt-3 mb-2">Rapportage &amp; Kosten</h3>
         <p class="text-gray-400 font-light text-[13px] leading-relaxed">
           Binnen 48 uur ontvang je een concreet rapport: welke taken kunnen we automatiseren, wat levert het op in uren, en wat kost het bouwen.
@@ -541,7 +496,7 @@
       </div>
 
       <div class="border border-white/5 bg-panel rounded-xl p-6 reveal reveal-delay-2">
-        <div class="text-[13px] font-semibold text-blue-400">03. Vrijblijvende Keuze</div>
+        <div class="text-[13px] font-semibold text-indigo-400">03. Vrijblijvende Keuze</div>
         <h3 class="text-[16px] font-semibold text-white mt-3 mb-2">100% Geen Verplichting</h3>
         <p class="text-gray-400 font-light text-[13px] leading-relaxed">
           De scan is volledig kosteloos en verplicht je tot niets. Je krijgt hoe dan ook een helder overzicht van jullie efficiëntiekansen.
@@ -570,7 +525,7 @@
       
       <!-- Linkerzijde info -->
       <div class="lg:col-span-5 reveal">
-        <h2 class="text-xs font-semibold uppercase tracking-wider text-blue-400">Start vandaag</h2>
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Start vandaag</h2>
         <p class="text-3xl text-white font-extrabold mt-4 tracking-tight leading-tight">Klaar om je content operations te schalen?</p>
         <p class="text-gray-400 font-light mt-4 text-[15px] leading-relaxed">
           Vul de velden in en we plannen op korte termijn een Workflow Scan in. Geen opdringerige salesgesprekken, wel direct technisch inzicht in je besparingspotentieel.
@@ -590,7 +545,7 @@
 
       <!-- Rechterzijde formulier -->
       <div class="lg:col-span-7 reveal reveal-delay-1">
-        <div class="bg-panel border border-white/5 rounded-xl p-6 sm:p-8">
+        <div class="bg-[#0e101a] border border-white/6 rounded-xl p-6 sm:p-8">
           
           <form action="https://formspree.io/f/xojojrrq" method="POST" class="space-y-5" id="contact-form">
             <div class="grid sm:grid-cols-2 gap-4">
@@ -650,12 +605,7 @@
 <footer class="py-12 border-t border-white/5 bg-surface">
   <div class="max-w-6xl mx-auto px-6 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
     <div class="flex items-center gap-3">
-      <div class="w-5 h-5 rounded bg-white flex items-center justify-center">
-        <svg width="10" height="10" viewBox="0 0 14 14" fill="none">
-          <path d="M2 7h10M7 2l5 5-5 5" stroke="#090a0f" stroke-width="2"/>
-        </svg>
-      </div>
-      <span class="text-white font-medium text-[14px]">Pool Media</span>
+      <img src="/assets/Pool-Media-Logo-Black-White.svg" alt="Pool Media" class="h-6 w-auto" />
     </div>
     <p class="text-[12px] text-gray-500">© 2026 Pool Media. Alle rechten voorbehouden.</p>
     <div class="flex gap-6 text-[12px] text-gray-500">
