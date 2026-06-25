@@ -553,55 +553,61 @@
       </div>
 
       <!-- Rechterzijde formulier -->
-      <div class="lg:col-span-7 reveal reveal-delay-1">
-        <div class="bg-[#0e101a] border border-white/6 rounded-xl p-6 sm:p-8">
+<div class="lg:col-span-7 reveal reveal-delay-1 visible">
+  <div class="bg-[#0e101a] border border-white/6 rounded-xl p-6 sm:p-8">
           
-          <form action="https://formspree.io/f/xojojrrq" method="POST" class="space-y-5" id="contact-form">
-            <div class="grid sm:grid-cols-2 gap-4">
-              <div>
-                <label for="naam" class="block text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">Naam *</label>
-                <input type="text" id="naam" name="naam" required placeholder="Je naam" class="w-full bg-surface border border-white/5 rounded px-4 py-3 text-[14px] text-white outline-none focus:border-white/20 transition-colors" />
-              </div>
-              <div>
-                <label for="bedrijf" class="block text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">Bedrijfsnaam *</label>
-                <input type="text" id="bedrijf" name="bedrijf" required placeholder="Bedrijf B.V." class="w-full bg-surface border border-white/5 rounded px-4 py-3 text-[14px] text-white outline-none focus:border-white/20 transition-colors" />
-              </div>
-            </div>
-
-            <div>
-              <label for="email" class="block text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">E-mailadres *</label>
-              <input type="email" id="email" name="email" required placeholder="naam@bedrijf.nl" class="w-full bg-surface border border-white/5 rounded px-4 py-3 text-[14px] text-white outline-none focus:border-white/20 transition-colors" />
-            </div>
-
-            <div>
-              <label for="tijdsverspiller" class="block text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">Grootste repetitieve workload? *</label>
-              <select id="tijdsverspiller" name="tijdsverspiller" required class="w-full bg-surface border border-white/5 rounded px-4 py-3 text-[14px] text-white outline-none focus:border-white/20 transition-colors">
-                <option value="" disabled selected class="text-gray-500">Kies een optie...</option>
-                <option value="design">Repetitieve designtaken / Bulk beeldbewerking</option>
-                <option value="data">Data-invoer / CMS-updates / Briefings overtypen</option>
-                <option value="marketing">Marketing links genereren / UTM &amp; Campagne tracking</option>
-                <option value="anders">Iets anders</option>
-              </select>
-            </div>
-
-            <div class="pt-2">
-              <button type="submit" id="submit-btn" class="btn-primary w-full py-3.5 rounded font-medium text-[14px] flex items-center justify-center gap-2">
-                Aanvraag versturen
-              </button>
-            </div>
-          </form>
-
-          <!-- Form Success -->
-          <div id="form-success" class="hidden text-center py-8">
-            <div class="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
-            </div>
-            <h3 class="text-lg font-semibold text-white mb-1">Aanvraag ontvangen</h3>
-            <p class="text-[13px] text-gray-400">We nemen binnen 48 uur contact met je op voor de scan.</p>
-          </div>
-
+    <form action="https://formspree.io/f/xojojrrq" method="POST" class="space-y-5" id="contact-form">
+      <div class="grid sm:grid-cols-2 gap-4">
+        <div>
+          <label for="naam" class="block text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">Naam *</label>
+          <input type="text" id="naam" name="naam" required="" placeholder="Je naam" class="w-full bg-surface border border-white/5 rounded px-4 py-3 text-[14px] text-white outline-none focus:border-white/20 transition-colors">
+        </div>
+        <div>
+          <label for="bedrijf" class="block text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">Bedrijfsnaam *</label>
+          <input type="text" id="bedrijf" name="bedrijf" required="" placeholder="Bedrijf B.V." class="w-full bg-surface border border-white/5 rounded px-4 py-3 text-[14px] text-white outline-none focus:border-white/20 transition-colors">
         </div>
       </div>
+
+      <div>
+        <label for="email" class="block text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">E-mailadres *</label>
+        <input type="email" id="email" name="email" required="" placeholder="naam@bedrijf.nl" class="w-full bg-surface border border-white/5 rounded px-4 py-3 text-[14px] text-white outline-none focus:border-white/20 transition-colors">
+      </div>
+
+      <div>
+        <label for="tijdsverspiller" class="block text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">Grootste repetitieve workload? *</label>
+        <select id="tijdsverspiller" name="tijdsverspiller" required="" class="w-full bg-surface border border-white/5 rounded px-4 py-3 text-[14px] text-white outline-none focus:border-white/20 transition-colors">
+          <option value="" disabled="" selected="" class="text-gray-500">Kies een optie...</option>
+          <option value="design">Repetitieve designtaken / Bulk beeldbewerking</option>
+          <option value="data">Data-invoer / CMS-updates / Briefings overtypen</option>
+          <option value="marketing">Marketing links genereren / UTM &amp; Campagne tracking</option>
+          <option value="anders">Iets anders</option>
+        </select>
+      </div>
+
+      <div class="flex items-start gap-3 pt-1">
+        <input type="checkbox" id="privacy" name="privacy_akkoord" required class="mt-1 h-4 w-4 rounded border-white/10 bg-surface text-emerald-500 focus:ring-0 focus:ring-offset-0 accent-emerald-500 cursor-pointer">
+        <label for="privacy" class="text-[13px] text-gray-400 leading-normal cursor-pointer select-none">
+          Ik ga akkoord met de verwerking van mijn gegevens volgens de <a href="/privacy-policy" class="text-white underline hover:text-gray-300 transition-colors">privacyverklaring</a>. *
+        </label>
+      </div>
+
+      <div class="pt-2">
+        <button type="submit" id="submit-btn" class="btn-primary w-full py-3.5 rounded font-medium text-[14px] flex items-center justify-center gap-2">
+          Aanvraag versturen
+        </button>
+      </div>
+    </form>
+
+    <div id="form-success" class="hidden text-center py-8">
+      <div class="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5"><path d="M20 6L9 17l-5-5"></path></svg>
+      </div>
+      <h3 class="text-lg font-semibold text-white mb-1">Aanvraag ontvangen</h3>
+      <p class="text-[13px] text-gray-400">We nemen binnen 48 uur contact met je op voor de scan.</p>
+    </div>
+
+  </div>
+</div>
 
     </div>
   </div>
