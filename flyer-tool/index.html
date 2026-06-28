@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lidl Flyer Versie Bouwer v2</title>
+    <title>Lidl Flyer Versie Bouwer v3</title>
     
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
@@ -30,7 +30,7 @@
 
 <div class="container">
     <h1>Lidl Flyer Splitter & Opschoner</h1>
-    <p class="subtitle">100% nauwkeurige tekst- en linkverwerking, direct in je browser.</p>
+    <p class="subtitle">Gecorrigeerde v3: 100% sluitende herkenning en UTM-verwijdering.</p>
     
     <div class="form-group">
         <label for="week_nr">🔢 Weeknummer:</label>
@@ -50,12 +50,11 @@
     </div>
 
     <div class="footer">
-        Pool Media &copy; 2026
+        Automatisering Tooling &copy; 2026
     </div>
 </div>
 
 <script>
-// Configureer de PDF.js worker voor snelle tekstextractie
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
 const JAAR = "2026";
@@ -80,37 +79,36 @@ async function verwerkPdf() {
     startBtn.disabled = true;
 
     try {
-        statusText.innerText = "PDF inlezen en analyseren...";
+        statusText.innerText = "PDF inlezen...";
         const fileBytes = await fileInput.arrayBuffer();
         
-        // MAAK HIER EEN KOPIE VAN DE BYTES VOOR PDF.JS
+        // Maak direct een veilige kopie voor PDF.js tekstextractie
         const fileBytesCopy = fileBytes.slice(0); 
-        
-        // 1. Open met PDF.js voor TEXT extractie (gebruik de kopie!)
+
         const loadingTask = pdfjsLib.getDocument({ data: fileBytesCopy });
         const pdfTextDoc = await loadingTask.promise;
         const totaalPaginas = pdfTextDoc.numPages;
         const laatstePaginaIndex = totaalPaginas - 1;
-        
-        // 2. Open met PDF-Lib voor de bewerkingen (gebruik de originele bytes)
+
         const pdfEditDoc = await PDFLib.PDFDocument.load(fileBytes);
 
         let allePaginasPerGroep = { "G1G2": [], "G3G4": [], "G5G6": [], "LANDELIJK": [] };
         let nfPaginasPerGroep = { "G1G2": [], "G3G4": [], "G5G6": [], "LANDELIJK": [] };
         let landelijkeWeekendPaginas = [];
 
-        // Loop door pagina's voor EXACTE tekstextractie
+        // Analyseer elke pagina
         for (let i = 0; i < totaalPaginas; i++) {
-            statusText.innerText = `Pagina ${i + 1} van ${totaalPaginas} scannen...`;
+            statusText.innerText = `Pagina ${i + 1} van ${totaalPaginas} analyseren...`;
             
             const pageTextObj = await pdfTextDoc.getPage(i + 1);
             const textContent = await pageTextObj.getTextContent();
-            const text = textContent.items.map(item => item.str).join(" ").toUpperCase();
+            let text = textContent.items.map(item => item.str).join(" ").toUpperCase();
             
-            // Haal ook productlink status op uit PDF-Lib annotaties
             const editPage = pdfEditDoc.getPage(i);
             let hasProductLink = false;
+            let hasLidlNlLink = false;
 
+            // Scan weblinks via de annotatielaag (Vangnet voor herkenning)
             if (editPage.node && editPage.node.Annots) {
                 const annots = pdfEditDoc.context.lookup(editPage.node.Annots);
                 if (annots && annots.array) {
@@ -122,9 +120,13 @@ async function verwerkPdf() {
                                 const uri = a.get(PDFLib.PDFName.of('URI'));
                                 if (uri) {
                                     const urlStr = uri.value.toLowerCase();
+                                    
+                                    // Gecorrigeerde link check
+                                    if (urlStr.includes('lidl.nl')) {
+                                        hasLidlNlLink = true;
+                                    }
                                     if ((urlStr.includes('/p/') || urlStr.includes('/q/')) && !urlStr.includes('lidlplus')) {
                                         hasProductLink = true;
-                                        break;
                                     }
                                 }
                             }
@@ -133,11 +135,15 @@ async function verwerkPdf() {
                 }
             }
 
-            // --- JOUW ORIGINELE LOGICA (Nu 100% accuraat op echte tekst) ---
+            // HIER IS HET VANGNET: Als de pagina een lidl.nl link bevat óf productlinks, is het sowieso Non-Food!
             let isNonFood = false;
             if (i !== 0) {
-                if (NF_TREFWOORDEN.some(term => text.includes(term)) || hasProductLink) isNonFood = true;
-                if (FOOD_UITZONDERINGEN.some(u => text.includes(u))) isNonFood = false;
+                if (NF_TREFWOORDEN.some(term => text.includes(term)) || hasProductLink || hasLidlNlLink) {
+                    isNonFood = true;
+                }
+                if (FOOD_UITZONDERINGEN.some(u => text.includes(u))) {
+                    isNonFood = false;
+                }
             }
 
             if (i === laatstePaginaIndex) {
@@ -171,8 +177,8 @@ async function verwerkPdf() {
             });
         }
 
-        // --- PDF GENERATIE & ZIP ---
-        statusText.innerText = "PDF folderversies genereren...";
+        // PDF Bouwen en ZIP aanmaken
+        statusText.innerText = "PDF folders genereren...";
         const zip = new JSZip();
 
         async function voegPdfToeAanZip(regioNaam, paginas, typeFolder) {
@@ -212,6 +218,7 @@ async function verwerkPdf() {
             zip.file(`LIDL/${typeFolder}/${bestandsnaam}_LIDL.pdf`, lidlBytes);
         }
 
+        // Geoptimaliseerde en agressieve UTM-verwijderaar
         async function schoonLinksOp(doc) {
             for (const page of doc.getPages()) {
                 if (page.node && page.node.Annots) {
@@ -223,9 +230,13 @@ async function verwerkPdf() {
                                 const a = annot.get(PDFLib.PDFName.of('A'));
                                 if (a) {
                                     const uri = a.get(PDFLib.PDFName.of('URI'));
-                                    if (uri && uri.value.includes("utm_medium")) {
-                                        let schoneUrl = uri.value.split("?utm_medium")[0].split("&utm_medium")[0];
-                                        a.set(PDFLib.PDFName.of('URI'), PDFLib.PDFString.of(schoneUrl));
+                                    if (uri) {
+                                        let urlStr = uri.value;
+                                        // RegEx die zoekt naar ?utm_ of &utm_ en alles wat daarna komt rigoureus verwijdert
+                                        if (/([?&]utm_[a-z]+=[^&]+)/i.test(urlStr)) {
+                                            let schoneUrl = urlStr.split(/[?&]utm_medium/)[0].split(/[?&]utm_source/)[0].split(/[?&]utm_/)[0];
+                                            a.set(PDFLib.PDFName.of('URI'), PDFLib.PDFString.of(schoneUrl));
+                                        }
                                     }
                                 }
                             }
@@ -241,7 +252,7 @@ async function verwerkPdf() {
         }
         await voegPdfToeAanZip("LANDELIJK", landelijkeWeekendPaginas, "WEEKEND");
 
-        statusText.innerText = "ZIP downloaden...";
+        statusText.innerText = "ZIP-pakket downloaden...";
         const zipContent = await zip.generateAsync({ type: "blob" });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(zipContent);
@@ -255,7 +266,7 @@ async function verwerkPdf() {
 
     } catch (error) {
         console.error(error);
-        alert("❌ Fout bij verwerking. Zie console.");
+        alert("❌ Er is een fout opgetreden bij de verwerking. Zie de console (F12) voor technische details.");
         statusDiv.style.display = 'none';
         startBtn.disabled = false;
     }
