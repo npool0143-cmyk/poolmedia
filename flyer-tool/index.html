@@ -83,13 +83,16 @@ async function verwerkPdf() {
         statusText.innerText = "PDF inlezen en analyseren...";
         const fileBytes = await fileInput.arrayBuffer();
         
-        // 1. Open met PDF.js voor TEXT extractie (net als PyMuPDF)
-        const loadingTask = pdfjsLib.getDocument({ data: fileBytes });
+        // MAAK HIER EEN KOPIE VAN DE BYTES VOOR PDF.JS
+        const fileBytesCopy = fileBytes.slice(0); 
+        
+        // 1. Open met PDF.js voor TEXT extractie (gebruik de kopie!)
+        const loadingTask = pdfjsLib.getDocument({ data: fileBytesCopy });
         const pdfTextDoc = await loadingTask.promise;
         const totaalPaginas = pdfTextDoc.numPages;
         const laatstePaginaIndex = totaalPaginas - 1;
-
-        // 2. Open met PDF-Lib voor de bewerkingen (opslaan/splitsen)
+        
+        // 2. Open met PDF-Lib voor de bewerkingen (gebruik de originele bytes)
         const pdfEditDoc = await PDFLib.PDFDocument.load(fileBytes);
 
         let allePaginasPerGroep = { "G1G2": [], "G3G4": [], "G5G6": [], "LANDELIJK": [] };
