@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lidl Aanbiedingen - JSON naar CSV Converter</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+        }
+        h1 { color: #0050aa; border-bottom: 2px solid #0050aa; padding-bottom: 10px; }
+        .container { display: flex; flex-direction: column; gap: 20px; }
+        .dropzone {
+            border: 3px dashed #0050aa;
+            padding: 40px;
+            text-align: center;
+            background: #fff;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: background 0.3s;
+        }
+        .dropzone:hover { background: #e6f0fa; }
+        textarea {
+            width: 100%;
+            height: 200px;
+            font-family: monospace;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            resize: vertical;
+        }
+        button {
+            background-color: #0050aa;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+        button:hover { background-color: #003775; }
+        button:disabled { background-color: #ccc; cursor: not-allowed; }
+        .report {
+            background: #fff;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            display: none;
+        }
+        .warning { color: #b7791f; background-color: #fefcbf; padding: 4px 8px; border-radius: 4px; margin: 4px 0; }
+        .success { color: #2f855a; font-weight: bold; }
+        .error-msg { color: #c53030; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <h1>Lidl Aanbiedingen - JSON naar CSV Converter</h1>
+    
+    <div class="container">
+        <p>Sleep een <code>input.json</code> bestand hieronder, of plak de JSON direct in het tekstveld om het om te zetten naar een Excel-vriendelijk CSV-bestand (met UTF-8 BOM en puntkomma-scheidingstekens).</p>
+
+        <div id="dropzone" class="dropzone">
+            <strong>Klik hier of sleep een JSON-bestand om te uploaden</strong>
+            <input type="file" id="fileInput" accept=".json" style="display: none;">
+        </div>
+
+        <div>
+            <label style="font-weight: bold; display: block; margin-bottom: 5px;">Of plak JSON data:</label>
+            <textarea id="jsonInput" placeholder='Paste je [ { ... } ] json hier...'></textarea>
+        </div>
+
+        <div>
+            <button id="convertBtn">Converteer naar CSV & Download</button>
+        </div>
+
+        <div id="report" class="report">
+            <h3>Conversie Rapport</h3>
+            <div id="reportContent"></div>
+        </div>
+    </div>
+
+<script>
+// Exacte kolommen configuratie uit de Python code
+const COLUMNS = [
+    "language", "title", "long title", "product group id", "sub title",
+    "price", "discount title", "price prefix id", "old price", "base price",
+    "quantity text", "highlight theme", "highlight text", "negate colors",
+    "price legend id", "article legend id", "1st ribbon type", "2nd ribbon type",
+    "3rd ribbon type", "ribbon image id", "online from", "online until",
+    "valid from", "valid until", "textile sizes", "textile person type id",
+    "textile clothing type id", "description", "second description", "meta title",
+    "meta description", "meta filename", "item number", "ian", "nan",
+    "logo image ids", "region ids", "shop article id", "brand",
+    "lidl plus price", "lidl plus base price", "lidl plus highlight text",
+    "lidl plus price prefix id", "lidl plus stores", "lidl plus region ids",
+    "age restriction"
+];
+
+const ALWAYS_EMPTY = new Set([
+    "textile sizes", "textile person type id", "textile clothing type id",
+    "second description", "meta title", "meta description",
+    "meta filename", "region ids", "shop article id", "lidl plus stores",
+    "lidl plus region ids", "age restriction"
+]);
+
+const NEVER_EMPTY = new Set([
+    "language", "title", "long title", "product group id",
+    "online from", "online until", "valid from", "valid until",
+    "item number", "ian", "nan"
+]);
+
+const KNOWN_FAKE_BRANDS = new Set(["ludwig", "action", "bonus", "aanbieding"]);
+
+// UI Elementen
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('fileInput');
+const jsonInput = document.getElementById('jsonInput');
+const convertBtn = document.getElementById('convertBtn');
+const reportDiv = document.getElementById('report');
+const reportContent = document.getElementById('reportContent');
+
+// Drag & Drop handlers
+dropzone.addEventListener('click', () => fileInput.click());
+dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.style.background = "#e6f0fa"; });
+dropzone.addEventListener('dragleave', () => { dropzone.style.background = "#fff"; });
+dropzone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    dropzone.style.background = "#fff";
+    const file = e.dataTransfer.files[0];
+    if (file) handleFile(file);
+});
+fileInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) handleFile(file);
+});
+
+function handleFile(file) {
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        jsonInput.value = e.target.result;
+    };
+    reader.readAsText(file);
+}
+
+// Opschonen van Chinese/Niet-Latijnse tekens
+function cleanValue(value) {
+    if (value === undefined || value === null) return "";
+    let valStr = String(value).trim();
+    // Verwijdert tekens buiten Latijns/Europese range (behoudt €, accenten, etc.)
+    return valStr.replace(/[\u4e00-\u9fff\u3000-\u303f\uff00-\uffef]/g, '').trim();
+}
+
+// Validatie logica (Overgenomen van Python validate_row)
+function validateRow(product, rowValues, rowIndex) {
+    let warnings = [];
+    let title = product.title || `Rij ${rowIndex + 1}`;
+
+    // Check nooit-lege kolommen
+    NEVER_EMPTY.forEach(col => {
+        let idx = COLUMNS.indexOf(col);
+        if (idx !== -1 && !rowValues[idx]) {
+            warnings.push(`⚠️ '${col}' is leeg maar mag dat niet zijn`);
+        }
+    });
+
+    // Check altijd-lege kolommen
+    ALWAYS_EMPTY.forEach(col => {
+        let idx = COLUMNS.indexOf(col);
+        if (idx !== -1 && rowValues[idx]) {
+            warnings.push(`⚠️ '${col}' heeft een waarde maar moet leeg zijn: '${rowValues[idx]}'`);
+        }
+    });
+
+    // Check Lidl Plus logica
+    let priceIdx = COLUMNS.indexOf("price");
+    let lidlPriceIdx = COLUMNS.indexOf("lidl plus price");
+    if (rowValues[lidlPriceIdx] && rowValues[priceIdx]) {
+        warnings.push(`⚠️ Heeft zowel 'price' als 'lidl plus price' — bij Lidl Plus moet 'price' leeg zijn`);
+    }
+
+    // Check brand
+    let brandIdx = COLUMNS.indexOf("brand");
+    let brandVal = rowValues[brandIdx];
+    if (brandVal && KNOWN_FAKE_BRANDS.has(brandVal.toLowerCase())) {
+        warnings.push(`⚠️ 'brand' bevat waarschijnlijk een foutieve waarde: '${brandVal}'`);
+    }
+
+    // Check aantal kolommen
+    if (rowValues.length !== 46) {
+        warnings.push(`❌ Verkeerd aantal kolommen: ${rowValues.length} (verwacht 46)`);
+    }
+
+    return warnings;
+}
+
+// Hoofd conversie functie
+convertBtn.addEventListener('click', () => {
+    let rawContent = jsonInput.value.trim();
+    if (!rawContent) {
+        alert("Plak eerst JSON data of drop een bestand.");
+        return;
+    }
+
+    // Strip eventuele markdown backticks indien meegekopieerd
+    rawContent = rawContent.replace(/^```json\s*/i, '').replace(/\s*```$/, '');
+
+    let data;
+    try {
+        data = JSON.parse(rawContent);
+    } catch (e) {
+        reportDiv.style.display = "block";
+        reportContent.innerHTML = `<p class="error-msg">❌ JSON parse fout: ${e.message}</p>`;
+        return;
+    }
+
+    if (!Array.isArray(data)) {
+        data = [data]; // Enkelvoudig object omzetten naar array
+    }
+
+    let rows = [];
+    let htmlWarnings = [];
+    let totalWarningsCount = 0;
+
+    data.forEach((product, i) => {
+        // Fix 1: "Product gekocht op" zin uit base price halen en in description zetten
+        let basePrice = product["base price"] || "";
+        let description = product["description"] || "";
+        
+        // Regex voor de "Product gekocht op..." zin
+        const gekochtRegex = /Product gekocht op .+? (online|supermarkt)[^.]*.?/g;
+        let match = basePrice.match(gekochtRegex);
+        
+        if (match) {
+            let gekochtZin = match[0].strip ? match[0].strip() : match[0].trim();
+            if (!description) {
+                product["description"] = gekochtZin;
+            }
+            basePrice = basePrice.replace(gekochtZin, "").trim();
+            // Haal eventuele losse eindpunten weg
+            if(basePrice.endsWith('.')) basePrice = basePrice.slice(0, -1).trim();
+            product["base price"] = basePrice;
+        }
+
+        // Fix 2: Als base price alleen een getal is -> naar old price, maak base price leeg
+        let baseClean = basePrice.replace(",", ".").trim();
+        if (baseClean !== "" && !isNaN(baseClean)) {
+            if (!product["old price"]) {
+                product["old price"] = basePrice;
+            }
+            product["base price"] = "";
+        }
+
+        // Bouw de rij op basis van de COLUMNS volgorde
+        let rowValues = [];
+        COLUMNS.forEach(col => {
+            let raw = product[col] !== undefined ? product[col] : "";
+            rowValues.push(cleanValue(raw));
+        });
+
+        // Valideer
+        let warnings = validateRow(product, rowValues, i);
+        let title = product.title || `Product ${i + 1}`;
+
+        if (warnings.length > 0) {
+            totalWarningsCount += warnings.length;
+            htmlWarnings.push(`<strong>📦 ${title} (Rij ${i + 1}):</strong>`);
+            warnings.forEach(w => {
+                htmlWarnings.push(`<div class="warning">${w}</div>`);
+            });
+        }
+
+        // Voeg de rij toe (gebruik ; als scheidingsteken)
+        rows.push(rowValues.join(";"));
+    });
+
+    // Genereer de CSV string (Inclusief de Header rij)
+    let csvContent = COLUMNS.join(";") + "\n" + rows.join("\n");
+
+    // Maak het CSV bestand klaar voor download met een UTF-8 BOM (\uFEFF) zodat Excel het snapt
+    const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), csvContent], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "output.csv";
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+
+    // Toon rapport op het scherm
+    reportDiv.style.display = "block";
+    let statusHtml = `<p class="success">✅ ${data.length} producten succesvol verwerkt en gedownload als <strong>output.csv</strong>.</p>`;
+    if (totalWarningsCount > 0) {
+        statusHtml += `<p style="color: #b7791f; font-weight:bold;">⚠️ ${totalWarningsCount} waarschuwingen gevonden:</p>`;
+        statusHtml += htmlWarnings.join("<br>");
+    } else {
+        statusHtml += `<p class="success">🎉 Geen problemen of waarschuwingen gevonden!</p>`;
+    }
+    reportContent.innerHTML = statusHtml;
+});
+</script>
+</body>
+</html>
