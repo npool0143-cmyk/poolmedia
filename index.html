@@ -5,13 +5,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pool Media — Marketing & Design Automatisering</title>
   <meta name="description" content="Pool Media automatiseert repetitieve creatieve processen, marketing pipelines en Adobe-workflows voor moderne marketingteams. Efficiënt, schaalbaar en foutloos." />
-  
-  <link rel="icon" type="image/png" href="assets/Pool-Media-Logo-Black-White-200px.png" />
+  <link rel="icon" type="image/png" href="/assets/Pool-Media-Logo-Black-White-200px.png" />
 
+  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet" />
 
+  <!-- Tailwind CSS CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -25,6 +26,25 @@
             panel: '#0e101a',
             border: '#1a1d2e',
             accent: '#5B5EF4',
+            'accent-light': '#818cf8',
+            muted: '#64748b',
+            subtle: '#111425',
+          },
+          animation: {
+            'fade-up': 'fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+            'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+          },
+          keyframes: {
+            fadeUp: {
+              '0%': { opacity: '0', transform: 'translateY(16px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
+            },
+          },
+          backgroundImage: {
+            'grid-pattern': "linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px)",
+          },
+          backgroundSize: {
+            'grid': '48px 48px',
           }
         }
       }
@@ -32,107 +52,264 @@
   </script>
 
   <style>
-    .glow-1 {
-      background: radial-gradient(circle 400px at 0% 0%, rgba(91, 94, 244, 0.04), transparent 80%);
+    .footer-logo {
+      height: 4.5rem;
     }
-    .glow-2 {
-      background: radial-gradient(circle 500px at 100% 100%, rgba(91, 94, 244, 0.03), transparent 80%);
+    .header-logo-text {
+      font-size: 20px;
+      margin-left: 3px;
     }
-    .grid-bg {
-      background-image: linear-gradient(rgba(255, 255, 255, 0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
-      background-size: 40px 40px;
+    .min-h-screen {
+        min-height: 1000px !important;
     }
     
-    .reveal {
-      opacity: 0;
-      transform: translateY(15px);
-      transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1), transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+    /* Mobiel (schermen tot 768px breed) */
+    @media (max-width: 768px) {
+        .min-h-screen {
+            min-height: 700px !important;
+        }
     }
-    .reveal.active {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .reveal-delay-1 { transition-delay: 100ms; }
-    .reveal-delay-2 { transition-delay: 200ms; }
-    .reveal-delay-3 { transition-delay: 300ms; }
+    
+    * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+    html { background: #06070d; }
 
+    /* ── Revolut/Stripe nav ── */
+    #navbar.scrolled {
+      background: rgba(6, 7, 13, 0.82);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+    }
+
+    /* Heading gradient – tighter, whiter, crisper (Stripe-style) */
+    .gradient-text {
+      background: linear-gradient(160deg, #ffffff 0%, #e2e8f0 55%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* ── Revolut-style primary CTA: vivid indigo pill ── */
+    .btn-primary {
+      background: #5B5EF4;
+      color: #ffffff;
+      border-radius: 8px;
+      letter-spacing: -0.01em;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.3), 0 0 0 0 rgba(91,94,244,0);
+    }
+    .btn-primary:hover {
+      background: #4a4de0;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(91,94,244,0.35);
+    }
+    .btn-primary:active {
+      transform: translateY(0);
+      box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+    }
+
+    /* ── Ghost secondary ── */
+    .btn-secondary {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.10);
+      color: #e2e8f0;
+      border-radius: 8px;
+      letter-spacing: -0.01em;
+      transition: all 0.18s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.18);
+    }
+
+    /* ── Cards ── */
     .card {
-      background-color: #0b0c13;
-      border: 1px solid rgba(255,255,255,0.03);
-      transition: border-color 0.3s ease, transform 0.3s ease;
+      background: #0e101a;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 12px;
+      transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
     }
     .card:hover {
-      border-color: rgba(91, 94, 244, 0.15);
+      border-color: rgba(255, 255, 255, 0.13);
+      background: #111425;
+    }
+
+    /* ── Accent pill label (like Stripe's "New" badge) ── */
+    .badge-label {
+      background: rgba(91,94,244,0.12);
+      border: 1px solid rgba(91,94,244,0.25);
+      color: #a5b4fc;
+    }
+
+    /* ── Scroll reveal ── */
+    .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+
+    #mobile-menu { display: none; }
+    #mobile-menu.open { display: flex; }
+
+    /* ── Stripe-style stat highlight ── */
+    .stat-accent { color: #818cf8; }
+
+    /* ── Form inputs ── */
+    input, select, textarea {
+      border-radius: 8px !important;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: rgba(91,94,244,0.5) !important;
+      box-shadow: 0 0 0 3px rgba(91,94,244,0.12);
     }
   </style>
 </head>
-<body class="bg-surface text-gray-300 antialiased overflow-x-hidden selection:bg-indigo-500/30 selection:text-white">
 
-  <nav class="fixed top-0 left-0 right-0 z-50 bg-surface/70 backdrop-blur-md border-b border-white/[0.02]">
-    <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <img src="assets/Pool-Media-Logo-Black-White-200px.png" alt="Pool Media Logo" class="h-6 w-auto hidden dark:block" />
-        <img src="assets/Pool-Media-Logo-Black-White-200px.png" alt="Pool Media Logo" class="h-6 w-auto block dark:hidden" />
-        <span class="text-white font-semibold text-[14px] tracking-tight hidden">Pool Media</span>
+<body class="bg-[#06070d] text-gray-300 font-sans antialiased overflow-x-hidden">
+
+<!-- ═══════════════════════════════════════════ -->
+<!--  NAVIGATIEBALK                             -->
+<!-- ═══════════════════════════════════════════ -->
+<nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-200 border-b border-transparent">
+  <div class="max-w-6xl mx-auto px-6 sm:px-8">
+    <div class="flex items-center justify-between h-20">
+
+      <!-- Logo -->
+      <a href="#" class="flex items-center gap-3 group">
+        <img src="/assets/Pool-Media-Logo-White-Favicon-200px.png" alt="Pool Media" class="h-7 w-auto" />
+        <span class="text-white font-medium tracking-tight header-logo-text"><b>Pool</b> Media</span>
+      </a>
+
+      <!-- Desktop Links -->
+      <div class="hidden md:flex items-center gap-2">
+        <a href="#propositie" class="px-4 py-2 text-[13px] font-medium text-gray-400 hover:text-white transition-colors">Wat we doen</a>
+        <a href="#use-cases" class="px-4 py-2 text-[13px] font-medium text-gray-400 hover:text-white transition-colors">Use Cases</a>
+        <a href="#praktijk" class="px-4 py-2 text-[13px] font-medium text-gray-400 hover:text-white transition-colors">In de praktijk</a>
+        <a href="#scan" class="px-4 py-2 text-[13px] font-medium text-gray-400 hover:text-white transition-colors">De Scan</a>
+        <a href="#contact" class="ml-4 btn-primary px-4 py-2 rounded font-medium text-[13px]">Vraag Quickscan aan</a>
       </div>
-      <div class="hidden md:flex items-center gap-8 text-[13px] font-medium text-gray-400">
-        <a href="#use-cases" class="hover:text-white transition-colors">Oplossingen</a>
-        <a href="#praktijk" class="hover:text-white transition-colors">Praktijkcase</a>
-        <a href="#quickscan" class="hover:text-white transition-colors">Gratis Quickscan</a>
+
+      <!-- Mobile Hamburger -->
+      <button id="hamburger" class="md:hidden p-2 text-gray-400 hover:text-white focus:outline-none" aria-label="Menu openen">
+        <svg width="20" height="20" viewBox="0 0 20 20" fill="none" class="transition-transform duration-200">
+          <path id="ham-line1" class="transition-all duration-200 origin-center" d="M3 5h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <path id="ham-line2" class="transition-all duration-200 origin-center" d="M3 10h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+          <path id="ham-line3" class="transition-all duration-200 origin-center" d="M3 15h14" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Mobile dropdown -->
+    <div id="mobile-menu" class="flex-col gap-1 pb-6 md:hidden">
+      <a href="#propositie" class="block px-4 py-2.5 text-sm font-medium text-gray-400 hover:text-white rounded-md hover:bg-white/5">Wat we doen</a>
+      <a href="#use-cases" class="block px-4 py-2.5 text-sm font-medium text-gray-400 hover:text-white rounded-md hover:bg-white/5">Use Cases</a>
+      <a href="#praktijk" class="block px-4 py-2.5 text-sm font-medium text-gray-400 hover:text-white rounded-md hover:bg-white/5">In de praktijk</a>
+      <a href="#scan" class="block px-4 py-2.5 text-sm font-medium text-gray-400 hover:text-white rounded-md hover:bg-white/5">De Scan</a>
+      <a href="#contact" class="mt-2 btn-primary text-center block px-4 py-2.5 rounded text-sm font-medium">Vraag Quickscan aan</a>
+    </div>
+  </div>
+</nav>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!--  HERO SECTIE                               -->
+<!-- ═══════════════════════════════════════════ -->
+<section class="relative min-h-screen flex flex-col justify-center pt-20 overflow-hidden">
+  <div class="absolute inset-0 bg-grid-pattern bg-grid opacity-100 pointer-events-none"></div>
+  
+  <!-- Subtiele verlichting geïnspireerd op Adyen/Mollie (geen felle neon) -->
+  <div class="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] bg-blue-500/5 rounded-full blur-[160px] pointer-events-none"></div>
+
+  <div class="relative max-w-6xl mx-auto px-6 sm:px-8 py-20">
+
+    <!-- Label -->
+    <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full mb-6 badge-label reveal">
+      <span class="w-1.5 h-1.5 bg-indigo-400 rounded-full animate-pulse-slow"></span>
+      <span class="text-[11px] font-semibold tracking-wider text-indigo-300 uppercase">Automate creative operations</span>
+    </div>
+
+    <!-- Hoofdkop (Mollie stijl: strak, groot, zelfverzekerd) -->
+    <h1 class="text-[clamp(2.2rem,5.5vw,4rem)] font-extrabold leading-[1.1] tracking-tight max-w-4xl gradient-text reveal reveal-delay-1">
+      Schaal je marketing- en designtaken zonder extra handjes.
+    </h1>
+
+    <!-- Subkop -->
+    <p class="mt-6 text-[17px] sm:text-[18px] text-gray-400 max-w-2xl leading-relaxed font-light reveal reveal-delay-2">
+      Wij bouwen slimme automatiseringen, AI-pipelines en Adobe-scripts voor marketingteams en creatieve afdelingen. Elimineer uren aan repetitief klikwerk en focus puur op creatie en strategie.
+    </p>
+
+    <!-- CTAs -->
+    <div class="mt-10 flex flex-col sm:flex-row gap-3.5 reveal reveal-delay-3">
+      <a href="#contact" class="btn-primary inline-flex items-center justify-center px-6 py-3 rounded font-medium text-[14px]">
+        Vraag een gratis Quickscan aan
+      </a>
+      <a href="#use-cases" class="btn-secondary inline-flex items-center justify-center px-6 py-3 rounded font-medium text-[14px]">
+        Bekijk toepassingen
+      </a>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!--  PROPOSITIE SECTIE                         -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="propositie" class="py-24 border-t border-white/5 relative">
+  <div class="max-w-6xl mx-auto px-6 sm:px-8">
+    <div class="grid md:grid-cols-3 gap-12">
+      <div class="reveal">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-indigo-400">De Uitdaging</h2>
+        <p class="text-xl text-white font-medium mt-4 leading-snug">
+          Waarom creatieve en marketingafdelingen vastlopen.
+        </p>
+        <p class="text-gray-400 font-light mt-3 text-[14px] leading-relaxed">
+          Getalenteerde designers en marketeers besteden tot wel de helft van hun week aan kopiëren-plakken, bestanden hernoemen, data overtypen en banners schalen. Dat is kostbaar, demotiverend en foutgevoelig.
+        </p>
       </div>
-      <div>
-        <a href="#quickscan" class="bg-white text-gray-950 font-semibold px-4 py-2 rounded-lg text-[12px] hover:bg-gray-100 transition-all shadow-sm">
-          Quickscan Aanvragen
-        </a>
+      <div class="reveal reveal-delay-1">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-white">De Oplossing</h2>
+        <p class="text-xl text-white font-medium mt-4 leading-snug">
+          Automatisering als een onzichtbare kracht.
+        </p>
+        <p class="text-gray-400 font-light mt-3 text-[14px] leading-relaxed">
+          Wij bouwen softwarematige bruggen tussen je data (briefings, Excel, PIM, CMS) en je creatieve tools (Photoshop, InDesign, Premiere). Repetitieve handelingen veranderen in geautomatiseerde processen van één klik.
+        </p>
+      </div>
+      <div class="reveal reveal-delay-2">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-white">Het Resultaat</h2>
+        <p class="text-xl text-white font-medium mt-4 leading-snug">
+          Oneindige schaalbaarheid van content operations.
+        </p>
+        <p class="text-gray-400 font-light mt-3 text-[14px] leading-relaxed">
+          In plaats van extra krachten aannemen om de werkdruk op te vangen, vergroot je de output van je huidige team met factoren. Sneller live, gegarandeerd foutloos en meetbare urenwinst vanaf dag één.
+        </p>
       </div>
     </div>
-  </nav>
+  </div>
+</section>
 
-  <header class="relative pt-36 pb-24 md:pt-48 md:pb-36 glow-1 grid-bg border-b border-white/[0.02]">
-    <div class="max-w-4xl mx-auto px-6 text-center">
-      <h1 class="text-white font-extrabold text-[36px] sm:text-[48px] md:text-[56px] leading-[1.1] tracking-tight mb-6">
-        Van 20 uur handmatig werk naar <span class="bg-gradient-to-r from-indigo-400 via-indigo-200 to-white bg-clip-text text-transparent">30 minuten runtime.</span>
-      </h1>
-      <p class="text-gray-400 font-light text-[15px] md:text-[17px] leading-relaxed max-w-2xl mx-auto mb-10">
-        Wij automatiseren tijdrovende contentprocessen, bouwen custom interne webapps en koppelen je favoriete Adobe &amp; e-commerce tools aan slimme AI-pipelines. Foutloos, schaalbaar en op maat.
+
+<!-- ═══════════════════════════════════════════ -->
+<!--  USE CASES (ALGEMEEN RASTER)                -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="use-cases" class="py-24 border-t border-white/5 bg-white/[0.01]">
+  <div class="max-w-6xl mx-auto px-6 sm:px-8">
+    
+    <!-- Header -->
+    <div class="max-w-2xl mb-16 reveal">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Toepassingen &amp; Mogelijkheden</h2>
+      <p class="text-3xl text-white font-extrabold mt-4 tracking-tight">Wat we zoal automatiseren binnen Marketing &amp; Design</p>
+      <p class="text-gray-400 font-light mt-4 text-[15px]">
+        Elke marketingafdeling heeft unieke systemen, maar de pijnpunten zijn vaak hetzelfde. Hier zijn veelvoorkomende scenario's waar we direct impact maken.
       </p>
-      <div class="flex flex-col sm:flex-row items-center justify-center gap-4">
-        <a href="#quickscan" class="w-full sm:w-auto bg-indigo-600 text-white font-semibold px-6 py-3 rounded-xl text-[13px] hover:bg-indigo-500 transition-all shadow-lg shadow-indigo-600/15">
-          Plan een Gratis Quickscan
-        </a>
-        <a href="#use-cases" class="w-full sm:w-auto bg-white/5 border border-white/5 text-white font-semibold px-6 py-3 rounded-xl text-[13px] hover:bg-white/10 transition-all">
-          Bekijk mogelijkheden
-        </a>
-      </div>
-    </div>
-  </header>
-
-  <section id="use-cases" class="py-24 max-w-6xl mx-auto px-6 relative">
-    <div class="glow-2 absolute inset-0 pointer-events-none"></div>
-    <div class="mb-16 text-center md:text-left max-w-xl">
-      <span class="text-[11px] font-bold text-indigo-400 uppercase tracking-widest block mb-2">Capabilities</span>
-      <h2 class="text-white font-bold text-[28px] md:text-[32px] tracking-tight">Waar we het verschil maken.</h2>
-      <p class="text-gray-400 font-light text-[14px] leading-relaxed mt-2">
-        Of het nu gaat om het schalen van je content, het extraheren van bulkdata of het bouwen van handige interfaces: wij slopen de repetitieve workload.
-      </p>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 relative z-10">
+    <!-- Grid -->
+    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
       
+      <!-- Use Case 1 -->
       <div class="card rounded-xl p-6 flex flex-col justify-between reveal">
-        <div>
-          <div class="w-8 h-8 rounded bg-white/5 border border-white/10 flex items-center justify-center mb-5">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"/><line x1="2" y1="21" x2="22" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
-          </div>
-          <h3 class="text-[16px] font-semibold text-white mb-2">Custom Webapps &amp; Interne Tools</h3>
-          <p class="text-gray-400 font-light text-[13px] leading-relaxed">
-            We bouwen overzichtelijke, op maat gemaakte dashboards en 'knoppendozen' voor je team. Geen ingewikkelde code, maar een simpele visuele tool waarmee je complexe acties met één klik start.
-          </p>
-        </div>
-        <span class="text-[11px] text-gray-500 font-medium block mt-6">Internal tools / UI Design</span>
-      </div>
-
-      <div class="card rounded-xl p-6 flex flex-col justify-between reveal reveal-delay-1">
         <div>
           <div class="w-8 h-8 rounded bg-white/5 border border-white/10 flex items-center justify-center mb-5">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M21 12H3M12 3v18"/></svg>
@@ -145,7 +322,8 @@
         <span class="text-[11px] text-gray-500 font-medium block mt-6">Design ops / E-commerce</span>
       </div>
 
-      <div class="card rounded-xl p-6 flex flex-col justify-between reveal reveal-delay-2">
+      <!-- Use Case 2 -->
+      <div class="card rounded-xl p-6 flex flex-col justify-between reveal reveal-delay-1">
         <div>
           <div class="w-8 h-8 rounded bg-white/5 border border-white/10 flex items-center justify-center mb-5">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6M16 13H8M16 17H8M10 9H8"/></svg>
@@ -158,242 +336,434 @@
         <span class="text-[11px] text-gray-500 font-medium block mt-6">Marketing ops / Retail</span>
       </div>
 
-      <div class="card rounded-xl p-6 flex flex-col justify-between reveal">
-        <div>
-          <div class="w-8 h-8 rounded bg-white/5 border border-white/10 flex items-center justify-center mb-5">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
-          </div>
-          <h3 class="text-[16px] font-semibold text-white mb-2">Maatwerk API Koppelingen</h3>
-          <p class="text-gray-400 font-light text-[13px] leading-relaxed">
-            Laat je CRM, CMS en marketingsoftware naadloos met elkaar praten via Make.com of directe API's. Geen handmatige synchronisaties meer nodig.
-          </p>
-        </div>
-        <span class="text-[11px] text-gray-500 font-medium block mt-6">Integrations / Infrastructure</span>
-      </div>
-
-      <div class="card rounded-xl p-6 flex flex-col justify-between reveal reveal-delay-1">
-        <div>
-          <div class="w-8 h-8 rounded bg-white/5 border border-white/10 flex items-center justify-center mb-5">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/></svg>
-          </div>
-          <h3 class="text-[16px] font-semibold text-white mb-2">Geautomatiseerde Videorendering</h3>
-          <p class="text-gray-400 font-light text-[13px] leading-relaxed">
-            Genereer gepersonaliseerde video-advertenties op schaal. Dynamische teksten, prijzen en beelden worden via templates volautomatisch ingeladen en gerenderd.
-          </p>
-        </div>
-        <span class="text-[11px] text-gray-500 font-medium block mt-6">Dynamic Video / Creative Tech</span>
-      </div>
-
+      <!-- Use Case 3 -->
       <div class="card rounded-xl p-6 flex flex-col justify-between reveal reveal-delay-2">
         <div>
           <div class="w-8 h-8 rounded bg-white/5 border border-white/10 flex items-center justify-center mb-5">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>
           </div>
-          <h3 class="text-[16px] font-semibold text-white mb-2">E-commerce Feed Automation</h3>
+          <h3 class="text-[16px] font-semibold text-white mb-2">Geautomatiseerde Campaign Tracking</h3>
           <p class="text-gray-400 font-light text-[13px] leading-relaxed">
-            Optimaliseer en verrijk duizenden productregels voor Google Shopping, Channable of marketplaces zonder handmatig werk in ingewikkelde spreadsheets.
+            Genereren en valideren van honderden unieke UTM-trackinglinks per regio en kanaal zonder handmatige invoerfouten in Google Sheets of Analytics.
           </p>
         </div>
-        <span class="text-[11px] text-gray-500 font-medium block mt-6">Data Feeds / Growth Ops</span>
+        <span class="text-[11px] text-gray-500 font-medium block mt-6">Performance marketing</span>
       </div>
 
-    </div>
-  </section>
+      <!-- Use Case 4 -->
+      <div class="card rounded-xl p-6 flex flex-col justify-between reveal">
+        <div>
+          <div class="w-8 h-8 rounded bg-white/5 border border-white/10 flex items-center justify-center mb-5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/></svg>
+          </div>
+          <h3 class="text-[16px] font-semibold text-white mb-2">Media &amp; CMS-Klaar Maken</h3>
+          <p class="text-gray-400 font-light text-[13px] leading-relaxed">
+            Scripts die foto's en video's automatisch hernoemen naar strikte SEO/CMS-conventies, uitsnijden voor diverse formaten en in de juiste mappenstructuur plaatsen.
+          </p>
+        </div>
+        <span class="text-[11px] text-gray-500 font-medium block mt-6">Content management / SEO</span>
+      </div>
 
-  <section id="praktijk" class="py-24 bg-panel/30 border-y border-white/[0.02] grid-bg">
-    <div class="max-w-6xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
+      <!-- Use Case 5 -->
+      <div class="card rounded-xl p-6 flex flex-col justify-between reveal reveal-delay-1">
+        <div>
+          <div class="w-8 h-8 rounded bg-white/5 border border-white/10 flex items-center justify-center mb-5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+          </div>
+          <h3 class="text-[16px] font-semibold text-white mb-2">Catalogus &amp; Folder Opmaak</h3>
+          <p class="text-gray-400 font-light text-[13px] leading-relaxed">
+            InDesign-scripts die prijs- en productwijzigingen direct vanuit de bron doorvoeren in bestaande opmaakbestanden. Geen handmatige correctierondes meer.
+          </p>
+        </div>
+        <span class="text-[11px] text-gray-500 font-medium block mt-6">Print &amp; Digital Publishing</span>
+      </div>
+
+      <!-- Use Case 6 -->
+      <div class="card rounded-xl p-6 flex flex-col justify-between reveal reveal-delay-2">
+        <div>
+          <div class="w-8 h-8 rounded bg-white/5 border border-white/10 flex items-center justify-center mb-5">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+          </div>
+          <h3 class="text-[16px] font-semibold text-white mb-2">Maatwerk API Koppelingen</h3>
+          <p class="text-gray-400 font-light text-[13px] leading-relaxed">
+            Het intelligent aan elkaar knopen van tools (zoals Monday, Airtable, Slack en Adobe Creative Cloud) zodat data naadloos doorstroomt zonder menselijke tussenkomst.
+          </p>
+        </div>
+        <span class="text-[11px] text-gray-500 font-medium block mt-6">Workflow integration</span>
+      </div>
       
+      <div class="max-w-2xl reveal">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-indigo-400">En nog veel meer...</h2>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════════════════════════════════════ -->
+<!--  OPEN BRIEFING / ONDERBUIKGEVOEL           -->
+<!-- ═══════════════════════════════════════════ -->
+  
+<section class="py-20 border-t border-white/5 bg-gradient-to-b from-transparent to-white/[0.01]">
+  <div class="max-w-4xl mx-auto px-6 sm:px-8 text-center reveal">
+    <h2 class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Maatwerk &amp; Sparren</h2>
+    <p class="text-2xl sm:text-3xl text-white font-extrabold mt-4 tracking-tight">Loop je ergens vast, maar weet je niet of het te automatiseren valt?</p>
+    <p class="text-gray-400 font-light mt-4 text-[15px] leading-relaxed max-w-2xl mx-auto">
+      Je hoeft de technische oplossing niet zelf te bedenken. Als je binnen je team een proces ziet waarvan je denkt: <span class="text-white font-medium">"Dit moet anno nu toch sneller of slimmer kunnen?"</span>, dan is dat voor ons al genoeg.
+    </p>
+    <p class="text-gray-400 font-light mt-3 text-[15px] leading-relaxed max-w-2xl mx-auto">
+      Klop gerust bij ons aan met een wild idee, een frustrerende workflow of een simpele schets. Wij kijken er met een technische blik naar en laten je direct weten wat er mogelijk is. Vaak is er meer haalbaar dan je denkt.
+    </p>
+    <div class="mt-8">
+      <a href="#contact" class="btn-secondary inline-flex items-center justify-center px-5 py-2.5 rounded font-medium text-[13px]">
+        Leg je idee aan ons voor
+      </a>
+    </div>
+  </div>
+</section>
+  
+<!-- ═══════════════════════════════════════════ -->
+<!--  PRAKTIJKVOORBEELD / CASE STUDY             -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="praktijk" class="py-24 border-t border-white/5">
+  <div class="max-w-6xl mx-auto px-6 sm:px-8">
+    
+    <div class="grid lg:grid-cols-12 gap-12 items-center">
+      
+      <!-- Linker tekstkolom -->
       <div class="lg:col-span-5 reveal">
-        <span class="text-[11px] font-bold text-indigo-400 uppercase tracking-widest block mb-2">The Architecture</span>
-        <h2 class="text-white font-bold text-[28px] md:text-[32px] tracking-tight mb-5">Van chaos naar clean dashboard.</h2>
-        <p class="text-gray-400 font-light text-[14px] leading-relaxed mb-6">
-          Veel bedrijven proberen automation op te lossen met nog meer losse tools of zware spreadsheets. Pool Media pakt het anders aan: we bouwen de onzichtbare infrastructuur op de achtergrond én leveren een strakke, custom webapp om het te bedienen.
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Gevalideerd Resultaat</h2>
+        <p class="text-3xl text-white font-extrabold mt-4 tracking-tight">Van 40 uur werk naar 30 minuten.</p>
+        <p class="text-gray-400 font-light mt-4 text-[15px] leading-relaxed">
+          Voor een grote retailketen hebben we een content-pipeline gebouwd die wekelijks honderden binnenkomende briefings volledig geautomatiseerd verwerkt. 
         </p>
-        <div class="space-y-3.5">
-          <div class="flex items-start gap-3 text-[13px]">
-            <span class="text-indigo-400 mt-0.5">✓</span>
-            <p><strong class="text-white font-medium">Volledige API-controle:</strong> Directe integraties met o.a. Adobe Creative Cloud, Airtable en Shopify.</p>
-          </div>
-          <div class="flex items-start gap-3 text-[13px]">
-            <span class="text-indigo-400 mt-0.5">✓</span>
-            <p><strong class="text-white font-medium">Foutloos op schaal:</strong> AI-validatie controleert de data voordat processen worden getriggerd.</p>
-          </div>
+        <p class="text-gray-400 font-light mt-3 text-[15px] leading-relaxed">
+          Wat voorheen een heel team een hele werkweek kostte aan handmatig kopiëren, beeldschalen in Photoshop en handmatig uploaden, draait nu in de achtergrond binnen een half uur — volledig foutloos.
+        </p>
+
+        <div class="mt-8 pt-6 border-t border-white/5">
+          <div class="text-2xl font-bold text-white">98%</div>
+          <p class="text-gray-500 text-[12px] mt-0.5">Directe tijdsbesparing op deze specifieke workflow</p>
         </div>
       </div>
 
+      <!-- Rechter visuele vergelijking -->
       <div class="lg:col-span-7 reveal reveal-delay-1">
-        <div class="bg-[#0e101a] border border-white/5 rounded-xl p-6 relative overflow-hidden group shadow-2xl">
+        <div class="bg-[#0e101a] border border-white/6 rounded-xl p-6 sm:p-8">
+          <span class="text-[11px] font-semibold tracking-wider text-gray-500 uppercase block mb-6">Tijdsbesteding per batch</span>
           
-          <div class="flex items-center justify-between pb-4 mb-4 border-b border-white/5">
-            <div class="flex items-center gap-2">
-              <span class="w-2.5 h-2.5 rounded-full bg-red-500/60 inline-block"></span>
-              <span class="w-2.5 h-2.5 rounded-full bg-yellow-500/60 inline-block"></span>
-              <span class="w-2.5 h-2.5 rounded-full bg-green-500/60 inline-block"></span>
-              <span class="text-[11px] text-gray-500 font-mono ml-2">poolmedia-portal_v1.0</span>
-            </div>
-            <div class="bg-white/5 border border-white/5 rounded px-2 py-0.5 text-[10px] text-indigo-400 font-medium">
-              Live Pipeline Active
-            </div>
-          </div>
-
-          <div class="grid grid-cols-3 gap-3">
-            
-            <div class="col-span-1 bg-black/30 border border-white/5 rounded-lg p-3 flex flex-col justify-between min-h-[180px]">
-              <div>
-                <span class="text-[9px] font-bold tracking-wider text-indigo-400 uppercase block mb-2">Data Input</span>
-                <div class="border border-dashed border-white/10 rounded p-2 text-center bg-white/[0.01] hover:border-white/20 transition-colors cursor-pointer">
-                  <svg class="mx-auto text-gray-500 mb-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>
-                  <span class="text-[10px] text-gray-400 block font-medium">Briefing.xlsx</span>
-                  <span class="text-[8px] text-gray-600 block">or drag & drop</span>
-                </div>
+          <div class="space-y-6">
+            <!-- Oude situatie -->
+            <div>
+              <div class="flex justify-between items-center text-xs mb-2">
+                <span class="text-gray-400 font-medium">Handmatige workflow (vóór Pool Media)</span>
+                <span class="text-red-400 font-semibold">~40 uur</span>
               </div>
-              
-              <div class="w-full bg-indigo-600 rounded p-1.5 text-center text-[10px] text-white font-semibold shadow-lg shadow-indigo-600/20 active:scale-[0.98] transition-transform cursor-pointer">
-                Run Automation
+              <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                <div class="h-full bg-red-400/40 rounded-full" style="width: 100%"></div>
               </div>
+              <span class="text-[11px] text-gray-500 block mt-1.5 font-light">Inladen briefings, handmatig schalen, handmatige UTM links invoeren.</span>
             </div>
 
-            <div class="col-span-2 bg-black/30 border border-white/5 rounded-lg p-3 flex flex-col justify-between font-mono">
-              <div>
-                <div class="flex justify-between items-center mb-2">
-                  <span class="text-[9px] font-bold tracking-wider text-gray-400 uppercase">Automation Activity</span>
-                  <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-                </div>
-                
-                <div class="space-y-1.5 text-[9px]">
-                  <div class="flex items-center text-emerald-400/90 bg-emerald-500/5 px-1.5 py-0.5 rounded border border-emerald-500/10">
-                    <span class="text-gray-600 mr-1.5">[14:32:01]</span> ✓ Briefing extracted successfully via AI
-                  </div>
-                  <div class="flex items-center text-indigo-300 bg-indigo-500/5 px-1.5 py-0.5 rounded border border-indigo-500/10">
-                    <span class="text-gray-600 mr-1.5">[14:32:03]</span> → Generating 45x variations in Adobe CC...
-                  </div>
-                  <div class="flex items-center text-gray-400 bg-white/5 px-1.5 py-0.5 rounded">
-                    <span class="text-gray-600 mr-1.5">[14:32:15]</span> → Syncing assets to Shopify and CMS...
-                  </div>
-                </div>
+            <!-- Nieuwe situatie -->
+            <div>
+              <div class="flex justify-between items-center text-xs mb-2">
+                <span class="text-white font-medium">Geautomatiseerde pipeline (met Pool Media)</span>
+                <span class="text-emerald-400 font-semibold">~30 min</span>
               </div>
-
-              <div class="mt-4 pt-2 border-t border-white/5 flex items-center justify-between">
-                <div class="w-2/3 bg-white/5 rounded-full h-1.5 overflow-hidden">
-                  <div class="bg-gradient-to-r from-indigo-500 to-emerald-500 h-1.5 rounded-full w-[98%]"></div>
-                </div>
-                <span class="text-[10px] font-bold text-emerald-400">98% Done</span>
+              <div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
+                <div class="h-full bg-gradient-to-r from-indigo-500 to-emerald-400 rounded-full" style="width: 2.5%"></div>
               </div>
+              <span class="text-[11px] text-gray-400 block mt-1.5 font-light">AI leest data, scripts sturen Creative Cloud aan, automatische CMS export.</span>
             </div>
-
-          </div>
-
-          <div class="mt-5 pt-4 border-t border-white/5 flex justify-between items-center text-[12px] px-1">
-            <span class="text-gray-400">Handmatige workflow: <span class="text-red-400 font-medium">~40 uur</span></span>
-            <span class="text-indigo-500 font-bold font-mono">→</span>
-            <span class="text-white font-medium">Met Pool Media Webapp: <span class="text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/20 rounded px-1.5 py-0.5">~30 min</span></span>
           </div>
 
         </div>
       </div>
 
     </div>
-  </section>
 
-  <section id="quickscan" class="py-24 max-w-5xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-12 relative">
-    <div class="glow-1 absolute inset-0 pointer-events-none"></div>
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!--  PRODUCT / DE SCAN                         -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="scan" class="py-24 border-t border-white/5 bg-white/[0.01]">
+  <div class="max-w-6xl mx-auto px-6 sm:px-8">
     
-    <div class="lg:col-span-5 flex flex-col justify-center reveal">
-      <span class="text-[11px] font-bold text-indigo-400 uppercase tracking-widest block mb-2">Free Audit</span>
-      <h2 class="text-white font-bold text-[28px] md:text-[32px] tracking-tight mb-5">Vraag een gratis Quickscan aan.</h2>
-      <p class="text-gray-400 font-light text-[14px] leading-relaxed">
-        Breng binnen 15 minuten in kaart waar jouw team kostbare tijd verliest. Wij analyseren je workflow gratis ogend en schetsen direct een concreet automatiseringsplan.
+    <div class="max-w-3xl mx-auto text-center mb-16 reveal">
+      <h2 class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Onze Aanpak</h2>
+      <p class="text-3xl text-white font-extrabold mt-4 tracking-tight">De Pool Media Workflow Scan</p>
+      <p class="text-gray-400 font-light mt-4 text-[16px]">
+        We gaan niks raden of overhaasten. We starten altijd met een vrijblijvende, grondige analyse van jullie huidige marketing operations.
       </p>
     </div>
 
-    <div class="lg:col-span-7 bg-panel border border-white/[0.03] rounded-2xl p-8 relative z-10 shadow-xl reveal reveal-delay-1">
-      
-      <div id="form-success" class="hidden text-center py-12">
-        <div class="w-10 h-10 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4 text-emerald-400 font-bold text-lg">✓</div>
-        <h3 class="text-white font-semibold text-lg mb-1">Aanvraag ontvangen!</h3>
-        <p class="text-gray-400 font-light text-[13px] max-w-xs mx-auto">We duiken in je workflow en nemen binnen 24 uur contact met je op.</p>
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="border border-white/5 bg-panel rounded-xl p-6 reveal">
+        <div class="text-[13px] font-semibold text-indigo-400">01. Inventarisatie</div>
+        <h3 class="text-[16px] font-semibold text-white mt-3 mb-2">Proces doorlichten</h3>
+        <p class="text-gray-400 font-light text-[13px] leading-relaxed">
+          We kijken remote of op locatie een uur live mee met de marketeers en designers om te zien welke handelingen repetitief zijn.
+        </p>
       </div>
 
-      <form id="webhook-form" action="https://hook.eu1.make.com/k9v9m3c5cl4f5g36d8m9qer4b2m19u1v" method="POST" class="space-y-5">
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div>
-            <label for="naam" class="block text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">Je naam *</label>
-            <input type="text" id="naam" name="naam" required class="w-full bg-surface border border-white/5 rounded px-4 py-3 text-[14px] text-white outline-none focus:border-white/20 transition-colors" placeholder="Alex" />
+      <div class="border border-white/5 bg-panel rounded-xl p-6 reveal reveal-delay-1">
+        <div class="text-[13px] font-semibold text-indigo-400">02. ROI Berekening</div>
+        <h3 class="text-[16px] font-semibold text-white mt-3 mb-2">Rapportage &amp; Kosten</h3>
+        <p class="text-gray-400 font-light text-[13px] leading-relaxed">
+          Binnen 48 uur ontvang je een concreet rapport: welke taken kunnen we automatiseren, wat levert het op in uren, en wat kost het bouwen.
+        </p>
+      </div>
+
+      <div class="border border-white/5 bg-panel rounded-xl p-6 reveal reveal-delay-2">
+        <div class="text-[13px] font-semibold text-indigo-400">03. Vrijblijvende Keuze</div>
+        <h3 class="text-[16px] font-semibold text-white mt-3 mb-2">100% Geen Verplichting</h3>
+        <p class="text-gray-400 font-light text-[13px] leading-relaxed">
+          De scan is volledig kosteloos en verplicht je tot niets. Je krijgt hoe dan ook een helder overzicht van jullie efficiëntiekansen.
+        </p>
+      </div>
+    </div>
+
+    <div class="text-center mt-12 reveal">
+      <a href="#contact" class="btn-primary inline-flex items-center justify-center px-6 py-3 rounded font-medium text-[14px]">
+        Claim mijn gratis Quickscan
+      </a>
+    </div>
+
+  </div>
+</section>
+
+
+<!-- ═══════════════════════════════════════════ -->
+<!--  CONTACT / CTA FORMULIER                   -->
+<!-- ═══════════════════════════════════════════ -->
+<section id="contact" class="py-24 border-t border-white/5 relative overflow-hidden">
+  <div class="absolute inset-0 bg-grid-pattern bg-grid opacity-60 pointer-events-none"></div>
+
+  <div class="max-w-6xl mx-auto px-6 sm:px-8 relative">
+    <div class="grid lg:grid-cols-12 gap-12 items-start">
+      
+      <!-- Linkerzijde info -->
+      <div class="lg:col-span-5 reveal">
+        <h2 class="text-xs font-semibold uppercase tracking-wider text-indigo-400">Start vandaag</h2>
+        <p class="text-3xl text-white font-extrabold mt-4 tracking-tight leading-tight">Klaar om je content operations te schalen?</p>
+        <p class="text-gray-400 font-light mt-4 text-[15px] leading-relaxed">
+          Vul de velden in en we plannen op korte termijn een Workflow Scan in. Geen opdringerige salesgesprekken, wel direct technisch inzicht in je besparingspotentieel.
+        </p>
+
+        <div class="mt-8 space-y-4">
+          <div class="flex items-center gap-3 text-xs text-gray-400 font-light">
+            <svg class="text-emerald-400 flex-shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+            Binnen 48 uur een reactie
           </div>
-          <div>
-            <label for="bedrijf" class="block text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">Bedrijfsnaam *</label>
-            <input type="text" id="bedrijf" name="bedrijf" required class="w-full bg-surface border border-white/5 rounded px-4 py-3 text-[14px] text-white outline-none focus:border-white/20 transition-colors" placeholder="Pool Media" />
+          <div class="flex items-center gap-3 text-xs text-gray-400 font-light">
+            <svg class="text-emerald-400 flex-shrink-0" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M20 6L9 17l-5-5"/></svg>
+            Volledig kosteloos en vrijblijvend
           </div>
         </div>
+      </div>
 
+      <!-- Rechterzijde formulier -->
+<div class="lg:col-span-7 reveal reveal-delay-1 visible">
+  <div class="bg-[#0e101a] border border-white/6 rounded-xl p-6 sm:p-8">
+          
+  <form action="https://hook.eu1.make.com/gneqb0xcefixwtqpw07bmdn9pu2gg7xl" method="POST" class="space-y-5" id="contact-form">
+      <div class="grid sm:grid-cols-2 gap-4">
         <div>
-          <label for="email" class="block text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">E-mailadres *</label>
-          <input type="email" id="email" name="email" required class="w-full bg-surface border border-white/5 rounded px-4 py-3 text-[14px] text-white outline-none focus:border-white/20 transition-colors" placeholder="alex@bedrijf.nl" />
+          <label for="naam" class="block text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">Naam *</label>
+          <input type="text" id="naam" name="naam" required="" placeholder="Je naam" class="w-full bg-surface border border-white/5 rounded px-4 py-3 text-[14px] text-white outline-none focus:border-white/20 transition-colors">
         </div>
-
         <div>
-          <label for="tijdsverspiller" class="block text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">Waar ligt de grootste workload? *</label>
-          <select id="tijdsverspiller" name="tijdsverspiller" required class="w-full bg-surface border border-white/5 rounded px-4 py-3 text-[14px] text-white outline-none focus:border-white/20 transition-colors">
-            <option value="" disabled selected class="text-gray-500">Kies een optie...</option>
-            <option value="Custom Webapps & Tools">Custom Webapps &amp; Interne Tools (Knoppendozen)</option>
-            <option value="Bulk Asset Generatie">Bulk Asset Generatie (Social media &amp; Banners)</option>
-            <option value="Slimme Data Extractie & AI">Slimme Data Extractie &amp; AI (PDF/Excel naar CMS)</option>
-            <option value="E-commerce Automations">E-commerce &amp; Productfeed Automations</option>
-            <option value="Overig / Maatwerk">Iets anders / Maatwerk advies</option>
-          </select>
+          <label for="bedrijf" class="block text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">Bedrijfsnaam *</label>
+          <input type="text" id="bedrijf" name="bedrijf" required="" placeholder="Bedrijf B.V." class="w-full bg-surface border border-white/5 rounded px-4 py-3 text-[14px] text-white outline-none focus:border-white/20 transition-colors">
         </div>
+      </div>
 
-        <div class="pt-2">
-          <button type="submit" id="submit-btn" class="w-full bg-white text-gray-950 font-bold px-5 py-3.5 rounded-xl text-[13px] hover:bg-gray-100 active:scale-[0.99] transition-all shadow-md">
-            Analyseer Mijn Workflow
-          </button>
-        </div>
-      </form>
+      <div>
+        <label for="email" class="block text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">E-mailadres *</label>
+        <input type="email" id="email" name="email" required="" placeholder="naam@bedrijf.nl" class="w-full bg-surface border border-white/5 rounded px-4 py-3 text-[14px] text-white outline-none focus:border-white/20 transition-colors">
+      </div>
+
+      <div>
+        <label for="tijdsverspiller" class="block text-[11px] font-medium text-gray-400 uppercase tracking-wider mb-2">Grootste repetitieve workload? *</label>
+        <select id="tijdsverspiller" name="tijdsverspiller" required="" class="w-full bg-surface border border-white/5 rounded px-4 py-3 text-[14px] text-white outline-none focus:border-white/20 transition-colors">
+          <option value="" disabled="" selected="" class="text-gray-500">Kies een optie...</option>
+          <option value="Repetitieve designtaken / Bulk beeldbewerking">Repetitieve designtaken / Bulk beeldbewerking</option>
+          <option value="Data-invoer / CMS-updates / Briefings overtypen">Data-invoer / CMS-updates / Briefings overtypen</option>
+          <option value="Marketing links genereren / UTM &amp; Campagne tracking">Marketing links genereren / UTM &amp; Campagne tracking</option>
+          <option value="Overig">Iets anders</option>
+        </select>
+      </div>
+
+      <div class="flex items-start gap-3 pt-1">
+        <input type="checkbox" id="privacy" name="privacy_akkoord" required class="mt-1 h-4 w-4 rounded border-white/10 bg-surface text-emerald-500 focus:ring-0 focus:ring-offset-0 accent-emerald-500 cursor-pointer">
+        <label for="privacy" class="text-[13px] text-gray-400 leading-normal cursor-pointer select-none">
+          Ik ga akkoord met de verwerking van mijn gegevens volgens de <a href="/privacy-policy" class="text-white underline hover:text-gray-300 transition-colors">privacyverklaring</a>. *
+        </label>
+      </div>
+
+      <div class="pt-2">
+        <button type="submit" id="submit-btn" class="btn-primary w-full py-3.5 rounded font-medium text-[14px] flex items-center justify-center gap-2">
+          Aanvraag versturen
+        </button>
+      </div>
+    </form>
+
+    <div id="form-success" class="hidden text-center py-8">
+      <div class="w-12 h-12 rounded-full bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center mx-auto mb-4">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#34d399" stroke-width="2.5"><path d="M20 6L9 17l-5-5"></path></svg>
+      </div>
+      <h3 class="text-lg font-semibold text-white mb-1">Aanvraag ontvangen</h3>
+      <p class="text-[13px] text-gray-400">We nemen binnen 48 uur contact met je op voor de scan.</p>
+    </div>
+
+  </div>
+</div>
 
     </div>
-  </section>
+  </div>
+</section>
 
-  <footer class="py-12 border-t border-white/[0.02] bg-panel/20 text-center text-[12px] text-gray-500 font-light">
-    <p>&copy; 2026 Pool Media. Built for hyper-efficiency.</p>
-  </footer>
 
-  <script>
-    const revealElements = document.querySelectorAll('.reveal');
-    const checkReveal = () => {
-      revealElements.forEach(el => {
-        const elementTop = el.getBoundingClientRect().top;
-        if (elementTop < window.innerHeight - 50) {
-          el.classList.add('active');
-        }
-      });
-    };
-    window.addEventListener('scroll', checkReveal);
-    window.addEventListener('load', checkReveal);
+<!-- ═══════════════════════════════════════════ -->
+<!--  FOOTER                                    -->
+<!-- ═══════════════════════════════════════════ -->
+<footer class="py-12 border-t border-white/5 bg-surface">
+  <div class="max-w-6xl mx-auto px-6 sm:px-8 flex flex-col sm:flex-row items-center justify-between gap-6">
+    <div class="flex items-center gap-3 footer-logo">
+      <img src="/assets/Pool-Media-Logo-White-Favicon-200px.png" alt="Pool Media" class="footer-logo w-auto" />
+    </div>
+    <p class="text-[12px] text-gray-500">© 2026 Pool Media. Alle rechten voorbehouden.</p>
+    <div class="flex gap-6 text-[12px] text-gray-500">
+      <a href="/privacy-policy" class="hover:text-white transition-colors">Privacybeleid</a>
+      <a href="/terms-conditions" class="hover:text-white transition-colors">Voorwaarden</a>
+    </div>
+  </div>
+</footer>
 
-    const form = document.getElementById('webhook-form');
-    const formSuccess = document.getElementById('form-success');
-    const submitBtn = document.getElementById('submit-btn');
 
-    if (form) {
-      form.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        submitBtn.innerHTML = '<svg class="animate-spin h-4 w-4 text-gray-900 inline-block mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Verwerken...';
-        submitBtn.disabled = true;
+<!-- ═══════════════════════════════════════════ -->
+<!--  JAVASCRIPT                                -->
+<!-- ═══════════════════════════════════════════ -->
+<script>
+  // Sticky Nav
+  const navbar = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 20) navbar.classList.add('scrolled');
+    else navbar.classList.remove('scrolled');
+  });
 
-        try {
-          const response = await fetch(form.action, {
-            method: 'POST',
-            body: new FormData(form),
-            headers: { 'Accept': 'application/json' }
-          });
-          form.style.display = 'none';
-          formSuccess.classList.remove('hidden');
-        } catch {
-          form.style.display = 'none';
-          formSuccess.classList.remove('hidden');
-        }
-      });
+  // Mobile Menu + Hamburger Animatie
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobile-menu');
+  const hamLine1 = document.getElementById('ham-line1');
+  const hamLine2 = document.getElementById('ham-line2');
+  const hamLine3 = document.getElementById('ham-line3');
+
+  hamburger.addEventListener('click', () => {
+    const isOpen = mobileMenu.classList.toggle('open');
+    if (isOpen) {
+      hamLine1.setAttribute('d', 'M5 5l10 10');
+      hamLine2.style.opacity = '0';
+      hamLine3.setAttribute('d', 'M5 15l10 -10');
+    } else {
+      hamLine1.setAttribute('d', 'M3 5h14');
+      hamLine2.style.opacity = '1';
+      hamLine3.setAttribute('d', 'M3 15h14');
     }
-  </script>
+  });
+
+  mobileMenu.querySelectorAll('a').forEach(a => {
+    a.addEventListener('click', () => {
+      mobileMenu.classList.remove('open');
+      hamLine1.setAttribute('d', 'M3 5h14');
+      hamLine2.style.opacity = '1';
+      hamLine3.setAttribute('d', 'M3 15h14');
+    });
+  });
+
+  // Scroll Reveal
+  const revealEls = document.querySelectorAll('.reveal');
+  const revealObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        revealObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.05, rootMargin: '0px 0px -20px 0px' });
+  revealEls.forEach(el => revealObs.observe(el));
+
+  // Counters
+  function animateCounter(el, target, duration = 1500) {
+    let start = null;
+    const step = (timestamp) => {
+      if (!start) start = timestamp;
+      const progress = Math.min((timestamp - start) / duration, 1);
+      const ease = 1 - Math.pow(1 - progress, 4); // ease-out-quart
+      el.textContent = Math.floor(ease * target).toLocaleString('nl-NL');
+      if (progress < 1) requestAnimationFrame(step);
+    };
+    requestAnimationFrame(step);
+  }
+
+  const counterEls = document.querySelectorAll('.counter');
+  const counterObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        animateCounter(e.target, parseInt(e.target.dataset.target));
+        counterObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  counterEls.forEach(el => counterObs.observe(el));
+
+  // Form Handling
+  const form = document.getElementById('contact-form');
+  const formSuccess = document.getElementById('form-success');
+  const submitBtn = document.getElementById('submit-btn');
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      submitBtn.innerHTML = '<svg class="animate-spin h-4 w-4 text-gray-900 inline-block mr-2" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg> Verwerken...';
+      submitBtn.disabled = true;
+
+      try {
+        const response = await fetch(form.action, {
+          method: 'POST',
+          body: new FormData(form),
+          headers: { 'Accept': 'application/json' }
+        });
+        if (response.ok) {
+          form.style.display = 'none';
+          formSuccess.classList.remove('hidden');
+        } else {
+          throw new Error();
+        }
+      } catch {
+        form.style.display = 'none';
+          formSuccess.classList.remove('hidden');
+      }
+    });
+  }
+
+  // Exact Anchor Scroll Offset Fix
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function(e) {
+      const target = document.querySelector(this.getAttribute('href'));
+      if (target) {
+        e.preventDefault();
+        const offset = 80; // Exact nav height
+        const top = target.getBoundingClientRect().top + window.scrollY - offset;
+        window.scrollTo({ top, behavior: 'smooth' });
+      }
+    });
+  });
+</script>
+
 </body>
 </html>
