@@ -5,7 +5,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pool Media — Marketing & Design Automatisering</title>
   <meta name="description" content="Pool Media automatiseert repetitieve creatieve processen, marketing pipelines en Adobe-workflows voor moderne marketingteams. Efficiënt, schaalbaar en foutloos." />
-  <link rel=\"icon\" type=\"image/png\" href=\"/assets/Pool-Media-Logo-Black-White-200px.png\" />
+  
+  <link rel="icon" type="image/png" href="assets/Pool-Media-Logo-Black-White-200px.png" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -31,7 +32,6 @@
   </script>
 
   <style>
-    /* Custom Glow Backgrounds */
     .glow-1 {
       background: radial-gradient(circle 400px at 0% 0%, rgba(91, 94, 244, 0.04), transparent 80%);
     }
@@ -43,7 +43,6 @@
       background-size: 40px 40px;
     }
     
-    /* Reveal Animation Styling */
     .reveal {
       opacity: 0;
       transform: translateY(15px);
@@ -57,7 +56,6 @@
     .reveal-delay-2 { transition-delay: 200ms; }
     .reveal-delay-3 { transition-delay: 300ms; }
 
-    /* Card Hover Styling */
     .card {
       background-color: #0b0c13;
       border: 1px solid rgba(255,255,255,0.03);
@@ -73,10 +71,9 @@
   <nav class="fixed top-0 left-0 right-0 z-50 bg-surface/70 backdrop-blur-md border-b border-white/[0.02]">
     <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
       <div class="flex items-center gap-3">
-        <div class="w-6 h-6 rounded-md bg-gradient-to-tr from-indigo-600 to-indigo-400 flex items-center justify-center font-bold text-white text-[12px] shadow-lg shadow-indigo-600/20">
-          P
-        </div>
-        <span class="text-white font-semibold text-[14px] tracking-tight">Pool Media</span>
+        <img src="assets/Pool-Media-Logo-Black-White-200px.png" alt="Pool Media Logo" class="h-6 w-auto hidden dark:block" />
+        <img src="assets/Pool-Media-Logo-Black-White-200px.png" alt="Pool Media Logo" class="h-6 w-auto block dark:hidden" />
+        <span class="text-white font-semibold text-[14px] tracking-tight hidden">Pool Media</span>
       </div>
       <div class="hidden md:flex items-center gap-8 text-[13px] font-medium text-gray-400">
         <a href="#use-cases" class="hover:text-white transition-colors">Oplossingen</a>
@@ -132,7 +129,7 @@
           </div>
           <h3 class="text-[16px] font-semibold text-white mb-2">Custom Webapps &amp; Interne Tools</h3>
           <p class="text-gray-400 font-light text-[13px] leading-relaxed">
-            We bouwen overzichtelijke, op maat gemaakte tools en webapps voor je team. Geen ingewikkelde code, maar een simpele visuele tool waarmee je complexe acties met één klik start.
+            We bouwen overzichtelijke, op maat gemaakte dashboards en 'knoppendozen' voor je team. Geen ingewikkelde code, maar een simpele visuele tool waarmee je complexe acties met één klik start.
           </p>
         </div>
         <span class="text-[11px] text-gray-500 font-medium block mt-6">Internal tools / UI Design</span>
@@ -238,7 +235,7 @@
               <span class="text-[11px] text-gray-500 font-mono ml-2">poolmedia-portal_v1.0</span>
             </div>
             <div class="bg-white/5 border border-white/5 rounded px-2 py-0.5 text-[10px] text-indigo-400 font-medium">
-              Briefing to CMS
+              Live Pipeline Active
             </div>
           </div>
 
@@ -308,7 +305,7 @@
       <span class="text-[11px] font-bold text-indigo-400 uppercase tracking-widest block mb-2">Free Audit</span>
       <h2 class="text-white font-bold text-[28px] md:text-[32px] tracking-tight mb-5">Vraag een gratis Quickscan aan.</h2>
       <p class="text-gray-400 font-light text-[14px] leading-relaxed">
-        Breng binnen 15 minuten in kaart waar jouw team kostbare tijd verliest. Wij analyseren je workflow gratis en schetsen direct een concreet automatiseringsplan.
+        Breng binnen 15 minuten in kaart waar jouw team kostbare tijd verliest. Wij analyseren je workflow gratis ogend en schetsen direct een concreet automatiseringsplan.
       </p>
     </div>
 
@@ -364,7 +361,6 @@
   </footer>
 
   <script>
-    // Reveal animation utility
     const revealElements = document.querySelectorAll('.reveal');
     const checkReveal = () => {
       revealElements.forEach(el => {
@@ -377,7 +373,6 @@
     window.addEventListener('scroll', checkReveal);
     window.addEventListener('load', checkReveal);
 
-    // Form submission to Make Webhook via JavaScript (Zonder de pagina te herladen)
     const form = document.getElementById('webhook-form');
     const formSuccess = document.getElementById('form-success');
     const submitBtn = document.getElementById('submit-btn');
@@ -397,7 +392,6 @@
           form.style.display = 'none';
           formSuccess.classList.remove('hidden');
         } catch {
-          // Fallback succes tonen, mocht de webhook geen JSON terugsturen
           form.style.display = 'none';
           formSuccess.classList.remove('hidden');
         }
