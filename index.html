@@ -63,7 +63,6 @@
         min-height: 1000px !important;
     }
     
-    /* Mobiel (schermen tot 768px breed) */
     @media (max-width: 768px) {
         .min-h-screen {
             min-height: 700px !important;
@@ -73,7 +72,6 @@
     * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
     html { background: #06070d; }
 
-    /* ── Revolut/Stripe nav ── */
     #navbar.scrolled {
       background: rgba(6, 7, 13, 0.82);
       backdrop-filter: blur(20px);
@@ -81,7 +79,15 @@
       border-bottom: 1px solid rgba(255, 255, 255, 0.07);
     }
 
-    /* Heading gradient – tighter, whiter, crisper (Stripe-style) */
+    @media (max-width: 767px) {
+      #navbar:has(#mobile-menu.open) {
+        background: #06070d !important;
+        backdrop-filter: none !important;
+        -webkit-backdrop-filter: none !important;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+      }
+    }
+
     .gradient-text {
       background: linear-gradient(160deg, #ffffff 0%, #e2e8f0 55%, #94a3b8 100%);
       -webkit-background-clip: text;
@@ -89,7 +95,6 @@
       background-clip: text;
     }
 
-    /* ── Revolut-style primary CTA: vivid indigo pill ── */
     .btn-primary {
       background: #5B5EF4;
       color: #ffffff;
@@ -108,7 +113,6 @@
       box-shadow: 0 1px 2px rgba(0,0,0,0.3);
     }
 
-    /* ── Ghost secondary ── */
     .btn-secondary {
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.10);
@@ -122,7 +126,6 @@
       border-color: rgba(255,255,255,0.18);
     }
 
-    /* ── Cards ── */
     .card {
       background: #0e101a;
       border: 1px solid rgba(255, 255, 255, 0.06);
@@ -134,14 +137,12 @@
       background: #111425;
     }
 
-    /* ── Accent pill label (like Stripe's "New" badge) ── */
     .badge-label {
       background: rgba(91,94,244,0.12);
       border: 1px solid rgba(91,94,244,0.25);
       color: #a5b4fc;
     }
 
-    /* ── Scroll reveal ── */
     .reveal { opacity: 0; transform: translateY(14px); transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1); }
     .reveal.visible { opacity: 1; transform: translateY(0); }
     .reveal-delay-1 { transition-delay: 0.1s; }
@@ -151,10 +152,8 @@
     #mobile-menu { display: none; }
     #mobile-menu.open { display: flex; }
 
-    /* ── Stripe-style stat highlight ── */
     .stat-accent { color: #818cf8; }
 
-    /* ── Form inputs ── */
     input, select, textarea {
       border-radius: 8px !important;
     }
