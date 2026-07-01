@@ -209,7 +209,7 @@
     </div>
 
     <h1>Flyer Splitter & Opschoner</h1>
-    <p class="subtitle">Versie 1</p>
+    <p class="subtitle">Versie 1, Geupdatet: 1 juli 2026</p>
     
     <div class="form-group">
         <label for="week_nr">🔢 Weeknummer:</label>
@@ -409,20 +409,28 @@ async function schoonLinksOp(doc) {
                             const annot = doc.context.lookup(annotRef);
                             if (annot && annot.get) {
                                 
-                                // 1. Haal de Actie (/A) op en open het verborgen Acrobat-object via de context lookup
                                 const actionRef = annot.get(PDFLib.PDFName.of('A'));
                                 const a = doc.context.lookup(actionRef);
                                 
                                 if (a && a.get) {
-                                    // 2. Haal de URI op en open ook deze specifieke Acrobat-verwijzing
                                     const uriRef = a.get(PDFLib.PDFName.of('URI'));
                                     const uri = doc.context.lookup(uriRef);
                                     
                                     if (uri) {
-                                        // Vang zowel standaard strings als hexadecimale Acrobat-strings op
-                                        let urlStr = typeof uri.asString === 'function' ? uri.asString() : uri.value;
+                                        let urlStr = '';
+                                        let isHex = false;
 
-                                        // 3. Als de link UTM-data bevat, snijden we alles vanaf het eerste query-teken (? of &) eraf
+                                        // 1. Controleer of Acrobat de link als Hex-string heeft opgeslagen
+                                        if (uri instanceof PDFLib.PDFHexString) {
+                                            urlStr = uri.asString(); // Decodeert de Hex-bytes direct naar leesbare tekst
+                                            isHex = true;
+                                        } else if (typeof uri.asString === 'function') {
+                                            urlStr = uri.asString();
+                                        } else {
+                                            urlStr = uri.value;
+                                        }
+
+                                        // 2. Als de ontcijferde URL de UTM-parameters bevat, gaan we poetsen
                                         if (urlStr && urlStr.toLowerCase().includes('utm_')) {
                                             const indexVraagteken = urlStr.indexOf('?');
                                             const indexAmpersand = urlStr.indexOf('&');
@@ -437,8 +445,12 @@ async function schoonLinksOp(doc) {
                                             if (knipPositie !== -1) {
                                                 let schoneUrl = urlStr.substring(0, knipPositie);
                                                 
-                                                // 4. Schrijf de schone link direct terug in het geopende Acrobat-object
-                                                a.set(PDFLib.PDFName.of('URI'), PDFLib.PDFString.of(schoneUrl));
+                                                // 3. Schrijf de link terug in de exact dezelfde string-indeling als de bron
+                                                if (isHex) {
+                                                    a.set(PDFLib.PDFName.of('URI'), PDFLib.PDFHexString.fromText(schoneUrl));
+                                                } else {
+                                                    a.set(PDFLib.PDFName.of('URI'), PDFLib.PDFString.of(schoneUrl));
+                                                }
                                             }
                                         }
                                     }
