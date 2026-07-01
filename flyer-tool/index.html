@@ -220,7 +220,7 @@
         <div class="spinner-container" id="status_spinner">
             <img src="https://www.lidl.nl/static/assets/1f8d040c-8532-4af5-9c99-7a59545365de.svg" class="lidl-spinner" alt="Laden...">
         </div>
-        <span id="status_text">PDF initialiseren...</span>
+        <div id="status_text" style="white-space: pre-line; text-align: left; max-height: 200px; overflow-y: auto; font-family: monospace; font-size: 13px; padding: 5px;">PDF initialiseren...</div>
     </div>
 
     <div class="footer">
@@ -263,7 +263,7 @@ async function verwerkPdf() {
     startBtn.disabled = true;
 
     try {
-        statusText.innerText = "PDF inlezen...";
+        statusText.innerText = "🔍 PDF analyseren op regio's, Non-Food en Weekend Food pagina's...";        
         const fileBytes = await fileInput.arrayBuffer();
         const fileBytesCopy = fileBytes.slice(0); 
 
@@ -350,7 +350,7 @@ async function verwerkPdf() {
         statusText.innerText = "PDF folders genereren...";
         const zip = new JSZip();
 
-        async function voegPdfToeAanZip(regioNaam, paginas, typeFolder) {
+async function voegPdfToeAanZip(regioNaam, paginas, typeFolder) {
             if (!paginas || paginas.length === 0) return;
 
             let actuelePaginas = [...paginas];
@@ -362,6 +362,12 @@ async function verwerkPdf() {
             }
 
             if (actuelePaginas.length === 0) return;
+
+            // Voeg de voortgangsregel toe aan het logvenster
+            statusText.innerText += `\n⚙️${typeFolder} folder voor ${regioNaam} genereren (${actuelePaginas.length} pagina's)...`;
+            
+            // Zorg dat het statusvenster automatisch naar beneden scrolt bij nieuwe regels
+            statusText.scrollTop = statusText.scrollHeight;
 
             let bestandsnaam = (typeFolder === "NONFOOD" || typeFolder === "WEEKEND") 
                 ? `WK${weekNrInput}_${typeFolder}_${regioNaam}_${JAAR}`
@@ -437,7 +443,7 @@ async function schoonLinksOp(doc) {
         }
         await voegPdfToeAanZip("LANDELIJK", landelijkeWeekendPaginas, "WEEKEND");
 
-        statusText.innerText = "ZIP-pakket downloaden...";
+        statusText.innerText += "\n📦 ZIP-pakket downloaden...";        
         const zipContent = await zip.generateAsync({ type: "blob" });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(zipContent);
@@ -446,7 +452,7 @@ async function schoonLinksOp(doc) {
         link.click();
         document.body.removeChild(link);
 
-        statusText.innerText = "🎉 Voltooid en gedownload!";
+        statusText.innerText += `\n🎉 HELEMAAL KLAAR! Alles staat nu 100% correct gesorteerd in je 'Flyer_Week_${weekNrInput}' map!`;
         setTimeout(() => { statusDiv.style.display = 'none'; startBtn.disabled = false; }, 3000);
 
     } catch (error) {
