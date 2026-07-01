@@ -285,7 +285,7 @@ async function verwerkPdf() {
         let nfPaginasPerGroep = { "G1G2": [], "G3G4": [], "G5G6": [], "LANDELIJK": [] };
         let landelijkeWeekendPaginas = [];
         
-        // Sla alle weblinks en hun exacte coördinaten op per pagina-index (gevangen via de PDF.js engine)
+        // Bewaar alle weblinks en coördinaten via de PDF.js-laag voor latere heropbouw
         let schoneLinksPerPagina = {};
 
         for (let i = 0; i < totaalPaginas; i++) {
@@ -293,7 +293,6 @@ async function verwerkPdf() {
             const textContent = await pageTextObj.getTextContent();
             let text = textContent.items.map(item => item.str).join(" ").toUpperCase();
             
-            // Haal de annotaties op via PDF.js (deze herkent de Acrobat-links gegarandeerd wél)
             const annotations = await pageTextObj.getAnnotations();
             let hasProductLink = false;
             let hasLidlNlLink = false;
@@ -308,7 +307,7 @@ async function verwerkPdf() {
                     if (urlLower.includes('lidl.nl')) hasLidlNlLink = true;
                     if ((urlLower.includes('/p/') || urlLower.includes('/q/')) && !urlLower.includes('lidlplus')) hasProductLink = true;
                     
-                    // Bereken direct de schone URL zonder parameters
+                    // Schone URL bepaling voor de overschrijf-layer
                     let schoneUrl = urlStr;
                     if (urlLower.includes('utm_')) {
                         const indexVraagteken = urlStr.indexOf('?');
@@ -322,7 +321,6 @@ async function verwerkPdf() {
                         }
                     }
                     
-                    // Sla de schone URL en de exacte PDF-coördinaten [left, bottom, right, top] op
                     schoneLinksPerPagina[i].push({
                         url: schoneUrl,
                         rect: annot.rect
@@ -330,18 +328,26 @@ async function verwerkPdf() {
                 }
             }
 
+            // STAP A: IDENTIFICEER PAGINA-EIGENSCHAPPEN (Exact conform je Python script)
             let isNonFood = false;
             if (i !== 0) {
-                if (NF_TREFWOORDEN.some(term => text.includes(term)) || hasProductLink || hasLidlNlLink) isNonFood = true;
-                if (FOOD_UITZONDERINGEN.some(u => text.includes(u))) isNonFood = false;
+                if (NF_TREFWOORDEN.some(term => text.includes(term)) || hasProductLink || hasLidlNlLink) {
+                    isNonFood = true;
+                }
+                if (FOOD_UITZONDERINGEN.some(u => text.includes(u))) {
+                    isNonFood = false;
+                }
             }
 
             if (i === laatstePaginaIndex) {
                 landelijkeWeekendPaginas.push(i);
             } else if (text.includes("VANAF VRIJDAG") && !hasProductLink) {
-                if (!WEEKEND_UITZONDERINGEN.some(u => text.includes(u))) landelijkeWeekendPaginas.push(i);
+                if (!WEEKEND_UITZONDERINGEN.some(u => text.includes(u))) {
+                    landelijkeWeekendPaginas.push(i);
+                }
             }
 
+            // STAP B: VERDEEL DE PAGES OP REGIO
             let behoortTotGroepen = [];
             if (text.includes("G1/G2/G3/G4/G5/G6")) {
                 behoortTotGroepen = GROEPEN;
@@ -363,7 +369,9 @@ async function verwerkPdf() {
 
             behoortTotGroepen.forEach(groep => {
                 allePaginasPerGroep[groep].push(i);
-                if (isNonFood || i === 1) nfPaginasPerGroep[groep].push(i);
+                if (isNonFood || i === 1) {
+                    nfPaginasPerGroep[groep].push(i);
+                }
             });
         }
 
@@ -389,7 +397,7 @@ async function verwerkPdf() {
                 ? `WK${weekNrInput}_${typeFolder}_${regioNaam}_${JAAR}`
                 : `WK${weekNrInput}_${regioNaam}_${JAAR}`;
 
-            // Bouw de EXTERN-versie (behoudt originele links)
+            // Bouw EXTERN direct schoon op (zonder link manipulatie)
             const subDocExtern = await PDFLib.PDFDocument.create();
             const gekopieerdePaginasExtern = await subDocExtern.copyPages(pdfEditDoc, actuelePaginas);
             gekopieerdePaginasExtern.forEach(p => subDocExtern.addPage(p));
@@ -404,14 +412,14 @@ async function verwerkPdf() {
             const externBytes = await subDocExtern.save();
             zip.file(`EXTERN/${typeFolder}/${bestandsnaam}_EXTERN.pdf`, externBytes);
 
-            // Bouw de LIDL-versie (met de volledig schone en nieuw getekende links)
+            // Bouw LIDL op basis van de schone EXTERN en overschrijf daar de annotatie layers
             const subDocLidl = await PDFLib.PDFDocument.load(externBytes);
             await overschrijfEnHerbouwLinks(subDocLidl, actuelePaginas);
             const lidlBytes = await subDocLidl.save();
             zip.file(`LIDL/${typeFolder}/${bestandsnaam}_LIDL.pdf`, lidlBytes);
         }
 
-        // DE COÖRDINATEN-SLEDGEHAMMER: Vernietigt de oude annotatielaag en tekent de links volledig nieuw op
+        // De onfeilbare array layer overschrijver op basis van PDF coördinaten
         async function overschrijfEnHerbouwLinks(doc, originelePaginas) {
             const pages = doc.getPages();
             
@@ -422,27 +430,25 @@ async function verwerkPdf() {
 
                 if (linksOmTeSchoonmaken && linksOmTeSchoonmaken.length > 0) {
                     
-                    // 1. Maak een splinternieuwe, lege PDFArray aan binnen de context van dit document
+                    // Maak een splinternieuwe lege PDFArray aan binnen de context van dit document
                     const nieuweAnnotsArray = doc.context.obj([]);
                     editPage.node.set(PDFLib.PDFName.of('Annots'), nieuweAnnotsArray);
 
-                    // 2. Bouw voor elke link een volledig schone, onafhankelijke link-annotatie op
                     for (let schoneLink of linksOmTeSchoonmaken) {
                         const r = schoneLink.rect;
                         
                         const nieuweLinkAnnotatie = doc.context.obj({
                             Type: 'Annot',
                             Subtype: 'Link',
-                            Rect: [r[0], r[1], r[2], r[3]], // Exact dezelfde positie
-                            Border: [0, 0, 0],              // Onzichtbaar kader
+                            Rect: [r[0], r[1], r[2], r[3]], 
+                            Border: [0, 0, 0],              
                             A: {
                                 Type: 'Action',
                                 S: 'URI',
-                                URI: PDFLib.PDFString.of(schoneLink.url) // Gegarandeerd schone URL zonder parameters
+                                URI: PDFLib.PDFString.of(schoneLink.url) 
                             }
                         });
 
-                        // 3. Voeg de annotatie toe met de juiste methode (.push() op de PDFArray werkt via de context-wrapper)
                         nieuweAnnotsArray.push(nieuweLinkAnnotatie);
                     }
                 }
