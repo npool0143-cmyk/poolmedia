@@ -3,25 +3,29 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lidl Flyer Versie Bouwer v3.2</title>
+    <title>Lidl Flyer Versie Bouwer v3.3</title>
     
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <style>
-        /* Geïmporteerde Lidl Huisstijl uit style.css */
+        /* Geïmporteerde Lidl Huisstijl en Font Pro */
         body { 
             margin: 0;
             padding: 40px 20px;
             background-color: #002466; 
             color: #000;
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Lidl Font Pro', 'Segoe UI', Arial, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             box-sizing: border-box;
+        }
+
+        html, input, select, button {
+            font-family: 'Lidl Font Pro', 'Segoe UI', Arial, sans-serif;
         }
 
         .container { 
@@ -67,12 +71,11 @@
             font-size: 15px;
         }
 
-        /* Input styling in lijn met de FAQ elementen */
         input[type="number"], input[type="file"] { 
             width: 100%; 
             padding: 12px; 
             border: 1px solid #0050aa; 
-            border-radius: 50px; /* Ronde hoeken conform menu-stijl */
+            border-radius: 50px; 
             box-sizing: border-box; 
             font-size: 16px; 
             background-color: #fff;
@@ -86,7 +89,6 @@
             font-size: 14px;
         }
 
-        /* De herkenbare Lidl-blauwe actieknop met gele hover */
         button { 
             width: 100%; 
             background-color: #0050aa; 
@@ -104,7 +106,7 @@
 
         button:hover { 
             color: #000;
-            background-color: #fff200; /* Lidl Geel */
+            background-color: #fff200; 
         }
 
         button:disabled { 
@@ -114,7 +116,6 @@
             box-shadow: none;
         }
 
-        /* Status & Error vakken */
         #status { 
             display: none; 
             text-align: center; 
@@ -132,18 +133,18 @@
             border: 1px solid #b52b27;
         }
 
-        #status.error .spinner { 
+        #status.error .spinner-container { 
             display: none; 
         }
 
-        .spinner { 
-            border: 4px solid rgba(255,255,255,0.3); 
-            width: 30px; 
-            height: 30px; 
-            border-radius: 50%; 
-            border-left-color: #fff200; /* Gele laad-indicator */
-            animation: spin 1s linear infinite; 
-            margin: 0 auto 10px auto; 
+        .spinner-container {
+            margin-bottom: 12px;
+        }
+
+        .lidl-spinner {
+            width: 45px;
+            height: 45px;
+            animation: spin 2s linear infinite;
         }
 
         @keyframes spin { 
@@ -158,6 +159,10 @@
             color: #999; 
             border-top: 1px solid #eee;
             padding-top: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
         }
     </style>
 </head>
@@ -165,11 +170,11 @@
 
 <div class="container">
     <div class="logo-header">
-        <img src="https://www.lidl.nl/static/assets/1f8d040c-8532-4af5-9c99-7a59545365de.svg" height="75" alt="Lidl Logo">
+        <img src="https://www.lidl.nl/static/assets/1f8d040c-8532-4af5-9c99-7a59545365de.svg" height="85" alt="Lidl Logo">
     </div>
 
     <h1>Flyer Splitter & Opschoner</h1>
-    <p class="subtitle">Deze tool split automatisch je PDF op voor Lidl.nl & Extern</p>
+    <p class="subtitle">Versie 3.3: Inclusief YouGov-remediëring & Lidl Logo Spinner.</p>
     
     <div class="form-group">
         <label for="week_nr">🔢 Weeknummer:</label>
@@ -177,19 +182,21 @@
     </div>
     
     <div class="form-group">
-        <label for="pdf_file">📄 Selecteer je gelinkte basis PDF:</label>
+        <label for="pdf_file">📄 Selecteer 'basis_gelinkt.pdf':</label>
         <input type="file" id="pdf_file" accept=".pdf">
     </div>
     
     <button id="start_btn" onclick="verwerkPdf()">Start Verwerking & Download ZIP</button>
 
     <div id="status">
-        <div class="spinner" id="status_spinner"></div>
+        <div class="spinner-container" id="status_spinner">
+            <img src="https://www.lidl.nl/static/assets/1f8d040c-8532-4af5-9c99-7a59545365de.svg" class="lidl-spinner" alt="Laden...">
+        </div>
         <span id="status_text">PDF initialiseren...</span>
     </div>
 
     <div class="footer">
-        Automatisering Tooling &copy; 2026
+        <img src="https://www.lidl.nl/static/assets/1f8d040c-8532-4af5-9c99-7a59545365de.svg" height="14" alt="Lidl"> Automatisering Tooling &copy; 2026
     </div>
 </div>
 
@@ -286,7 +293,7 @@ async function verwerkPdf() {
                 if (!WEEKEND_UITZONDERINGEN.some(u => text.includes(u))) landelijkeWeekendPaginas.push(i);
             }
 
-            // Gecorrigeerde Regio-groepering met uitsluiting van 'LANDELIJKE'
+            // Regio-groepering logic
             let behoortTotGroepen = [];
             if (text.includes("G1/G2/G3/G4/G5/G6")) {
                 behoortTotGroepen = GROEPEN;
