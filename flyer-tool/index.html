@@ -406,27 +406,12 @@ async function schoonLinksOp(doc) {
                                     const uri = a.get(PDFLib.PDFName.of('URI'));
                                     if (uri) {
                                         let urlStr = uri.value;
-                                        
-                                        try {
-                                            // Maak er een echt URL-object van
-                                            let parsedUrl = new URL(urlStr);
+                                        if (/utm_/i.test(urlStr)) {
+                                            let schoneUrl = urlStr.replace(/[?&]utm_.*/i, '');
                                             
-                                            // Als de link UTM-parameters bevat
-                                            if (parsedUrl.search.toLowerCase().includes('utm_')) {
-                                                // Haal de complete query string (?utm_medium=...) in één keer weg
-                                                parsedUrl.search = '';
-                                                
-                                                // Schrijf de schone URL (zonder vraagteken en alles erachter) terug
-                                                let schoneUrl = parsedUrl.toString();
-                                                a.set(PDFLib.PDFName.of('URI'), PDFLib.PDFString.of(schoneUrl));
-                                            }
-                                        } catch (e) {
-                                            // Fallback voor het geval een link geen geldige URL is
-                                            const utmRegex = /([?&]utm_.*)/i;
-                                            if (utmRegex.test(urlStr)) {
-                                                let schoneUrl = urlStr.split(utmRegex)[0];
-                                                a.set(PDFLib.PDFName.of('URI'), PDFLib.PDFString.of(schoneUrl));
-                                            }
+                                            schoneUrl = schoneUrl.replace(/[?&]$/, '');
+
+                                            a.set(PDFLib.PDFName.of('URI'), PDFLib.PDFString.of(schoneUrl));
                                         }
                                     }
                                 }
