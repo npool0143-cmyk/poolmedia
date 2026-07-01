@@ -422,8 +422,9 @@ async function verwerkPdf() {
 
                 if (linksOmTeSchoonmaken && linksOmTeSchoonmaken.length > 0) {
                     
-                    // 1. Wis de bestaande /Annots dictionary volledig van de pagina om Acrobat-data te vernietigen
-                    editPage.node.set(PDFLib.PDFName.of('Annots'), doc.context.obj([]));
+                    // 1. Maak een splinternieuwe, lege PDFArray aan binnen de context van dit document
+                    const nieuweAnnotsArray = doc.context.obj([]);
+                    editPage.node.set(PDFLib.PDFName.of('Annots'), nieuweAnnotsArray);
 
                     // 2. Bouw voor elke link een volledig schone, onafhankelijke link-annotatie op
                     for (let schoneLink of linksOmTeSchoonmaken) {
@@ -441,9 +442,8 @@ async function verwerkPdf() {
                             }
                         });
 
-                        // 3. Duw de nieuwe, schone link in de zojuist geleegde annotatie-array
-                        const annotsRef = editPage.node.Annots;
-                        annotsRef.push(nieuweLinkAnnotatie);
+                        // 3. Voeg de annotatie toe met de juiste methode (.push() op de PDFArray werkt via de context-wrapper)
+                        nieuweAnnotsArray.push(nieuweLinkAnnotatie);
                     }
                 }
             }
