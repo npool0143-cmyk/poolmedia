@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lidl Flyer Versie Bouwer v3</title>
+    <title>Lidl Flyer Versie Bouwer v3.1</title>
     
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <style>
-        :root { --lidl-blue: #002f6c; --lidl-yellow: #fff200; }
+        :root { --lidl-blue: #002f6c; --lidl-yellow: #fff200; --error-red: #d9534f; }
         body { font-family: 'Segoe UI', sans-serif; background-color: #f4f6f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
         .container { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); max-width: 500px; width: 100%; border-top: 8px solid var(--lidl-blue); }
         h1 { color: var(--lidl-blue); text-align: center; margin-top: 0; font-size: 24px; }
@@ -18,9 +18,12 @@
         .form-group { margin-bottom: 20px; }
         label { display: block; font-weight: 600; margin-bottom: 8px; color: #333; }
         input[type="number"], input[type="file"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; background-color: var(--lidl-blue); color: white; border: none; padding: 14px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+        button { width: 100%; background-color: var(--lidl-blue); color: white; border: none; padding: 14px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
+        button:hover { background-color: #001f4d; }
         button:disabled { background-color: #cccccc; cursor: not-allowed; }
-        #status { display: none; text-align: center; margin-top: 20px; font-weight: bold; color: var(--lidl-blue); }
+        #status { display: none; text-align: center; margin-top: 20px; font-weight: bold; color: var(--lidl-blue); padding: 10px; border-radius: 6px; }
+        #status.error { color: var(--error-red); background-color: #fdf2f2; border: 1px solid var(--error-red); }
+        #status.error .spinner { display: none; }
         .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--lidl-blue); animation: spin 1s linear infinite; margin: 10px auto; }
         @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
         .footer { margin-top: 30px; text-align: center; font-size: 11px; color: #999; }
@@ -30,7 +33,7 @@
 
 <div class="container">
     <h1>Lidl Flyer Splitter & Opschoner</h1>
-    <p class="subtitle">Gecorrigeerde v3: 100% sluitende herkenning en UTM-verwijdering.</p>
+    <p class="subtitle">Gecorrigeerde v3.1: Volledige trefwoordenlijst & in-browser verwerking.</p>
     
     <div class="form-group">
         <label for="week_nr">🔢 Weeknummer:</label>
@@ -45,7 +48,7 @@
     <button id="start_btn" onclick="verwerkPdf()">Start Verwerking & Download ZIP</button>
 
     <div id="status">
-        <div class="spinner"></div>
+        <div class="spinner" id="status_spinner"></div>
         <span id="status_text">PDF initialiseren...</span>
     </div>
 
@@ -59,7 +62,15 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
 
 const JAAR = "2026";
 const GROEPEN = ["G1G2", "G3G4", "G5G6", "LANDELIJK"];
-const NF_TREFWOORDEN = ["ALTIJD MEER OP LIDL.NL", "PARKSIDE", "SILVERCREST", "ESMARA", "LIVERGY", "CRIVIT", "ZOOFARI", "LUPILU", "ULTIMATE SPEED", "GARDENA", "ZOMEROPRUIMING", "WINTEROPRUIMING", "OPRUIMING", "ERNESTO", "MERADISO", "LIVARNO", "LIVARNO HOME", "LIVARNO LUX", "AQUAPUR", "MIOMARE", "PEPPERTS", "PLAYTIVE", "AUNTSFIELD", "NEVADENT", "SANITAS", "VITALCONTROL", "TRONIC", "TOPMOVE", "CRELANDO", "ROCKTRAIL", "SENSIPLAST", "WITTENBERG", "PARKSIDE PERFORMANCE"];
+
+// Volledige lijst hersteld uit je originele script
+const NF_TREFWOORDEN = [
+    "ALTIJD MEER OP LIDL.NL", "PARKSIDE", "SILVERCREST", "ESMARA", "LIVERGY", "CRIVIT", "ZOOFARI", 
+    "LUPILU", "ULTIMATE SPEED", "GARDENA", "ZOMEROPRUIMING", "WINTEROPRUIMING", "OPRUIMING", "ERNESTO", 
+    "MERADISO", "LIVARNO", "LIVARNO HOME", "LIVARNO LUX", "AQUAPUR", "MIOMARE", "PEPPERTS", 
+    "PLAYTIVE", "AUNTSFIELD", "NEVADENT", "SANITAS", "VITALCONTROL", "TRONIC", "TOPMOVE", 
+    "CRELANDO", "ROCKTRAIL", "SENSIPLAST", "WITTENBERG", "PARKSIDE PERFORMANCE", "PHILIPS", "MEXX", "BOSCH"
+];
 const FOOD_UITZONDERINGEN = ["WERKENBIJLIDL", "WERKEN BIJ", "TEAMLIDL", "#TEAMLIDL"];
 const WEEKEND_UITZONDERINGEN = ["POTMAAT", "PLANT", "PLANTEN", "BLOEMEN", "BOEKET", "LEPELPLANT", "SUNFLOWERS", "ZONNEBLOEMEN"];
 
@@ -68,21 +79,23 @@ async function verwerkPdf() {
     const fileInput = document.getElementById('pdf_file').files[0];
     const statusDiv = document.getElementById('status');
     const statusText = document.getElementById('status_text');
+    const statusSpinner = document.getElementById('status_spinner');
     const startBtn = document.getElementById('start_btn');
 
     if (!weekNrInput || !fileInput) {
-        alert("❌ Vul een weeknummer in en selecteer een PDF-bestand.");
+        toonFout("❌ Vul een weeknummer in en selecteer een PDF-bestand.");
         return;
     }
 
+    // Reset status UI naar 'laden'
+    statusDiv.className = '';
+    statusSpinner.style.display = 'block';
     statusDiv.style.display = 'block';
     startBtn.disabled = true;
 
     try {
         statusText.innerText = "PDF inlezen...";
         const fileBytes = await fileInput.arrayBuffer();
-        
-        // Maak direct een veilige kopie voor PDF.js tekstextractie
         const fileBytesCopy = fileBytes.slice(0); 
 
         const loadingTask = pdfjsLib.getDocument({ data: fileBytesCopy });
@@ -108,7 +121,7 @@ async function verwerkPdf() {
             let hasProductLink = false;
             let hasLidlNlLink = false;
 
-            // Scan weblinks via de annotatielaag (Vangnet voor herkenning)
+            // Scan weblinks via de annotatielaag
             if (editPage.node && editPage.node.Annots) {
                 const annots = pdfEditDoc.context.lookup(editPage.node.Annots);
                 if (annots && annots.array) {
@@ -121,7 +134,6 @@ async function verwerkPdf() {
                                 if (uri) {
                                     const urlStr = uri.value.toLowerCase();
                                     
-                                    // Gecorrigeerde link check
                                     if (urlStr.includes('lidl.nl')) {
                                         hasLidlNlLink = true;
                                     }
@@ -135,7 +147,7 @@ async function verwerkPdf() {
                 }
             }
 
-            // HIER IS HET VANGNET: Als de pagina een lidl.nl link bevat óf productlinks, is het sowieso Non-Food!
+            // Non-food bepaling logica
             let isNonFood = false;
             if (i !== 0) {
                 if (NF_TREFWOORDEN.some(term => text.includes(term)) || hasProductLink || hasLidlNlLink) {
@@ -146,6 +158,7 @@ async function verwerkPdf() {
                 }
             }
 
+            // Weekend folder selectie
             if (i === laatstePaginaIndex) {
                 landelijkeWeekendPaginas.push(i);
             } else if (text.includes("VANAF VRIJDAG") && !hasProductLink) {
@@ -154,6 +167,7 @@ async function verwerkPdf() {
                 }
             }
 
+            // Regio groepering
             let behoortTotGroepen = [];
             if (text.includes("LANDELIJK")) {
                 behoortTotGroepen = ["LANDELIJK"];
@@ -218,7 +232,7 @@ async function verwerkPdf() {
             zip.file(`LIDL/${typeFolder}/${bestandsnaam}_LIDL.pdf`, lidlBytes);
         }
 
-        // Geoptimaliseerde en agressieve UTM-verwijderaar
+        // UTM-verwijderaar
         async function schoonLinksOp(doc) {
             for (const page of doc.getPages()) {
                 if (page.node && page.node.Annots) {
@@ -232,7 +246,6 @@ async function verwerkPdf() {
                                     const uri = a.get(PDFLib.PDFName.of('URI'));
                                     if (uri) {
                                         let urlStr = uri.value;
-                                        // RegEx die zoekt naar ?utm_ of &utm_ en alles wat daarna komt rigoureus verwijdert
                                         if (/([?&]utm_[a-z]+=[^&]+)/i.test(urlStr)) {
                                             let schoneUrl = urlStr.split(/[?&]utm_medium/)[0].split(/[?&]utm_source/)[0].split(/[?&]utm_/)[0];
                                             a.set(PDFLib.PDFName.of('URI'), PDFLib.PDFString.of(schoneUrl));
@@ -261,15 +274,22 @@ async function verwerkPdf() {
         link.click();
         document.body.removeChild(link);
 
-        statusText.innerText = "Gereed!";
-        setTimeout(() => { statusDiv.style.display = 'none'; startBtn.disabled = false; }, 2000);
+        statusText.innerText = "🎉 Voltooid en gedownload!";
+        setTimeout(() => { statusDiv.style.display = 'none'; startBtn.disabled = false; }, 3000);
 
     } catch (error) {
         console.error(error);
-        alert("❌ Er is een fout opgetreden bij de verwerking. Zie de console (F12) voor technische details.");
-        statusDiv.style.display = 'none';
+        toonFout("❌ Er ging iets fout bij het verwerken. Open de console (F12) voor meer details.");
         startBtn.disabled = false;
     }
+}
+
+function toonFout(bericht) {
+    const statusDiv = document.getElementById('status');
+    const statusText = document.getElementById('status_text');
+    statusDiv.className = 'error';
+    statusText.innerText = bericht;
+    statusDiv.style.display = 'block';
 }
 </script>
 </body>
