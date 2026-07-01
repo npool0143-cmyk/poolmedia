@@ -422,14 +422,14 @@ async function schoonLinksOp(doc) {
                                         // Vang zowel standaard strings als hexadecimale Acrobat-strings op
                                         let urlStr = '';
                                         if (uri instanceof PDFLib.PDFHexString) {
-                                            urlStr = uri.asString(); // Decodeert de Hex-bytes direct naar leesbare tekst
+                                            urlStr = uri.asString(); 
                                         } else if (typeof uri.asString === 'function') {
                                             urlStr = uri.asString();
                                         } else {
                                             urlStr = uri.value;
                                         }
 
-                                        // 3. Als de link UTM-data bevat, snijden we alles vanaf het eerste query-teken (? of &) eraf
+                                        // 3. Als de link UTM-data bevat, gaan we de complete Action-dictionary resetten
                                         if (urlStr && urlStr.toLowerCase().includes('utm_')) {
                                             const indexVraagteken = urlStr.indexOf('?');
                                             const indexAmpersand = urlStr.indexOf('&');
@@ -444,12 +444,16 @@ async function schoonLinksOp(doc) {
                                             if (knipPositie !== -1) {
                                                 let schoneUrl = urlStr.substring(0, knipPositie);
                                                 
-                                                // 4. Schrijf de schone link direct terug in het geopende Acrobat-object (behoud Hex indien nodig)
-                                                if (uri instanceof PDFLib.PDFHexString) {
-                                                    a.set(PDFLib.PDFName.of('URI'), PDFLib.PDFHexString.fromText(schoneUrl));
-                                                } else {
-                                                    a.set(PDFLib.PDFName.of('URI'), PDFLib.PDFString.of(schoneUrl));
-                                                }
+                                                // 4. DE METAMORFOSE: In plaats van de URI te wijzigen, bouwen we een 
+                                                // 100% nieuwe, schone Action map op om alle Acrobat-restanten te overschrijven
+                                                const schoneActieMap = doc.context.obj({
+                                                    Type: 'Action',
+                                                    S: 'URI',
+                                                    URI: PDFLib.PDFString.of(schoneUrl)
+                                                });
+
+                                                // Overschrijf de complete /A dictionary op de annotatie met ons schone object
+                                                annot.set(PDFLib.PDFName.of('A'), schoneActieMap);
                                             }
                                         }
                                     }
