@@ -407,17 +407,38 @@ async function schoonLinksOp(doc) {
                         for (const annotRef of annots.array) {
                             const annot = doc.context.lookup(annotRef);
                             if (annot && annot.get) {
-                                const a = annot.get(PDFLib.PDFName.of('A'));
-                                if (a) {
-                                    const uri = a.get(PDFLib.PDFName.of('URI'));
+                                
+                                // 1. Haal de Actie (/A) op en open het verborgen Acrobat-object via de context lookup
+                                const actionRef = annot.get(PDFLib.PDFName.of('A'));
+                                const a = doc.context.lookup(actionRef);
+                                
+                                if (a && a.get) {
+                                    // 2. Haal de URI op en open ook deze specifieke Acrobat-verwijzing
+                                    const uriRef = a.get(PDFLib.PDFName.of('URI'));
+                                    const uri = doc.context.lookup(uriRef);
+                                    
                                     if (uri) {
-                                        let urlStr = uri.value;
-                                        if (/utm_/i.test(urlStr)) {
-                                            let schoneUrl = urlStr.replace(/[?&]utm_.*/i, '');
-                                            
-                                            schoneUrl = schoneUrl.replace(/[?&]$/, '');
+                                        // Vang zowel standaard strings als hexadecimale Acrobat-strings op
+                                        let urlStr = typeof uri.asString === 'function' ? uri.asString() : uri.value;
 
-                                            a.set(PDFLib.PDFName.of('URI'), PDFLib.PDFString.of(schoneUrl));
+                                        // 3. Als de link UTM-data bevat, snijden we alles vanaf het eerste query-teken (? of &) eraf
+                                        if (urlStr && urlStr.toLowerCase().includes('utm_')) {
+                                            const indexVraagteken = urlStr.indexOf('?');
+                                            const indexAmpersand = urlStr.indexOf('&');
+                                            
+                                            let knipPositie = -1;
+                                            if (indexVraagteken !== -1 && indexAmpersand !== -1) {
+                                                knipPositie = Math.min(indexVraagteken, indexAmpersand);
+                                            } else {
+                                                knipPositie = indexVraagteken !== -1 ? indexVraagteken : indexAmpersand;
+                                            }
+
+                                            if (knipPositie !== -1) {
+                                                let schoneUrl = urlStr.substring(0, knipPositie);
+                                                
+                                                // 4. Schrijf de schone link direct terug in het geopende Acrobat-object
+                                                a.set(PDFLib.PDFName.of('URI'), PDFLib.PDFString.of(schoneUrl));
+                                            }
                                         }
                                     }
                                 }
