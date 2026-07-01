@@ -382,8 +382,14 @@ async function verwerkPdf() {
                                     const uri = a.get(PDFLib.PDFName.of('URI'));
                                     if (uri) {
                                         let urlStr = uri.value;
-                                        if (/([?&]utm_[a-z]+=[^&]+)/i.test(urlStr)) {
-                                            let schoneUrl = urlStr.split(/[?&]utm_medium/)[0].split(/[?&]utm_source/)[0].split(/[?&]utm_/)[0];
+                                        
+                                        // Waterdichte Regex: Zoek naar de allereerste ?utm_ of &utm_ 
+                                        // en match ALLES wat daarna komt (.*) om het te verwijderen.
+                                        const utmRegex = /([?&]utm_.*)/i;
+                                        
+                                        if (utmRegex.test(urlStr)) {
+                                            // Knip de URL af vlak voor de allereerste UTM parameter
+                                            let schoneUrl = urlStr.split(utmRegex)[0];
                                             a.set(PDFLib.PDFName.of('URI'), PDFLib.PDFString.of(schoneUrl));
                                         }
                                     }
