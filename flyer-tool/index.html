@@ -100,7 +100,11 @@
             font-size: 15px;
         }
 
-        input[type="number"], input[type="file"] { 
+.form-group { 
+            margin-bottom: 25px; 
+        }
+
+        input[type="number"] { 
             width: 100%; 
             padding: 12px; 
             border: 1px solid #0050aa; 
@@ -112,10 +116,58 @@
             padding-left: 20px;
         }
 
-        input[type="file"] {
-            padding: 10px;
-            padding-left: 15px;
+        /* Lidl Drag & Drop Dropzone Zone */
+        .dropzone-area {
+            border: 2px dashed #0050aa;
+            border-radius: 12px;
+            padding: 30px 20px;
+            text-align: center;
+            background: #f9f9f9;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .dropzone-area:hover, .dropzone-area.dragover {
+            background: #fffde6;
+            border-color: #fff200; /* Lidl Geel bij hover/drag */
+        }
+
+        .dropzone-icon {
+            font-size: 40px;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .dropzone-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 15px;
+        }
+
+        .dropzone-btn {
+            display: inline-block;
+            background-color: #0050aa;
+            color: white;
+            padding: 10px 24px;
             font-size: 14px;
+            font-weight: bold;
+            border-radius: 50px;
+            transition: all 0.3s ease;
+        }
+
+        .dropzone-area:hover .dropzone-btn {
+            background-color: #fff200;
+            color: #000;
+        }
+
+        .file-info {
+            margin-top: 10px;
+            font-size: 13px;
+            color: #0050aa;
+            font-weight: bold;
+            display: none;
         }
 
         button { 
@@ -217,8 +269,16 @@
     </div>
     
     <div class="form-group">
-        <label for="pdf_file">📄 Selecteer je gelinkte basis PDF:</label>
-        <input type="file" id="pdf_file" accept=".pdf">
+        <label>📄 Selecteer je gelinkte basis PDF:</label>
+        
+        <div id="dropzone" class="dropzone-area" onclick="document.getElementById('pdf_file').click()">
+            <span class="dropzone-icon">📄</span>
+            <div class="dropzone-text">Sleep je PDF-bestand hiernaartoe</div>
+            <div class="dropzone-btn">Selecteer van computer</div>
+            <div id="file_name_display" class="file-info"></div>
+            
+            <input type="file" id="pdf_file" accept=".pdf" style="display: none;" onchange="updateDropzoneStatus(this)">
+        </div>
     </div>
     
     <button id="start_btn" onclick="verwerkPdf()">Start Verwerking & Download ZIP</button>
@@ -236,6 +296,46 @@
 </div>
 
 <script>
+
+// Update de interface wanneer een bestand succesvol is gekoppeld
+function updateDropzoneStatus(input) {
+    const display = document.getElementById('file_name_display');
+    if (input.files && input.files[0]) {
+        display.innerText = "✅ Geselecteerd: " + input.files[0].name;
+        display.style.display = "block";
+    } else {
+        display.style.display = "none";
+    }
+}
+
+// Drag & Drop event listeners voor visuele feedback
+const dropzone = document.getElementById('dropzone');
+const fileInput = document.getElementById('pdf_file');
+
+['dragenter', 'dragover'].forEach(eventName => {
+    dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropzone.classList.add('dragover');
+    }, false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    dropzone.addEventListener(eventName, (e) => {
+        e.preventDefault();
+        dropzone.classList.remove('dragover');
+    }, false);
+});
+
+dropzone.addEventListener('drop', (e) => {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    if (files.length > 0 && files[0].type === "application/pdf") {
+        fileInput.files = files;
+        updateDropzoneStatus(fileInput);
+    }
+});
+
+    
 pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
 
 const JAAR = "2026";
