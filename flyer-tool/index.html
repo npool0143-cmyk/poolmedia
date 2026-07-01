@@ -10,7 +10,17 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <style>
-        /* Geïmporteerde Lidl Huisstijl en Font Pro */
+        /* 1. Definieer het lettertype vanaf jouw GitHub 'fonts' map */
+        @font-face {
+            font-family: 'Lidl Font Pro';
+            src: url('fonts/LidlFontPro-Regular.woff2') format('woff2'),
+                 url('fonts/LidlFontPro-Regular.woff') format('woff'),
+                 url('fonts/LidlFontPro-Regular.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+
+        /* 2. Lidl Huisstijl & Interface Layout */
         body { 
             margin: 0;
             padding: 40px 20px;
@@ -293,7 +303,7 @@ async function verwerkPdf() {
                 if (!WEEKEND_UITZONDERINGEN.some(u => text.includes(u))) landelijkeWeekendPaginas.push(i);
             }
 
-            // Regio-groepering logic
+            // Regio-groepering logic (met YouGov fix)
             let behoortTotGroepen = [];
             if (text.includes("G1/G2/G3/G4/G5/G6")) {
                 behoortTotGroepen = GROEPEN;
