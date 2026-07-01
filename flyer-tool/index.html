@@ -3,37 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Lidl Flyer Versie Bouwer v1.0</title>
+    <title>Lidl Flyer Versie Bouwer v3.2</title>
     
     <script src="https://unpkg.com/pdf-lib@1.17.1/dist/pdf-lib.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
 
     <style>
-        :root { --lidl-blue: #002f6c; --lidl-yellow: #fff200; --error-red: #d9534f; }
-        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f6f9; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
-        .container { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); max-width: 500px; width: 100%; border-top: 8px solid var(--lidl-blue); }
-        h1 { color: var(--lidl-blue); text-align: center; margin-top: 0; font-size: 24px; }
-        p.subtitle { text-align: center; color: #666; font-size: 14px; margin-bottom: 30px; }
-        .form-group { margin-bottom: 20px; }
-        label { display: block; font-weight: 600; margin-bottom: 8px; color: #333; }
-        input[type="number"], input[type="file"] { width: 100%; padding: 12px; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; background-color: var(--lidl-blue); color: white; border: none; padding: 14px; font-size: 16px; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 10px; transition: background 0.2s; }
-        button:hover { background-color: #001f4d; }
-        button:disabled { background-color: #cccccc; cursor: not-allowed; }
-        #status { display: none; text-align: center; margin-top: 20px; font-weight: bold; color: var(--lidl-blue); padding: 10px; border-radius: 6px; }
-        #status.error { color: var(--error-red); background-color: #fdf2f2; border: 1px solid var(--error-red); }
-        #status.error .spinner { display: none; }
-        .spinner { border: 4px solid rgba(0,0,0,0.1); width: 36px; height: 36px; border-radius: 50%; border-left-color: var(--lidl-blue); animation: spin 1s linear infinite; margin: 10px auto; }
-        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-        .footer { margin-top: 30px; text-align: center; font-size: 11px; color: #999; }
+        /* Geïmporteerde Lidl Huisstijl uit style.css */
+        body { 
+            margin: 0;
+            padding: 40px 20px;
+            background-color: #002466; 
+            color: #000;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container { 
+            background: white; 
+            padding: 40px; 
+            border-radius: 12px; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2); 
+            max-width: 500px; 
+            width: 100%; 
+            border-top: 8px solid #0050aa; 
+            position: relative;
+        }
+
+        .logo-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        h1 { 
+            color: #0050aa; 
+            text-align: center; 
+            margin-top: 0; 
+            font-size: 28px; 
+            font-weight: bold;
+        }
+
+        p.subtitle { 
+            text-align: center; 
+            color: #666; 
+            font-size: 14px; 
+            margin-bottom: 30px; 
+        }
+
+        .form-group { 
+            margin-bottom: 25px; 
+        }
+
+        label { 
+            display: block; 
+            font-weight: 600; 
+            margin-bottom: 8px; 
+            color: #333; 
+            font-size: 15px;
+        }
+
+        /* Input styling in lijn met de FAQ elementen */
+        input[type="number"], input[type="file"] { 
+            width: 100%; 
+            padding: 12px; 
+            border: 1px solid #0050aa; 
+            border-radius: 50px; /* Ronde hoeken conform menu-stijl */
+            box-sizing: border-box; 
+            font-size: 16px; 
+            background-color: #fff;
+            color: #333;
+            padding-left: 20px;
+        }
+
+        input[type="file"] {
+            padding: 10px;
+            padding-left: 15px;
+            font-size: 14px;
+        }
+
+        /* De herkenbare Lidl-blauwe actieknop met gele hover */
+        button { 
+            width: 100%; 
+            background-color: #0050aa; 
+            color: white; 
+            border: none; 
+            padding: 14px; 
+            font-size: 16px; 
+            font-weight: bold; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            margin-top: 10px; 
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        button:hover { 
+            color: #000;
+            background-color: #fff200; /* Lidl Geel */
+        }
+
+        button:disabled { 
+            background-color: #cccccc; 
+            color: #666;
+            cursor: not-allowed; 
+            box-shadow: none;
+        }
+
+        /* Status & Error vakken */
+        #status { 
+            display: none; 
+            text-align: center; 
+            margin-top: 25px; 
+            font-weight: bold; 
+            color: white; 
+            padding: 15px; 
+            border-radius: 8px; 
+            background-color: #0050aa;
+            font-size: 15px;
+        }
+
+        #status.error { 
+            background-color: #d9534f; 
+            border: 1px solid #b52b27;
+        }
+
+        #status.error .spinner { 
+            display: none; 
+        }
+
+        .spinner { 
+            border: 4px solid rgba(255,255,255,0.3); 
+            width: 30px; 
+            height: 30px; 
+            border-radius: 50%; 
+            border-left-color: #fff200; /* Gele laad-indicator */
+            animation: spin 1s linear infinite; 
+            margin: 0 auto 10px auto; 
+        }
+
+        @keyframes spin { 
+            0% { transform: rotate(0deg); } 
+            100% { transform: rotate(360deg); } 
+        }
+
+        .footer { 
+            margin-top: 40px; 
+            text-align: center; 
+            font-size: 11px; 
+            color: #999; 
+            border-top: 1px solid #eee;
+            padding-top: 15px;
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Lidl Flyer Splitter</h1>
-    <p class="subtitle">Gecorrigeerde v3.1: Volledige trefwoordenlijst & in-browser verwerking.</p>
+    <div class="logo-header">
+        <img src="https://www.lidl.nl/static/assets/1f8d040c-8532-4af5-9c99-7a59545365de.svg" height="75" alt="Lidl Logo">
+    </div>
+
+    <h1>Flyer Splitter & Opschoner</h1>
+    <p class="subtitle">Deze tool split automatisch je PDF op voor Lidl.nl & Extern</p>
     
     <div class="form-group">
         <label for="week_nr">🔢 Weeknummer:</label>
@@ -41,7 +177,7 @@
     </div>
     
     <div class="form-group">
-        <label for="pdf_file">📄 Selecteer 'basis_gelinkt.pdf':</label>
+        <label for="pdf_file">📄 Selecteer je gelinkte basis PDF:</label>
         <input type="file" id="pdf_file" accept=".pdf">
     </div>
     
@@ -63,7 +199,6 @@ pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs
 const JAAR = "2026";
 const GROEPEN = ["G1G2", "G3G4", "G5G6", "LANDELIJK"];
 
-// Volledige lijst hersteld uit je originele script
 const NF_TREFWOORDEN = [
     "ALTIJD MEER OP LIDL.NL", "PARKSIDE", "SILVERCREST", "ESMARA", "LIVERGY", "CRIVIT", "ZOOFARI", 
     "LUPILU", "ULTIMATE SPEED", "GARDENA", "ZOMEROPRUIMING", "WINTEROPRUIMING", "OPRUIMING", "ERNESTO", 
@@ -87,7 +222,6 @@ async function verwerkPdf() {
         return;
     }
 
-    // Reset status UI naar 'laden'
     statusDiv.className = '';
     statusSpinner.style.display = 'block';
     statusDiv.style.display = 'block';
@@ -109,7 +243,6 @@ async function verwerkPdf() {
         let nfPaginasPerGroep = { "G1G2": [], "G3G4": [], "G5G6": [], "LANDELIJK": [] };
         let landelijkeWeekendPaginas = [];
 
-        // Analyseer elke pagina
         for (let i = 0; i < totaalPaginas; i++) {
             statusText.innerText = `Pagina ${i + 1} van ${totaalPaginas} analyseren...`;
             
@@ -121,7 +254,6 @@ async function verwerkPdf() {
             let hasProductLink = false;
             let hasLidlNlLink = false;
 
-            // Scan weblinks via de annotatielaag
             if (editPage.node && editPage.node.Annots) {
                 const annots = pdfEditDoc.context.lookup(editPage.node.Annots);
                 if (annots && annots.array) {
@@ -133,13 +265,8 @@ async function verwerkPdf() {
                                 const uri = a.get(PDFLib.PDFName.of('URI'));
                                 if (uri) {
                                     const urlStr = uri.value.toLowerCase();
-                                    
-                                    if (urlStr.includes('lidl.nl')) {
-                                        hasLidlNlLink = true;
-                                    }
-                                    if ((urlStr.includes('/p/') || urlStr.includes('/q/')) && !urlStr.includes('lidlplus')) {
-                                        hasProductLink = true;
-                                    }
+                                    if (urlStr.includes('lidl.nl')) hasLidlNlLink = true;
+                                    if ((urlStr.includes('/p/') || urlStr.includes('/q/')) && !urlStr.includes('lidlplus')) hasProductLink = true;
                                 }
                             }
                         }
@@ -147,29 +274,20 @@ async function verwerkPdf() {
                 }
             }
 
-            // Non-food bepaling logica
             let isNonFood = false;
             if (i !== 0) {
-                if (NF_TREFWOORDEN.some(term => text.includes(term)) || hasProductLink || hasLidlNlLink) {
-                    isNonFood = true;
-                }
-                if (FOOD_UITZONDERINGEN.some(u => text.includes(u))) {
-                    isNonFood = false;
-                }
+                if (NF_TREFWOORDEN.some(term => text.includes(term)) || hasProductLink || hasLidlNlLink) isNonFood = true;
+                if (FOOD_UITZONDERINGEN.some(u => text.includes(u))) isNonFood = false;
             }
 
-            // Weekend folder selectie
             if (i === laatstePaginaIndex) {
                 landelijkeWeekendPaginas.push(i);
             } else if (text.includes("VANAF VRIJDAG") && !hasProductLink) {
-                if (!WEEKEND_UITZONDERINGEN.some(u => text.includes(u))) {
-                    landelijkeWeekendPaginas.push(i);
-                }
+                if (!WEEKEND_UITZONDERINGEN.some(u => text.includes(u))) landelijkeWeekendPaginas.push(i);
             }
 
-            // Regio groepering (Exacte kopie van de Python logica)
+            // Gecorrigeerde Regio-groepering met uitsluiting van 'LANDELIJKE'
             let behoortTotGroepen = [];
-            
             if (text.includes("G1/G2/G3/G4/G5/G6")) {
                 behoortTotGroepen = GROEPEN;
             } else if (text.includes("LANDELIJK") && !text.includes("LANDELIJKE")) {
@@ -194,7 +312,6 @@ async function verwerkPdf() {
             });
         }
 
-        // PDF Bouwen en ZIP aanmaken
         statusText.innerText = "PDF folders genereren...";
         const zip = new JSZip();
 
@@ -235,7 +352,6 @@ async function verwerkPdf() {
             zip.file(`LIDL/${typeFolder}/${bestandsnaam}_LIDL.pdf`, lidlBytes);
         }
 
-        // UTM-verwijderaar
         async function schoonLinksOp(doc) {
             for (const page of doc.getPages()) {
                 if (page.node && page.node.Annots) {
