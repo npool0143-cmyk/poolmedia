@@ -304,8 +304,13 @@ async function verwerkPdf() {
                     const urlStr = annot.url;
                     const urlLower = urlStr.toLowerCase();
                     
-                    if (urlLower.includes('lidl.nl')) hasLidlNlLink = true;
-                    if ((urlLower.includes('/p/') || urlLower.includes('/q/')) && !urlLower.includes('lidlplus')) hasProductLink = true;
+                    if ((urlLower.includes('/p/') || urlLower.includes('/q/')) && !urlLower.includes('lidlplus')) {
+                        hasProductLink = true;
+                    }
+                    
+                    if (urlLower.includes('/h/') && !urlLower.includes('lidlplus')) {
+                        hasLidlNlLink = true;
+                    }
                     
                     // Schone URL bepaling voor de overschrijf-layer
                     let schoneUrl = urlStr;
