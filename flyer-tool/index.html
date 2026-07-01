@@ -270,7 +270,7 @@ async function verwerkPdf() {
     startBtn.disabled = true;
 
     try {
-        statusText.innerText = "🔍 PDF analyseren op regio's, Non-Food en Weekend Food pagina's...";        
+        statusText.innerText = "🔍 PDF analyseren op regio's, Non-Food en Weekend Food pagina's...";
         const fileBytes = await fileInput.arrayBuffer();
         const fileBytesCopy = fileBytes.slice(0); 
 
@@ -284,35 +284,49 @@ async function verwerkPdf() {
         let allePaginasPerGroep = { "G1G2": [], "G3G4": [], "G5G6": [], "LANDELIJK": [] };
         let nfPaginasPerGroep = { "G1G2": [], "G3G4": [], "G5G6": [], "LANDELIJK": [] };
         let landelijkeWeekendPaginas = [];
+        
+        // Sla alle weblinks en hun exacte coördinaten op per pagina-index (gevangen via de PDF.js engine)
+        let schoneLinksPerPagina = {};
 
         for (let i = 0; i < totaalPaginas; i++) {
-            statusText.innerText = `Pagina ${i + 1} van ${totaalPaginas} analyseren...`;
-            
             const pageTextObj = await pdfTextDoc.getPage(i + 1);
             const textContent = await pageTextObj.getTextContent();
             let text = textContent.items.map(item => item.str).join(" ").toUpperCase();
             
-            const editPage = pdfEditDoc.getPage(i);
+            // Haal de annotaties op via PDF.js (deze herkent de Acrobat-links gegarandeerd wél)
+            const annotations = await pageTextObj.getAnnotations();
             let hasProductLink = false;
             let hasLidlNlLink = false;
+            
+            schoneLinksPerPagina[i] = [];
 
-            if (editPage.node && editPage.node.Annots) {
-                const annots = pdfEditDoc.context.lookup(editPage.node.Annots);
-                if (annots && annots.array) {
-                    for (const annotRef of annots.array) {
-                        const annot = pdfEditDoc.context.lookup(annotRef);
-                        if (annot && annot.get) {
-                            const a = annot.get(PDFLib.PDFName.of('A'));
-                            if (a) {
-                                const uri = a.get(PDFLib.PDFName.of('URI'));
-                                if (uri) {
-                                    const urlStr = uri.value.toLowerCase();
-                                    if (urlStr.includes('lidl.nl')) hasLidlNlLink = true;
-                                    if ((urlStr.includes('/p/') || urlStr.includes('/q/')) && !urlStr.includes('lidlplus')) hasProductLink = true;
-                                }
-                            }
+            for (let annot of annotations) {
+                if (annot.subtype === 'Link' && annot.url) {
+                    const urlStr = annot.url;
+                    const urlLower = urlStr.toLowerCase();
+                    
+                    if (urlLower.includes('lidl.nl')) hasLidlNlLink = true;
+                    if ((urlLower.includes('/p/') || urlLower.includes('/q/')) && !urlLower.includes('lidlplus')) hasProductLink = true;
+                    
+                    // Bereken direct de schone URL zonder parameters
+                    let schoneUrl = urlStr;
+                    if (urlLower.includes('utm_')) {
+                        const indexVraagteken = urlStr.indexOf('?');
+                        const indexAmpersand = urlStr.indexOf('&');
+                        let knipPositie = (indexVraagteken !== -1 && indexAmpersand !== -1) 
+                            ? Math.min(indexVraagteken, indexAmpersand) 
+                            : (indexVraagteken !== -1 ? indexVraagteken : indexAmpersand);
+                        
+                        if (knipPositie !== -1) {
+                            schoneUrl = urlStr.substring(0, knipPositie);
                         }
                     }
+                    
+                    // Sla de schone URL en de exacte PDF-coördinaten [left, bottom, right, top] op
+                    schoneLinksPerPagina[i].push({
+                        url: schoneUrl,
+                        rect: annot.rect
+                    });
                 }
             }
 
@@ -328,7 +342,6 @@ async function verwerkPdf() {
                 if (!WEEKEND_UITZONDERINGEN.some(u => text.includes(u))) landelijkeWeekendPaginas.push(i);
             }
 
-            // Regio-groepering logic (met YouGov fix)
             let behoortTotGroepen = [];
             if (text.includes("G1/G2/G3/G4/G5/G6")) {
                 behoortTotGroepen = GROEPEN;
@@ -354,10 +367,9 @@ async function verwerkPdf() {
             });
         }
 
-        statusText.innerText = "PDF folders genereren...";
         const zip = new JSZip();
 
-async function voegPdfToeAanZip(regioNaam, paginas, typeFolder) {
+        async function voegPdfToeAanZip(regioNaam, paginas, typeFolder) {
             if (!paginas || paginas.length === 0) return;
 
             let actuelePaginas = [...paginas];
@@ -370,22 +382,20 @@ async function voegPdfToeAanZip(regioNaam, paginas, typeFolder) {
 
             if (actuelePaginas.length === 0) return;
 
-            // Voeg de voortgangsregel toe aan het logvenster
             statusText.innerText += `\n⚙️${typeFolder} folder voor ${regioNaam} genereren (${actuelePaginas.length} pagina's)...`;
-            
-            // Zorg dat het statusvenster automatisch naar beneden scrolt bij nieuwe regels
             statusText.scrollTop = statusText.scrollHeight;
 
             let bestandsnaam = (typeFolder === "NONFOOD" || typeFolder === "WEEKEND") 
                 ? `WK${weekNrInput}_${typeFolder}_${regioNaam}_${JAAR}`
                 : `WK${weekNrInput}_${regioNaam}_${JAAR}`;
 
+            // Bouw de EXTERN-versie (behoudt originele links)
             const subDocExtern = await PDFLib.PDFDocument.create();
             const gekopieerdePaginasExtern = await subDocExtern.copyPages(pdfEditDoc, actuelePaginas);
             gekopieerdePaginasExtern.forEach(p => subDocExtern.addPage(p));
             
             if (typeFolder === "WEEKEND") {
-                await schoonLinksOp(subDocExtern);
+                await overschrijfEnHerbouwLinks(subDocExtern, actuelePaginas);
                 const weekendBytes = await subDocExtern.save();
                 zip.file(`LIDL/WEEKEND/${bestandsnaam}_LIDL.pdf`, weekendBytes);
                 return;
@@ -394,72 +404,46 @@ async function voegPdfToeAanZip(regioNaam, paginas, typeFolder) {
             const externBytes = await subDocExtern.save();
             zip.file(`EXTERN/${typeFolder}/${bestandsnaam}_EXTERN.pdf`, externBytes);
 
+            // Bouw de LIDL-versie (met de volledig schone en nieuw getekende links)
             const subDocLidl = await PDFLib.PDFDocument.load(externBytes);
-            await schoonLinksOp(subDocLidl);
+            await overschrijfEnHerbouwLinks(subDocLidl, actuelePaginas);
             const lidlBytes = await subDocLidl.save();
             zip.file(`LIDL/${typeFolder}/${bestandsnaam}_LIDL.pdf`, lidlBytes);
         }
 
-async function schoonLinksOp(doc) {
-            for (const page of doc.getPages()) {
-                if (page.node && page.node.Annots) {
-                    const annots = doc.context.lookup(page.node.Annots);
-                    if (annots && annots.array) {
-                        for (const annotRef of annots.array) {
-                            const annot = doc.context.lookup(annotRef);
-                            if (annot && annot.get) {
-                                
-                                // 1. Haal de Actie (/A) op en open het verborgen Acrobat-object via de context lookup
-                                const actionRef = annot.get(PDFLib.PDFName.of('A'));
-                                const a = doc.context.lookup(actionRef);
-                                
-                                if (a && a.get) {
-                                    // 2. Haal de URI op en open ook deze specifieke Acrobat-verwijzing
-                                    const uriRef = a.get(PDFLib.PDFName.of('URI'));
-                                    const uri = doc.context.lookup(uriRef);
-                                    
-                                    if (uri) {
-                                        // Vang zowel standaard strings als hexadecimale Acrobat-strings op
-                                        let urlStr = '';
-                                        if (uri instanceof PDFLib.PDFHexString) {
-                                            urlStr = uri.asString(); 
-                                        } else if (typeof uri.asString === 'function') {
-                                            urlStr = uri.asString();
-                                        } else {
-                                            urlStr = uri.value;
-                                        }
+        // DE COÖRDINATEN-SLEDGEHAMMER: Vernietigt de oude annotatielaag en tekent de links volledig nieuw op
+        async function overschrijfEnHerbouwLinks(doc, originelePaginas) {
+            const pages = doc.getPages();
+            
+            for (let index = 0; index < pages.length; index++) {
+                const editPage = pages[index];
+                const originelePaginaIndex = originelePaginas[index];
+                const linksOmTeSchoonmaken = schoneLinksPerPagina[originelePaginaIndex];
 
-                                        // 3. Als de link UTM-data bevat, gaan we de complete Action-dictionary resetten
-                                        if (urlStr && urlStr.toLowerCase().includes('utm_')) {
-                                            const indexVraagteken = urlStr.indexOf('?');
-                                            const indexAmpersand = urlStr.indexOf('&');
-                                            
-                                            let knipPositie = -1;
-                                            if (indexVraagteken !== -1 && indexAmpersand !== -1) {
-                                                knipPositie = Math.min(indexVraagteken, indexAmpersand);
-                                            } else {
-                                                knipPositie = indexVraagteken !== -1 ? indexVraagteken : indexAmpersand;
-                                            }
+                if (linksOmTeSchoonmaken && linksOmTeSchoonmaken.length > 0) {
+                    
+                    // 1. Wis de bestaande /Annots dictionary volledig van de pagina om Acrobat-data te vernietigen
+                    editPage.node.set(PDFLib.PDFName.of('Annots'), doc.context.obj([]));
 
-                                            if (knipPositie !== -1) {
-                                                let schoneUrl = urlStr.substring(0, knipPositie);
-                                                
-                                                // 4. DE METAMORFOSE: In plaats van de URI te wijzigen, bouwen we een 
-                                                // 100% nieuwe, schone Action map op om alle Acrobat-restanten te overschrijven
-                                                const schoneActieMap = doc.context.obj({
-                                                    Type: 'Action',
-                                                    S: 'URI',
-                                                    URI: PDFLib.PDFString.of(schoneUrl)
-                                                });
-
-                                                // Overschrijf de complete /A dictionary op de annotatie met ons schone object
-                                                annot.set(PDFLib.PDFName.of('A'), schoneActieMap);
-                                            }
-                                        }
-                                    }
-                                }
+                    // 2. Bouw voor elke link een volledig schone, onafhankelijke link-annotatie op
+                    for (let schoneLink of linksOmTeSchoonmaken) {
+                        const r = schoneLink.rect;
+                        
+                        const nieuweLinkAnnotatie = doc.context.obj({
+                            Type: 'Annot',
+                            Subtype: 'Link',
+                            Rect: [r[0], r[1], r[2], r[3]], // Exact dezelfde positie
+                            Border: [0, 0, 0],              // Onzichtbaar kader
+                            A: {
+                                Type: 'Action',
+                                S: 'URI',
+                                URI: PDFLib.PDFString.of(schoneLink.url) // Gegarandeerd schone URL zonder parameters
                             }
-                        }
+                        });
+
+                        // 3. Duw de nieuwe, schone link in de zojuist geleegde annotatie-array
+                        const annotsRef = editPage.node.Annots;
+                        annotsRef.push(nieuweLinkAnnotatie);
                     }
                 }
             }
@@ -471,7 +455,7 @@ async function schoonLinksOp(doc) {
         }
         await voegPdfToeAanZip("LANDELIJK", landelijkeWeekendPaginas, "WEEKEND");
 
-        statusText.innerText += "\n📦 ZIP-pakket downloaden...";        
+        statusText.innerText += "\n📦 ZIP-pakket downloaden...";
         const zipContent = await zip.generateAsync({ type: "blob" });
         const link = document.createElement('a');
         link.href = URL.createObjectURL(zipContent);
